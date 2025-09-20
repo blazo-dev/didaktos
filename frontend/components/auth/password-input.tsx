@@ -42,7 +42,7 @@ export function PasswordInput({
                     id={id}
                     name={name}
                     required={required}
-                    className={`w-full px-4 py-3 border border-border rounded-lg bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-colors pr-12 ${className}`}
+                    className={`w-full px-4 py-3 border border-border rounded-lg bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-secondary/80 transition-colors pr-12 ${className}`}
                     placeholder={placeholder}
                 />
                 <Button

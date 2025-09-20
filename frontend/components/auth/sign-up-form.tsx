@@ -2,7 +2,9 @@
 
 import { FormEvent } from "react"
 import { Button } from "../ui/button"
+import { Input } from "../ui/input"
 import { PasswordInput } from "./password-input"
+import { Select } from "../ui/select"
 
 interface SignUpFormProps {
     onShowSignIn: () => void
@@ -14,8 +16,8 @@ export function SignUpForm({ onShowSignIn }: SignUpFormProps) {
         // Handle form submission logic here
         const formData = new FormData(e.currentTarget)
         const userData = {
-            firstName: formData.get('firstname'),
-            lastName: formData.get('lastname'),
+            firstName: formData.get('firstName'),
+            lastName: formData.get('lastName'),
             email: formData.get('email'),
             role: formData.get('role'),
             password: formData.get('password'),
@@ -26,7 +28,7 @@ export function SignUpForm({ onShowSignIn }: SignUpFormProps) {
 
     return (
         <div className="w-full grid gap-8 justify-content-center">
-            <div className="text-center mb-8">
+            <div className="text-center">
                 <h2 className="text-3xl font-bold mb-2">Create Account</h2>
                 <p className="text-muted-foreground">
                     Join Didaktos and start your learning journey
@@ -35,64 +37,43 @@ export function SignUpForm({ onShowSignIn }: SignUpFormProps) {
 
             <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label htmlFor="signup-firstname" className="block text-sm font-medium mb-2">
-                            First Name
-                        </label>
-                        <input
-                            type="text"
-                            id="signup-firstname"
-                            name="firstname"
-                            required
-                            className="w-full px-4 py-3 border border-border rounded-lg bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
-                            placeholder="First name"
-                        />
-                    </div>
-                    <div>
-                        <label htmlFor="signup-lastname" className="block text-sm font-medium mb-2">
-                            Last Name
-                        </label>
-                        <input
-                            type="text"
-                            id="signup-lastname"
-                            name="lastname"
-                            required
-                            className="w-full px-4 py-3 border border-border rounded-lg bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
-                            placeholder="Last name"
-                        />
-                    </div>
-                </div>
-
-                <div>
-                    <label htmlFor="signup-email" className="block text-sm font-medium mb-2">
-                        Email Address
-                    </label>
-                    <input
-                        type="email"
-                        id="signup-email"
-                        name="email"
+                    <Input
+                        id="signup-firstname"
+                        name="firstName"
+                        label="First Name"
+                        placeholder="First name"
                         required
-                        className="w-full px-4 py-3 border border-border rounded-lg bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
-                        placeholder="Enter your email"
+                    />
+                    <Input
+                        id="signup-lastname"
+                        name="lastName"
+                        label="Last Name"
+                        placeholder="Last name"
+                        required
                     />
                 </div>
 
-                <div>
-                    <label htmlFor="signup-role" className="block text-sm font-medium mb-2">
-                        I am a
-                    </label>
-                    <select
-                        id="signup-role"
-                        name="role"
-                        required
-                        className="w-full px-4 py-3 border border-border rounded-lg bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
-                    >
-                        <option value="">Select your role</option>
-                        <option value="student">Student</option>
-                        <option value="instructor">Instructor</option>
-                        <option value="admin">Administrator</option>
-                    </select>
-                </div>
+                <Input
+                    id="signup-email"
+                    name="email"
+                    type="email"
+                    label="Email Address"
+                    placeholder="Enter your email"
+                    required
+                />
+
+                <Select
+                    id="signup-role"
+                    name="role"
+                    label="I am a"
+                    placeholder="Select your role"
+                    required
+                    options={[
+                        { value: "student", label: "Student" },
+                        { value: "instructor", label: "Instructor" },
+                        { value: "admin", label: "Administrator" }
+                    ]}
+                />
 
                 <PasswordInput
                     id="signup-password"
@@ -112,12 +93,15 @@ export function SignUpForm({ onShowSignIn }: SignUpFormProps) {
                     required
                 />
 
-                <button
+                <Button
                     type="submit"
-                    className="w-full bg-secondary text-secondary-foreground hover:bg-secondary/90 py-3 px-4 rounded-lg transition-colors font-medium"
+                    variant={"secondary"}
+                    className="w-full"
+                    size={"lg"}
+
                 >
                     Create Account
-                </button>
+                </Button>
 
                 <div className="text-center">
                     <span className="text-muted-foreground">

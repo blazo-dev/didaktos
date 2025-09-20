@@ -3,6 +3,7 @@
 import { FormEvent } from "react"
 import { Button } from "../ui/button"
 import { PasswordInput } from "./password-input"
+import { Input } from "../ui/input"
 
 interface SignInFormProps {
     onShowSignUp: () => void
@@ -28,19 +29,14 @@ export function SignInForm({ onShowSignUp }: SignInFormProps) {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
-                <div>
-                    <label htmlFor="signin-email" className="block text-sm font-medium mb-2">
-                        Email Address
-                    </label>
-                    <input
-                        type="email"
-                        id="signin-email"
-                        name="email"
-                        required
-                        className="w-full px-4 py-3 border border-border rounded-lg bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
-                        placeholder="Enter your email"
-                    />
-                </div>
+                <Input
+                    id="signin-email"
+                    name="email"
+                    type="email"
+                    label="Email Address"
+                    placeholder="Enter your email"
+                    required
+                />
 
                 <PasswordInput
                     id="signin-password"
