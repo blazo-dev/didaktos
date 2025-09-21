@@ -29,14 +29,19 @@ namespace didaktos.backend.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult<AuthResponseDto>> Register(
+        public async Task<ActionResult<HttpResponseDto<object>>> Register(
             [FromBody] RegisterRequestDto request
         )
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(
-                    new AuthResponseDto { Success = false, Message = "Invalid request data" }
+                    new HttpResponseDto<object>
+                    {
+                        Success = false,
+                        Message = "Invalid request data",
+                        Errors = ModelState,
+                    }
                 );
             }
 
@@ -46,8 +51,8 @@ namespace didaktos.backend.Controllers
                 var existingUser = await GetUserByEmailAsync(request.Email);
                 if (existingUser != null)
                 {
-                    return BadRequest(
-                        new AuthResponseDto
+                    return Conflict(
+                        new HttpResponseDto<object>
                         {
                             Success = false,
                             Message = "User with this email already exists",
@@ -59,7 +64,7 @@ namespace didaktos.backend.Controllers
                 if (request.Role.ToLower() != "student" && request.Role.ToLower() != "instructor")
                 {
                     return BadRequest(
-                        new AuthResponseDto
+                        new HttpResponseDto<object>
                         {
                             Success = false,
                             Message = "Invalid role. Must be 'student' or 'instructor'",
@@ -86,19 +91,16 @@ namespace didaktos.backend.Controllers
                 var token = GenerateJwtToken(createdUser);
 
                 return Ok(
-                    new AuthResponseDto
+                    new HttpResponseDto<object>
                     {
                         Success = true,
                         Message = "User registered successfully",
-                        Token = token,
-                        User = new UserDto
+                        Data = new UserDto
                         {
                             Id = createdUser.Id,
                             Name = createdUser.Name,
                             Email = createdUser.Email,
                             Role = createdUser.Role,
-                            CreatedAt = createdUser.CreatedAt,
-                            UpdatedAt = createdUser.UpdatedAt,
                         },
                     }
                 );
@@ -106,22 +108,30 @@ namespace didaktos.backend.Controllers
             catch (Exception ex)
             {
                 return BadRequest(
-                    new AuthResponseDto
+                    new HttpResponseDto<object>
                     {
                         Success = false,
-                        Message = "Registration failed: " + ex.Message,
+                        Message = "Registration failed",
+                        Errors = new { exception = ex.Message },
                     }
                 );
             }
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<AuthResponseDto>> Login([FromBody] LoginRequestDto request)
+        public async Task<ActionResult<HttpResponseDto<object>>> Login(
+            [FromBody] LoginRequestDto request
+        )
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(
-                    new AuthResponseDto { Success = false, Message = "Invalid request data" }
+                    new HttpResponseDto<object>
+                    {
+                        Success = false,
+                        Message = "Invalid request data",
+                        Errors = ModelState,
+                    }
                 );
             }
 
@@ -131,7 +141,7 @@ namespace didaktos.backend.Controllers
                 if (user == null)
                 {
                     return BadRequest(
-                        new AuthResponseDto
+                        new HttpResponseDto<object>
                         {
                             Success = false,
                             Message = "Invalid email or password",
@@ -143,7 +153,7 @@ namespace didaktos.backend.Controllers
                 if (!BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
                 {
                     return BadRequest(
-                        new AuthResponseDto
+                        new HttpResponseDto<object>
                         {
                             Success = false,
                             Message = "Invalid email or password",
@@ -154,19 +164,20 @@ namespace didaktos.backend.Controllers
                 var token = GenerateJwtToken(user);
 
                 return Ok(
-                    new AuthResponseDto
+                    new HttpResponseDto<object>
                     {
                         Success = true,
                         Message = "Login successful",
-                        Token = token,
-                        User = new UserDto
+                        Data = new AuthDataDto
                         {
-                            Id = user.Id,
-                            Name = user.Name,
-                            Email = user.Email,
-                            Role = user.Role,
-                            CreatedAt = user.CreatedAt,
-                            UpdatedAt = user.UpdatedAt,
+                            Token = token,
+                            User = new UserDto
+                            {
+                                Id = user.Id,
+                                Name = user.Name,
+                                Email = user.Email,
+                                Role = user.Role,
+                            },
                         },
                     }
                 );
@@ -174,7 +185,12 @@ namespace didaktos.backend.Controllers
             catch (Exception ex)
             {
                 return BadRequest(
-                    new AuthResponseDto { Success = false, Message = "Login failed: " + ex.Message }
+                    new HttpResponseDto<object>
+                    {
+                        Success = false,
+                        Message = "Login failed",
+                        Errors = new { exception = ex.Message },
+                    }
                 );
             }
         }
@@ -202,8 +218,6 @@ namespace didaktos.backend.Controllers
                     Name = user.Name,
                     Email = user.Email,
                     Role = user.Role,
-                    CreatedAt = user.CreatedAt,
-                    UpdatedAt = user.UpdatedAt,
                 }
             );
         }
