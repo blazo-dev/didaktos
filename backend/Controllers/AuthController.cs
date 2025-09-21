@@ -1,13 +1,7 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using didaktos.backend.Models;
+using didaktos.backend.Interfaces;
 using didaktos.backend.Models.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
-using Npgsql;
 
 namespace didaktos.backend.Controllers
 {
@@ -15,17 +9,13 @@ namespace didaktos.backend.Controllers
     [Route("api/auth")]
     public class AuthController : ControllerBase
     {
-        private readonly string _connectionString;
-        private readonly JwtSettings _jwtSettings;
+        private readonly IAuthService _authService;
+        private readonly IUserRepository _userRepository;
 
-        public AuthController(IConfiguration configuration, IOptions<JwtSettings> jwtSettings)
+        public AuthController(IAuthService authService, IUserRepository userRepository)
         {
-            _connectionString =
-                configuration.GetConnectionString("SupabaseConnection")
-                ?? throw new InvalidOperationException(
-                    "Supabase connection string is not configured"
-                );
-            _jwtSettings = jwtSettings.Value;
+            _authService = authService;
+            _userRepository = userRepository;
         }
 
         [HttpPost("register")]
@@ -45,77 +35,16 @@ namespace didaktos.backend.Controllers
                 );
             }
 
-            try
+            var result = await _authService.RegisterAsync(request);
+
+            if (result.Success)
             {
-                // Check if user already exists
-                var existingUser = await GetUserByEmailAsync(request.Email);
-                if (existingUser != null)
-                {
-                    return Conflict(
-                        new HttpResponseDto<object>
-                        {
-                            Success = false,
-                            Message = "User with this email already exists",
-                        }
-                    );
-                }
-
-                // Validate role
-                if (request.Role.ToLower() != "student" && request.Role.ToLower() != "instructor")
-                {
-                    return BadRequest(
-                        new HttpResponseDto<object>
-                        {
-                            Success = false,
-                            Message = "Invalid role. Must be 'student' or 'instructor'",
-                        }
-                    );
-                }
-
-                // Hash password
-                var passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
-
-                // Create user
-                var user = new User
-                {
-                    Id = Guid.NewGuid(),
-                    Name = request.Name,
-                    Email = request.Email.ToLower(),
-                    PasswordHash = passwordHash,
-                    Role = request.Role.ToLower(),
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow,
-                };
-
-                var createdUser = await CreateUserAsync(user);
-                var token = GenerateJwtToken(createdUser);
-
-                return Ok(
-                    new HttpResponseDto<object>
-                    {
-                        Success = true,
-                        Message = "User registered successfully",
-                        Data = new UserDto
-                        {
-                            Id = createdUser.Id,
-                            Name = createdUser.Name,
-                            Email = createdUser.Email,
-                            Role = createdUser.Role,
-                        },
-                    }
-                );
+                return Ok(result);
             }
-            catch (Exception ex)
-            {
-                return BadRequest(
-                    new HttpResponseDto<object>
-                    {
-                        Success = false,
-                        Message = "Registration failed",
-                        Errors = new { exception = ex.Message },
-                    }
-                );
-            }
+
+            return result.Message == "User with this email already exists"
+                ? Conflict(result)
+                : BadRequest(result);
         }
 
         [HttpPost("login")]
@@ -135,64 +64,9 @@ namespace didaktos.backend.Controllers
                 );
             }
 
-            try
-            {
-                var user = await GetUserByEmailAsync(request.Email.ToLower());
-                if (user == null)
-                {
-                    return BadRequest(
-                        new HttpResponseDto<object>
-                        {
-                            Success = false,
-                            Message = "Invalid email or password",
-                        }
-                    );
-                }
+            var result = await _authService.LoginAsync(request);
 
-                // Verify password
-                if (!BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
-                {
-                    return BadRequest(
-                        new HttpResponseDto<object>
-                        {
-                            Success = false,
-                            Message = "Invalid email or password",
-                        }
-                    );
-                }
-
-                var token = GenerateJwtToken(user);
-
-                return Ok(
-                    new HttpResponseDto<object>
-                    {
-                        Success = true,
-                        Message = "Login successful",
-                        Data = new AuthDataDto
-                        {
-                            Token = token,
-                            User = new UserDto
-                            {
-                                Id = user.Id,
-                                Name = user.Name,
-                                Email = user.Email,
-                                Role = user.Role,
-                            },
-                        },
-                    }
-                );
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(
-                    new HttpResponseDto<object>
-                    {
-                        Success = false,
-                        Message = "Login failed",
-                        Errors = new { exception = ex.Message },
-                    }
-                );
-            }
+            return result.Success ? Ok(result) : BadRequest(result);
         }
 
         [HttpGet("me")]
@@ -205,7 +79,7 @@ namespace didaktos.backend.Controllers
                 return Unauthorized();
             }
 
-            var user = await GetUserByIdAsync(userId);
+            var user = await _userRepository.GetUserByIdAsync(userId);
             if (user == null)
             {
                 return NotFound();
@@ -222,146 +96,11 @@ namespace didaktos.backend.Controllers
             );
         }
 
-        // implement logout once frontend is ready.
         [HttpPost("logout")]
         [Authorize]
         public IActionResult Logout()
         {
             return Ok(new { Message = "Logout successful" });
-        }
-
-        // Private helper methods for database operations
-        private async Task<User?> GetUserByEmailAsync(string email)
-        {
-            using var connection = new NpgsqlConnection(_connectionString);
-            await connection.OpenAsync();
-
-            const string sql =
-                @"
-                SELECT id, name, email, password_hash, role, created_at, updated_at 
-                FROM users 
-                WHERE email = @email";
-
-            using var command = new NpgsqlCommand(sql, connection);
-            command.Parameters.AddWithValue("@email", email);
-
-            using var reader = await command.ExecuteReaderAsync();
-            if (await reader.ReadAsync())
-            {
-                return new User
-                {
-                    Id = (Guid)reader["id"],
-                    Name = (string)reader["name"],
-                    Email = (string)reader["email"],
-                    PasswordHash = (string)reader["password_hash"],
-                    Role = (string)reader["role"],
-                    CreatedAt = (DateTime)reader["created_at"],
-                    UpdatedAt = (DateTime)reader["updated_at"],
-                };
-            }
-
-            return null;
-        }
-
-        private async Task<User?> GetUserByIdAsync(Guid id)
-        {
-            using var connection = new NpgsqlConnection(_connectionString);
-            await connection.OpenAsync();
-
-            const string sql =
-                @"
-                SELECT id, name, email, password_hash, role, created_at, updated_at 
-                FROM users 
-                WHERE id = @id";
-
-            using var command = new NpgsqlCommand(sql, connection);
-            command.Parameters.AddWithValue("@id", id);
-
-            using var reader = await command.ExecuteReaderAsync();
-            if (await reader.ReadAsync())
-            {
-                return new User
-                {
-                    Id = (Guid)reader["id"],
-                    Name = (string)reader["name"],
-                    Email = (string)reader["email"],
-                    PasswordHash = (string)reader["password_hash"],
-                    Role = (string)reader["role"],
-                    CreatedAt = (DateTime)reader["created_at"],
-                    UpdatedAt = (DateTime)reader["updated_at"],
-                };
-            }
-
-            return null;
-        }
-
-        private async Task<User> CreateUserAsync(User user)
-        {
-            using var connection = new NpgsqlConnection(_connectionString);
-            await connection.OpenAsync();
-
-            const string sql =
-                @"
-                INSERT INTO users (id, name, email, password_hash, role, created_at, updated_at)
-                VALUES (@id, @name, @email, @passwordHash, @role::user_role, @createdAt, @updatedAt)
-                RETURNING id, name, email, password_hash, role, created_at, updated_at";
-
-            using var command = new NpgsqlCommand(sql, connection);
-            command.Parameters.AddWithValue("@id", user.Id);
-            command.Parameters.AddWithValue("@name", user.Name);
-            command.Parameters.AddWithValue("@email", user.Email);
-            command.Parameters.AddWithValue("@passwordHash", user.PasswordHash);
-            command.Parameters.AddWithValue("@role", user.Role);
-            command.Parameters.AddWithValue("@createdAt", user.CreatedAt);
-            command.Parameters.AddWithValue("@updatedAt", user.UpdatedAt);
-
-            using var reader = await command.ExecuteReaderAsync();
-            if (await reader.ReadAsync())
-            {
-                return new User
-                {
-                    Id = (Guid)reader["id"],
-                    Name = (string)reader["name"],
-                    Email = (string)reader["email"],
-                    PasswordHash = (string)reader["password_hash"],
-                    Role = (string)reader["role"],
-                    CreatedAt = (DateTime)reader["created_at"],
-                    UpdatedAt = (DateTime)reader["updated_at"],
-                };
-            }
-
-            throw new InvalidOperationException("Failed to create user");
-        }
-
-        // Private helper method for JWT token generation
-        private string GenerateJwtToken(User user)
-        {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.UTF8.GetBytes(_jwtSettings.SecretKey);
-
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.Name),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Role, user.Role),
-                new Claim("userId", user.Id.ToString()),
-            };
-
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddMinutes(_jwtSettings.ExpirationMinutes),
-                Issuer = _jwtSettings.Issuer,
-                Audience = _jwtSettings.Audience,
-                SigningCredentials = new SigningCredentials(
-                    new SymmetricSecurityKey(key),
-                    SecurityAlgorithms.HmacSha256Signature
-                ),
-            };
-
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            return tokenHandler.WriteToken(token);
         }
     }
 }
