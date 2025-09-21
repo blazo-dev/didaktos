@@ -12,7 +12,7 @@ using Npgsql;
 namespace didaktos.backend.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/auth")]
     public class AuthController : ControllerBase
     {
         private readonly string _connectionString;
