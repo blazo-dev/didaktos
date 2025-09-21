@@ -11,9 +11,4 @@ namespace didaktos.backend.Models
         public DateTime UpdatedAt { get; set; }
     }
 
-    public enum UserRole
-    {
-        Student,
-        Instructor,
-    }
 }
