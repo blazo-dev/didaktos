@@ -56,10 +56,6 @@ if (string.IsNullOrWhiteSpace(secretKey))
     throw new InvalidOperationException("JWT SecretKey is missing or empty. Please set 'JwtSettings:SecretKey' in configuration.");
 }
 
-if (string.IsNullOrWhiteSpace(secretKey))
-{
-    throw new InvalidOperationException("JWT SecretKey is not configured. Please set JwtSettings:SecretKey in your configuration (appsettings.json, environment variable, or user-secrets).");
-}
 builder.Services.Configure<JwtSettings>(jwtSettings);
 
 builder
@@ -108,7 +104,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseRouting();
 app.UseRouting();
 app.UseCors("NextJSPolicy");
 app.UseAuthentication();
