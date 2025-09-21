@@ -1,5 +1,10 @@
+// Program.cs - Add these service registrations
 using System.Text;
+using didaktos.backend.Interfaces;
 using didaktos.backend.Models;
+using didaktos.backend.Repositories;
+using didaktos.backend.Services;
+using didaktos.backend.Utils;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -21,12 +26,11 @@ builder.Services.AddSwaggerGen(c =>
         new OpenApiSecurityScheme
         {
             Description =
-                "JWT Authorization header using the Bearer scheme. Enter only your token below.",
+                "JWT Authorization header using the Bearer scheme. Enter 'Bearer' [space] and then your token in the text input below.",
             Name = "Authorization",
             In = ParameterLocation.Header,
-            Type = SecuritySchemeType.Http,
-            Scheme = "bearer",
-            BearerFormat = "JWT",
+            Type = SecuritySchemeType.ApiKey,
+            Scheme = "Bearer",
         }
     );
 
@@ -51,10 +55,6 @@ builder.Services.AddSwaggerGen(c =>
 // Configure JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var secretKey = jwtSettings["SecretKey"];
-if (string.IsNullOrWhiteSpace(secretKey))
-{
-    throw new InvalidOperationException("JWT SecretKey is missing or empty. Please set 'JwtSettings:SecretKey' in configuration.");
-}
 
 builder.Services.Configure<JwtSettings>(jwtSettings);
 
@@ -76,6 +76,11 @@ builder
     });
 
 builder.Services.AddAuthorization();
+
+// Register your services
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<JwtTokenGenerator>();
 
 // Add CORS for Next.js frontend
 builder.Services.AddCors(options =>
@@ -104,8 +109,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseRouting();
 app.UseCors("NextJSPolicy");
+
 app.UseAuthentication();
 app.UseAuthorization();
 
