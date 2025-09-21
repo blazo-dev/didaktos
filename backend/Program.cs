@@ -1,7 +1,5 @@
-// Program.cs
 using System.Text;
 using didaktos.backend.Models;
-using didaktos.backend.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -15,7 +13,7 @@ builder.Services.AddEndpointsApiExplorer();
 // Configure Swagger with JWT support
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Auth API", Version = "v1" });
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Didaktos API", Version = "v1" });
 
     // Add JWT Authentication to Swagger
     c.AddSecurityDefinition(
@@ -74,11 +72,6 @@ builder
 
 builder.Services.AddAuthorization();
 
-// Register services
-builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
-
 // Add CORS for Next.js frontend
 builder.Services.AddCors(options =>
 {
@@ -87,7 +80,7 @@ builder.Services.AddCors(options =>
         policy =>
         {
             policy
-                .WithOrigins("http://localhost:3000", "https://localhost:3001") // change to frontend URLs
+                .WithOrigins("http://localhost:3000", "https://localhost:3001")
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .AllowCredentials();
