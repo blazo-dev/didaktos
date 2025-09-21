@@ -21,11 +21,12 @@ builder.Services.AddSwaggerGen(c =>
         new OpenApiSecurityScheme
         {
             Description =
-                "JWT Authorization header using the Bearer scheme. Enter 'Bearer' [space] and then your token in the text input below.",
+                "JWT Authorization header using the Bearer scheme. Enter only your token below.",
             Name = "Authorization",
             In = ParameterLocation.Header,
-            Type = SecuritySchemeType.ApiKey,
-            Scheme = "Bearer",
+            Type = SecuritySchemeType.Http,
+            Scheme = "bearer",
+            BearerFormat = "JWT",
         }
     );
 
@@ -50,7 +51,15 @@ builder.Services.AddSwaggerGen(c =>
 // Configure JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var secretKey = jwtSettings["SecretKey"];
+if (string.IsNullOrWhiteSpace(secretKey))
+{
+    throw new InvalidOperationException("JWT SecretKey is missing or empty. Please set 'JwtSettings:SecretKey' in configuration.");
+}
 
+if (string.IsNullOrWhiteSpace(secretKey))
+{
+    throw new InvalidOperationException("JWT SecretKey is not configured. Please set JwtSettings:SecretKey in your configuration (appsettings.json, environment variable, or user-secrets).");
+}
 builder.Services.Configure<JwtSettings>(jwtSettings);
 
 builder
@@ -99,8 +108,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseRouting();
+app.UseRouting();
 app.UseCors("NextJSPolicy");
-
 app.UseAuthentication();
 app.UseAuthorization();
 
