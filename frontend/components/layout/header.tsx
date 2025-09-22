@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button"
+import { useAuthStore } from "@/stores/auth-store"
 import { MenuIcon } from "lucide-react"
 import Link from "next/link"
 import { ThemeToggle } from "./theme-toggle"
@@ -10,6 +11,8 @@ interface HeaderProps {
 }
 
 export function Header({ toggleSidebar, showSidebar = false, isLanding = false }: HeaderProps) {
+  const { user } = useAuthStore();
+
   return (
     <header className="g-container gap-6 border-b border-border bg-surface">
       <div className="w-full px-4 py-4 flex items-center justify-between">
@@ -32,7 +35,11 @@ export function Header({ toggleSidebar, showSidebar = false, isLanding = false }
             isLanding && (
               <div className="flex items-center gap-4">
                 <Button asChild size="sm" variant="secondary">
-                  <Link href="/auth">Sign In</Link>
+                  {user ? (
+                    <Link href="/courses">Go to dashboard</Link>
+                  ) : (
+                    <Link href="/auth">Sign In</Link>
+                  )}
                 </Button>
               </div>
             )}
