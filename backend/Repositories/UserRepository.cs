@@ -40,7 +40,6 @@ namespace didaktos.backend.Repositories
                     Name = (string)reader["name"],
                     Email = (string)reader["email"],
                     PasswordHash = (string)reader["password_hash"],
-                    Role = (string)reader["role"],
                     CreatedAt = (DateTime)reader["created_at"],
                     UpdatedAt = (DateTime)reader["updated_at"],
                 };
@@ -72,7 +71,6 @@ namespace didaktos.backend.Repositories
                     Name = (string)reader["name"],
                     Email = (string)reader["email"],
                     PasswordHash = (string)reader["password_hash"],
-                    Role = (string)reader["role"],
                     CreatedAt = (DateTime)reader["created_at"],
                     UpdatedAt = (DateTime)reader["updated_at"],
                 };
@@ -97,7 +95,6 @@ namespace didaktos.backend.Repositories
             command.Parameters.AddWithValue("@name", user.Name);
             command.Parameters.AddWithValue("@email", user.Email);
             command.Parameters.AddWithValue("@passwordHash", user.PasswordHash);
-            command.Parameters.AddWithValue("@role", user.Role);
             command.Parameters.AddWithValue("@createdAt", user.CreatedAt);
             command.Parameters.AddWithValue("@updatedAt", user.UpdatedAt);
 
@@ -110,7 +107,6 @@ namespace didaktos.backend.Repositories
                     Name = (string)reader["name"],
                     Email = (string)reader["email"],
                     PasswordHash = (string)reader["password_hash"],
-                    Role = (string)reader["role"],
                     CreatedAt = (DateTime)reader["created_at"],
                     UpdatedAt = (DateTime)reader["updated_at"],
                 };

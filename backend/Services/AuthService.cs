@@ -31,16 +31,6 @@ namespace didaktos.backend.Services
                     };
                 }
 
-                // Validate role
-                if (request.Role.ToLower() != "student" && request.Role.ToLower() != "instructor")
-                {
-                    return new HttpResponseDto<object>
-                    {
-                        Success = false,
-                        Message = "Invalid role. Must be 'student' or 'instructor'",
-                    };
-                }
-
                 // Hash password
                 var passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
 
@@ -51,7 +41,6 @@ namespace didaktos.backend.Services
                     Name = request.Name,
                     Email = request.Email.ToLower(),
                     PasswordHash = passwordHash,
-                    Role = request.Role.ToLower(),
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow,
                 };
@@ -71,7 +60,6 @@ namespace didaktos.backend.Services
                             Id = createdUser.Id,
                             Name = createdUser.Name,
                             Email = createdUser.Email,
-                            Role = createdUser.Role,
                         },
                     },
                 };
@@ -125,7 +113,6 @@ namespace didaktos.backend.Services
                             Id = user.Id,
                             Name = user.Name,
                             Email = user.Email,
-                            Role = user.Role,
                         },
                     },
                 };
