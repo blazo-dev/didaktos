@@ -29,7 +29,7 @@ namespace didaktos.backend.Controllers
                     new HttpResponseDto<object>
                     {
                         Success = false,
-                        Message = "Invalid request data",
+                        Message = UserMessages.InvalidData,
                         Errors = ModelState,
                     }
                 );
@@ -42,7 +42,7 @@ namespace didaktos.backend.Controllers
                 return Ok(result);
             }
 
-            return result.Message == "User with this email already exists"
+            return result.Message == UserMessages.EmailAlreadyExists
                 ? Conflict(result)
                 : BadRequest(result);
         }
@@ -58,7 +58,7 @@ namespace didaktos.backend.Controllers
                     new HttpResponseDto<object>
                     {
                         Success = false,
-                        Message = "Invalid request data",
+                        Message = UserMessages.InvalidData,
                         Errors = ModelState,
                     }
                 );
@@ -103,4 +103,10 @@ namespace didaktos.backend.Controllers
             return Ok(new { Message = "Logout successful" });
         }
     }
+}
+
+public static class UserMessages
+{
+    public const string EmailAlreadyExists = "User with this email already exists";
+    public const string InvalidData = "Invalid data";
 }

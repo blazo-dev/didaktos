@@ -63,12 +63,16 @@ namespace didaktos.backend.Services
                 {
                     Success = true,
                     Message = "User registered successfully",
-                    Data = new UserDto
+                    Data = new AuthDataDto
                     {
-                        Id = createdUser.Id,
-                        Name = createdUser.Name,
-                        Email = createdUser.Email,
-                        Role = createdUser.Role,
+                        Token = token,
+                        User = new UserDto
+                        {
+                            Id = createdUser.Id,
+                            Name = createdUser.Name,
+                            Email = createdUser.Email,
+                            Role = createdUser.Role,
+                        },
                     },
                 };
             }
