@@ -6,6 +6,7 @@ import { useEffect, useState, type ReactNode } from "react"
 import { Header } from "./header"
 import Loader from "./loader"
 import { Sidebar } from "./sidebar"
+import { ToastContainer } from "../ui/toast-container"
 
 interface AppLayoutProps {
   children: ReactNode
@@ -27,6 +28,7 @@ export function AppLayout({ children, showSidebar = false, showHeader = true, is
 
   return (
     <div className={cn("min-h-screen bg-background grid", showHeader ? "grid-rows-[auto_1fr]" : "")}>
+      <ToastContainer />
       {isLoading && <Loader text="Loading..." />}
       {showHeader && (
         <Header toggleSidebar={() => setIsSidebarVisible(!isSidebarVisible)} showSidebar={showSidebar} isLanding={isLanding} />

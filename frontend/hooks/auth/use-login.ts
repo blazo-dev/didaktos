@@ -1,8 +1,11 @@
-import { useMutation } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api";
-import { LoginRequest } from "@/lib/types/auth";
+import { useToastStore } from "@/stores/toast-store";
+import { LoginRequest } from "@/types/auth";
+import { useMutation } from "@tanstack/react-query";
 
 export function useLogin() {
+    const addToast = useToastStore((state) => state.addToast);
+
     return useMutation({
         mutationFn: (data: LoginRequest) =>
             apiFetch<{ data: { token: string; user: any } }>("/auth/login", {
@@ -11,9 +14,11 @@ export function useLogin() {
             }),
         onSuccess: (res) => {
             localStorage.setItem("token", res.data.token);
-            // aquí puedes guardar user en Zustand
+            addToast({ message: "Login successful", type: "success" });
+        },
+        onError: (error) => {
+            console.log(error);
+            addToast({ message: error.message, type: "error" });
         },
     });
 }
-
-

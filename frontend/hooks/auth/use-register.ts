@@ -1,5 +1,5 @@
 import { apiFetch } from "@/lib/api";
-import { RegisterRequest } from "@/lib/types/auth";
+import { RegisterRequest } from "@/types/auth";
 import { useMutation } from "@tanstack/react-query";
 
 export function useRegister() {

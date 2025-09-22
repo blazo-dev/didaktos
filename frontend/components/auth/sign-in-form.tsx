@@ -5,6 +5,7 @@ import { FormEvent } from "react"
 import { Button } from "../ui/button"
 import { Input } from "../ui/input"
 import { PasswordInput } from "./password-input"
+import { useToastStore } from "@/stores/toast-store"
 
 interface SignInFormProps {
     onShowSignUp: () => void
@@ -52,12 +53,6 @@ export function SignInForm({ onShowSignUp }: SignInFormProps) {
                 <Button type="submit" className="w-full" disabled={loginMutation.isPending}>
                     {loginMutation.isPending ? "Signing in..." : "Sign In"}
                 </Button>
-
-                {loginMutation.isError && (
-                    <p className="text-red-500 text-sm">
-                        {(loginMutation.error as Error).message}
-                    </p>
-                )}
 
                 <div className="text-center">
                     <span className="text-muted-foreground">

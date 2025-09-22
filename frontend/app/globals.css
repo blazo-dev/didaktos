@@ -25,6 +25,12 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+
+  --animate-enter: slideInRight 0.3s ease-out forwards;
+  --animate-exit: slideOutRight 0.3s ease-in forwards;
+  --animate-progress: progressBar 4s linear forwards;
+
+
 }
 
 :root {
@@ -77,6 +83,8 @@
   --destructive-foreground: #F9FAFB;
 
   --border: #374151;
+
+
 }
 
 @layer base {
@@ -97,4 +105,38 @@
     grid-column: 2/3;
   }
 
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes progressBar {
+  from {
+    width: 100%;
+  }
+
+  to {
+    width: 0%;
+  }
 }
