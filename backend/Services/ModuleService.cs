@@ -15,17 +15,14 @@ namespace didaktos.backend.Services
             _courseRepository = courseRepository;
         }
 
-        public async Task<HttpResponseDto<List<ModuleDto>>> GetCourseModulesAsync(
-            Guid courseId,
-            Guid userId
-        )
+        public async Task<HttpResponseDto<object>> GetCourseModulesAsync(Guid courseId, Guid userId)
         {
             try
             {
                 // Check if course exists
                 if (!await _courseRepository.CourseExistsAsync(courseId))
                 {
-                    return new HttpResponseDto<List<ModuleDto>>
+                    return new HttpResponseDto<object>
                     {
                         Success = false,
                         Message = "Course not found",
@@ -44,7 +41,7 @@ namespace didaktos.backend.Services
 
                 if (!isInstructor && !isEnrolled)
                 {
-                    return new HttpResponseDto<List<ModuleDto>>
+                    return new HttpResponseDto<object>
                     {
                         Success = false,
                         Message = "Access denied to this course",
@@ -63,16 +60,17 @@ namespace didaktos.backend.Services
                     })
                     .ToList();
 
-                return new HttpResponseDto<List<ModuleDto>>
+                return new HttpResponseDto<object>
                 {
                     Success = true,
                     Message = $"Retrieved {moduleDtos.Count} modules for course",
-                    Data = moduleDtos,
+                    Data = new { modules = moduleDtos },
+                    Errors = null,
                 };
             }
             catch (Exception ex)
             {
-                return new HttpResponseDto<List<ModuleDto>>
+                return new HttpResponseDto<object>
                 {
                     Success = false,
                     Message = "Failed to retrieve course modules",
