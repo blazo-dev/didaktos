@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using didaktos.backend.Interfaces;
 using didaktos.backend.Models.DTOs;
 using Microsoft.AspNetCore.Authorization;
@@ -73,7 +74,7 @@ namespace didaktos.backend.Controllers
         [Authorize]
         public async Task<ActionResult<UserDto>> GetCurrentUser()
         {
-            var userIdClaim = User.FindFirst("userId")?.Value;
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
             {
                 return Unauthorized();
@@ -86,11 +87,16 @@ namespace didaktos.backend.Controllers
             }
 
             return Ok(
-                new UserDto
+                new HttpResponseDto<object>
                 {
-                    Id = user.Id,
-                    Name = user.Name,
-                    Email = user.Email,
+                    Success = true,
+                    Message = "Current User",
+                    Data = new UserDto
+                    {
+                        Id = user.Id,
+                        Name = user.Name,
+                        Email = user.Email,
+                    },
                 }
             );
         }
