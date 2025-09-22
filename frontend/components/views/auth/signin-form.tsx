@@ -1,27 +1,32 @@
 "use client"
 
-import { useLogin } from "@/hooks/auth/use-login"
-import { FormEvent } from "react"
-import { Button } from "../ui/button"
-import { Input } from "../ui/input"
-import { PasswordInput } from "./password-input"
-import { useToastStore } from "@/stores/toast-store"
+import { useSignIn } from "@/hooks/auth/use-signin";
+import { useRouter } from "next/navigation";
+import { FormEvent } from "react";
+import { Button } from "../../ui/button";
+import { Input } from "../../ui/input";
+import { PasswordInput } from "./password-input";
 
 interface SignInFormProps {
-    onShowSignUp: () => void
+    onShowSignUp: () => void;
 }
 
 export function SignInForm({ onShowSignUp }: SignInFormProps) {
-    const loginMutation = useLogin()
+    const router = useRouter();
+    const signInMutation = useSignIn();
 
     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
-        const formData = new FormData(e.currentTarget)
-        const email = formData.get("email") as string
-        const password = formData.get("password") as string
+        e.preventDefault();
+        const formData = new FormData(e.currentTarget);
+        const email = formData.get("email") as string;
+        const password = formData.get("password") as string;
 
-        loginMutation.mutate({ email, password })
-    }
+        signInMutation.mutate({ email, password }, {
+            onSuccess: () => {
+                router.push("/courses");
+            },
+        });
+    };
 
     return (
         <div className="w-full grid gap-8 justify-content-center">
@@ -50,14 +55,12 @@ export function SignInForm({ onShowSignUp }: SignInFormProps) {
                     required
                 />
 
-                <Button type="submit" className="w-full" disabled={loginMutation.isPending}>
-                    {loginMutation.isPending ? "Signing in..." : "Sign In"}
+                <Button type="submit" className="w-full" disabled={signInMutation.isPending}>
+                    {signInMutation.isPending ? "Signing in..." : "Sign In"}
                 </Button>
 
                 <div className="text-center">
-                    <span className="text-muted-foreground">
-                        Don't have an account?
-                    </span>
+                    <span className="text-muted-foreground">Don't have an account?</span>
                     <Button
                         type="button"
                         variant={"link"}
@@ -69,5 +72,5 @@ export function SignInForm({ onShowSignUp }: SignInFormProps) {
                 </div>
             </form>
         </div>
-    )
+    );
 }

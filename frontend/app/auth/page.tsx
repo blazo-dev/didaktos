@@ -1,5 +1,5 @@
-import { AuthLayout } from "@/components/auth/auth-layout"
-import { AppLayout } from "@/components/layout/app-layout"
+import { AppLayout } from "@/components/layout/app-layout";
+import { AuthLayout } from "@/components/views/auth/auth-layout";
 
 function AuthPage() {
     return (

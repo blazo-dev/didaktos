@@ -1,27 +1,30 @@
 "use client"
 
 import { FormEvent } from "react"
-import { Button } from "../ui/button"
-import { Input } from "../ui/input"
+import { Button } from "../../ui/button"
+import { Input } from "../../ui/input"
 import { PasswordInput } from "./password-input"
+import { useSignUp } from "@/hooks/auth/use-signup"
 
 interface SignUpFormProps {
     onShowSignIn: () => void
 }
 
 export function SignUpForm({ onShowSignIn }: SignUpFormProps) {
+    const signUpMutation = useSignUp()
+
     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault()
-        // Handle form submission logic here
         const formData = new FormData(e.currentTarget)
+
         const userData = {
-            firstName: formData.get('firstName'),
-            lastName: formData.get('lastName'),
-            email: formData.get('email'),
-            password: formData.get('password'),
-            confirmPassword: formData.get('confirmPassword'),
+            name: formData.get('name') as string,
+            email: formData.get('email') as string,
+            password: formData.get('password') as string,
+            confirmPassword: formData.get('confirmPassword') as string,
         }
-        console.log('Sign up:', userData)
+
+        signUpMutation.mutate(userData)
     }
 
     return (
@@ -34,22 +37,13 @@ export function SignUpForm({ onShowSignIn }: SignUpFormProps) {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <Input
-                        id="signup-firstname"
-                        name="firstName"
-                        label="First Name"
-                        placeholder="First name"
-                        required
-                    />
-                    <Input
-                        id="signup-lastname"
-                        name="lastName"
-                        label="Last Name"
-                        placeholder="Last name"
-                        required
-                    />
-                </div>
+                <Input
+                    id="signup-name"
+                    name="name"
+                    label="Name"
+                    placeholder="Enter your name"
+                    required
+                />
 
                 <Input
                     id="signup-email"
