@@ -1,10 +1,10 @@
 import { Button } from "@/components/ui/button"
-import { AlertTriangle, Bot, HelpCircle, Home, LogOut, Shield, User } from "lucide-react"
+import { AlertTriangle, BookOpenIcon, HelpCircle, Home, LogOut, Shield, User } from "lucide-react"
 import Link from "next/link"
 
 const generalLinks = [
-  { href: "/", label: "Home", icon: Home },
-  { href: "/assistant", label: "AI Assistant", icon: Bot },
+  { href: "/dashboard", label: "Dashboard", icon: Home },
+  { href: "/courses", label: "Courses", icon: BookOpenIcon },
   { href: "/profile", label: "Profile", icon: User },
   { href: "/logout", label: "Logout", icon: LogOut },
 ]
@@ -19,7 +19,7 @@ export function Sidebar() {
   return (
     <aside className="w-64 h-full flex flex-col bg-surface border-r border-surface-border">
       <div className="space-y-4 p-4">
-        <h3 className="text-sm font-medium text-primary mb-4">General</h3>
+        <h3 className="text-sm font-medium text-secondary mb-4">General</h3>
 
         <div className="space-y-2">
           {generalLinks.map((link) => {
@@ -42,7 +42,7 @@ export function Sidebar() {
       </div>
 
       <div className="space-y-4 p-4">
-        <h3 className="text-sm font-medium text-primary mb-4">Information</h3>
+        <h3 className="text-sm font-medium text-secondary mb-4">Information</h3>
 
         <div className="space-y-2">
           {infoLinks.map((link) => {
