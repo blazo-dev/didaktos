@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using didaktos.backend.Interfaces;
 using didaktos.backend.Models.DTOs;
 using Microsoft.AspNetCore.Authorization;
@@ -73,7 +74,8 @@ namespace didaktos.backend.Controllers
         [Authorize]
         public async Task<ActionResult<UserDto>> GetCurrentUser()
         {
-            var userIdClaim = User.FindFirst("userId")?.Value;
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            Console.WriteLine(userIdClaim ?? "No userId claim found");
             if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
             {
                 return Unauthorized();
