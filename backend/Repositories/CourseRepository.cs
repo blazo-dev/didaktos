@@ -1,8 +1,5 @@
-using System.Security.Claims;
 using didaktos.backend.Interfaces;
 using didaktos.backend.Models;
-using didaktos.backend.Models.DTOs;
-using didaktos.backend.Models.DTOs.Requests;
 using didaktos.backend.Models.DTOs.Response;
 using Npgsql;
 
@@ -28,7 +25,7 @@ namespace didaktos.backend.Services
 
             const string sql =
                 @"
-                INSERT INTO users (id, title, description, instructor_id, created_at, updated_at)
+                INSERT INTO courses (id, title, description, instructor_id, created_at, updated_at)
                 VALUES (@id, @title, @description, @instructor_id, @createdAt, @updatedAt)
                 RETURNING id, title, description, instructor_id";
 

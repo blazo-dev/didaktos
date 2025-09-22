@@ -1,11 +1,8 @@
-using System.Security.Claims;
 using didaktos.backend.Interfaces;
 using didaktos.backend.Models;
 using didaktos.backend.Models.DTOs;
 using didaktos.backend.Models.DTOs.Requests;
 using didaktos.backend.Models.DTOs.Response;
-using Npgsql;
-
 namespace didaktos.backend.Services
 {
     public class CourseService : ICourseService
@@ -17,7 +14,7 @@ namespace didaktos.backend.Services
             _courseRepository = courseRepository;
         }
 
-        public async Task<HttpResponseDto<object>> CreateCourseAsync(CourseRequestDto request)
+        public async Task<HttpResponseDto<object>> CreateCourseAsync(CourseRequestDto request, Guid instructorId)
         {
             try
             {
@@ -27,7 +24,7 @@ namespace didaktos.backend.Services
                     Id = Guid.NewGuid(),
                     Title = request.Title,
                     Description = request.Description.ToLower(),
-                    InstructorId = Guid.Parse(ClaimTypes.NameIdentifier),
+                    InstructorId = instructorId,
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow,
                 };
@@ -37,7 +34,7 @@ namespace didaktos.backend.Services
                 return new HttpResponseDto<object>
                 {
                     Success = true,
-                    Message = "User registered successfully",
+                    Message = "Course created successfully",
                     Data = new CourseResponseDto
                     {
                         Id = createdCourse.Id,
@@ -52,7 +49,7 @@ namespace didaktos.backend.Services
                 return new HttpResponseDto<object>
                 {
                     Success = false,
-                    Message = "Registration failed",
+                    Message = "Course creation failed",
                     Errors = new { exception = ex.Message },
                 };
             }

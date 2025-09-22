@@ -1,19 +1,9 @@
-using System.ComponentModel.DataAnnotations;
-using System.Net.Http;
 using System.Security.Claims;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
 using didaktos.backend.Interfaces;
-using didaktos.backend.Models;
 using didaktos.backend.Models.DTOs;
 using didaktos.backend.Models.DTOs.Requests;
-using didaktos.backend.Services;
-using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Npgsql;
 
 namespace didaktos.backend.Controllers
 {
@@ -22,12 +12,10 @@ namespace didaktos.backend.Controllers
     public class CourseController : ControllerBase
     {
         private readonly ICourseService _courseService;
-        private readonly ICourseRepository _courseRepository;
 
-        public CourseController(ICourseService courseService, ICourseRepository courseRepository)
+        public CourseController(ICourseService courseService)
         {
             _courseService = courseService;
-            _courseRepository = courseRepository;
         }
 
         //[HttpGet]
@@ -37,32 +25,38 @@ namespace didaktos.backend.Controllers
         //}
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> CreateCourses([FromBody] CourseRequestDto request)
         {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            Console.WriteLine($"Creating course for user: {userIdClaim}");
+            if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
             {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(
-                        new HttpResponseDto<object>
-                        {
-                            Success = false,
-                            Message = "Invalid request data",
-                            Errors = ModelState,
-                        }
-                    );
-                }
-
-                var result = await _courseService.CreateCourseAsync(request);
-
-                if (result.Success)
-                {
-                    return Ok(result);
-                }
-
-                return result.Message == "User with this email already exists"
-                    ? Conflict(result)
-                    : BadRequest(result);
+                return Unauthorized();
             }
+
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(
+                    new HttpResponseDto<object>
+                    {
+                        Success = false,
+                        Message = "Invalid request data",
+                        Errors = ModelState,
+                    }
+                );
+            }
+
+            var result = await _courseService.CreateCourseAsync(request, userId);
+
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+
+            return BadRequest(result);
+
         }
 
         // private async Task<Enrollment> CreateEnrollmentAsync(Enrollment course)
@@ -72,7 +66,7 @@ namespace didaktos.backend.Controllers
 
         //     const string sql =
         //         @"
-        //         INSERT INTO users (id, status, instructor_id, course_id, created_at, updated_at)
+        //         INSERT INTO courses (id, status, instructor_id, course_id, created_at, updated_at)
         //         VALUES (@id, @status, @instructor_id, @course_id, @createdAt, @updatedAt)
         //         RETURNING id, status, instructor_id, course_id, created_at, updated_at";
 
