@@ -2,6 +2,8 @@ using System.Security.Claims;
 using didaktos.backend.Interfaces;
 using didaktos.backend.Models;
 using didaktos.backend.Models.DTOs;
+using didaktos.backend.Models.DTOs.Requests;
+using didaktos.backend.Models.DTOs.Response;
 using Npgsql;
 
 namespace didaktos.backend.Services
@@ -15,52 +17,30 @@ namespace didaktos.backend.Services
             _courseRepository = courseRepository;
         }
 
-        public async Task<HttpResponseDto<object>> CreateCourseAsync(CourseCreationDto request)
+        public async Task<HttpResponseDto<object>> CreateCourseAsync(CourseRequestDto request)
         {
             try
             {
-                // Check if Course already exists
-                var existingUser = await _courseRepository.GetCourseByInstructorIdAsync(
-                    request.InstructorId
-                );
-
-                if (existingUser != null)
-                {
-                    return new HttpResponseDto<object>
-                    {
-                        Success = false,
-                        Message = "Course already exists",
-                    };
-                }
-
-                if (ClaimTypes.Role.ToLower() != "instructor")
-                {
-                    return new HttpResponseDto<object>
-                    {
-                        Success = false,
-                        Message = "Invalid role. Must be 'instructor'",
-                    };
-                }
-
                 // Create Course
                 var course = new Course
                 {
                     Id = Guid.NewGuid(),
                     Title = request.Title,
                     Description = request.Description.ToLower(),
-                    InstructorId = request.InstructorId,
+                    InstructorId = Guid.Parse(ClaimTypes.NameIdentifier),
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow,
                 };
 
-                var createdCourse = await _courseRepository.CreateCourseAsync(course);
+                var createdCourse = await _courseRepository.InsertCourseAsync(course);
 
                 return new HttpResponseDto<object>
                 {
                     Success = true,
                     Message = "User registered successfully",
-                    Data = new CourseCreationDto
+                    Data = new CourseResponseDto
                     {
+                        Id = createdCourse.Id,
                         Title = createdCourse.Title,
                         Description = createdCourse.Description,
                         InstructorId = createdCourse.InstructorId,

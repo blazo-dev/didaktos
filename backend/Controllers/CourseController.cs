@@ -5,8 +5,11 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
+using didaktos.backend.Interfaces;
 using didaktos.backend.Models;
 using didaktos.backend.Models.DTOs;
+using didaktos.backend.Models.DTOs.Requests;
+using didaktos.backend.Services;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -19,26 +22,23 @@ namespace didaktos.backend.Controllers
     public class CourseController : ControllerBase
     {
         private readonly string _connectionString;
+        private readonly ICourseService _courseService;
+        private readonly ICourseRepository _courseRepository;
 
-        public CourseController(IConfiguration configuration)
+        public CourseController(ICourseService courseService, ICourseRepository courseRepository)
         {
-            _connectionString =
-                configuration.GetConnectionString("SupabaseConnection")
-                ?? throw new InvalidOperationException(
-                    "Supabase connection string is not configured"
-                );
+            _courseService = courseService;
+            _courseRepository = courseRepository;
         }
 
         [HttpGet("courses")]
         public async Task<IActionResult> GetCourses([FromBody] GeminiPrompt prompt)
         {
-            if (ClaimTypes.Role == "instructor") { }
-            else { }
             return Ok();
         }
 
         [HttpPost("courses")]
-        public async Task<IActionResult> CreateCourses([FromBody] CourseCreationDto request)
+        public async Task<IActionResult> CreateCourses([FromBody] CourseRequestDto request)
         {
             {
                 if (!ModelState.IsValid)
@@ -53,7 +53,7 @@ namespace didaktos.backend.Controllers
                     );
                 }
 
-                var result = await _authService.RegisterAsync(request);
+                var result = await _courseService.CreateCourseAsync(request);
 
                 if (result.Success)
                 {
@@ -64,12 +64,6 @@ namespace didaktos.backend.Controllers
                     ? Conflict(result)
                     : BadRequest(result);
             }
-        }
-
-        [HttpGet("courses/{id}")]
-        public async Task<IActionResult> GetCourse(int course, [FromBody] GeminiPrompt prompt)
-        {
-            return Ok();
         }
 
         private async Task<Enrollment> CreateEnrollmentAsync(Enrollment course)

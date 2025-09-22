@@ -1,6 +1,9 @@
+using System.Security.Claims;
 using didaktos.backend.Interfaces;
 using didaktos.backend.Models;
 using didaktos.backend.Models.DTOs;
+using didaktos.backend.Models.DTOs.Requests;
+using didaktos.backend.Models.DTOs.Response;
 using Npgsql;
 
 namespace didaktos.backend.Services
@@ -18,7 +21,7 @@ namespace didaktos.backend.Services
                 );
         }
 
-        public async Task<Course> CreateCourseAsync(Course course)
+        public async Task<CourseResponseDto> InsertCourseAsync(Course course)
         {
             using var connection = new NpgsqlConnection(_connectionString);
             await connection.OpenAsync();
@@ -27,58 +30,52 @@ namespace didaktos.backend.Services
                 @"
                 INSERT INTO users (id, title, description, instructor_id, created_at, updated_at)
                 VALUES (@id, @title, @description, @instructor_id, @createdAt, @updatedAt)
-                RETURNING id, title, description, instructor_id, created_at, updated_at";
+                RETURNING id, title, description, instructor_id";
 
             using var command = new NpgsqlCommand(sql, connection);
             command.Parameters.AddWithValue("@id", course.Id);
             command.Parameters.AddWithValue("@title", course.Title);
             command.Parameters.AddWithValue("@description", course.Description);
             command.Parameters.AddWithValue("@instructor_id", course.InstructorId);
-            command.Parameters.AddWithValue("@createdAt", course.CreatedAt);
-            command.Parameters.AddWithValue("@updatedAt", course.UpdatedAt);
+            command.Parameters.AddWithValue("@createdAt", DateTime.UtcNow);
+            command.Parameters.AddWithValue("@updatedAt", DateTime.UtcNow);
 
             using var reader = await command.ExecuteReaderAsync();
             if (await reader.ReadAsync())
             {
-                return new Course
+                return new CourseResponseDto
                 {
                     Id = (Guid)reader["id"],
                     Title = (string)reader["title"],
                     Description = (string)reader["description"],
                     InstructorId = (Guid)reader["instructor_id"],
-                    CreatedAt = (DateTime)reader["created_at"],
-                    UpdatedAt = (DateTime)reader["updated_at"],
                 };
             }
 
             throw new InvalidOperationException("Failed to create course");
         }
 
-        public async Task<Course?> GetCourseByInstructorIdAsync(Guid Instructor_id)
+        public async Task<CourseResponseDto?> SelectCourseByInstructorIdAsync()
         {
             using var connection = new NpgsqlConnection(_connectionString);
             await connection.OpenAsync();
 
             const string sql =
                 @"
-                SELECT id, title, description, instructor_id, role, created_at, updated_at 
-                FROM courses
-                WHERE id = @id";
+                SELECT id, title, description, instructor_id 
+                FROM courses";
 
             using var command = new NpgsqlCommand(sql, connection);
-            command.Parameters.AddWithValue("@id", Instructor_id);
 
             using var reader = await command.ExecuteReaderAsync();
             if (await reader.ReadAsync())
             {
-                return new Course
+                return new CourseResponseDto
                 {
                     Id = (Guid)reader["id"],
                     Title = (string)reader["title"],
                     Description = (string)reader["description"],
                     InstructorId = (Guid)reader["instructor_id"],
-                    CreatedAt = (DateTime)reader["created_at"],
-                    UpdatedAt = (DateTime)reader["updated_at"],
                 };
             }
 
