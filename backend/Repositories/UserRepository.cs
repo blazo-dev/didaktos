@@ -24,7 +24,7 @@ namespace didaktos.backend.Repositories
 
             const string sql =
                 @"
-                SELECT id, name, email, password_hash, role, created_at, updated_at 
+                SELECT id, name, email, password_hash, created_at, updated_at 
                 FROM users 
                 WHERE email = @email";
 
@@ -40,7 +40,6 @@ namespace didaktos.backend.Repositories
                     Name = (string)reader["name"],
                     Email = (string)reader["email"],
                     PasswordHash = (string)reader["password_hash"],
-                    Role = (string)reader["role"],
                     CreatedAt = (DateTime)reader["created_at"],
                     UpdatedAt = (DateTime)reader["updated_at"],
                 };
@@ -56,7 +55,7 @@ namespace didaktos.backend.Repositories
 
             const string sql =
                 @"
-                SELECT id, name, email, password_hash, role, created_at, updated_at 
+                SELECT id, name, email, password_hash, created_at, updated_at 
                 FROM users 
                 WHERE id = @id";
 
@@ -72,7 +71,6 @@ namespace didaktos.backend.Repositories
                     Name = (string)reader["name"],
                     Email = (string)reader["email"],
                     PasswordHash = (string)reader["password_hash"],
-                    Role = (string)reader["role"],
                     CreatedAt = (DateTime)reader["created_at"],
                     UpdatedAt = (DateTime)reader["updated_at"],
                 };
@@ -88,16 +86,15 @@ namespace didaktos.backend.Repositories
 
             const string sql =
                 @"
-                INSERT INTO users (id, name, email, password_hash, role, created_at, updated_at)
-                VALUES (@id, @name, @email, @passwordHash, @role::user_role, @createdAt, @updatedAt)
-                RETURNING id, name, email, password_hash, role, created_at, updated_at";
+                INSERT INTO users (id, name, email, password_hash, created_at, updated_at)
+                VALUES (@id, @name, @email, @passwordHash, @createdAt, @updatedAt)
+                RETURNING id, name, email, password_hash, created_at, updated_at";
 
             using var command = new NpgsqlCommand(sql, connection);
             command.Parameters.AddWithValue("@id", user.Id);
             command.Parameters.AddWithValue("@name", user.Name);
             command.Parameters.AddWithValue("@email", user.Email);
             command.Parameters.AddWithValue("@passwordHash", user.PasswordHash);
-            command.Parameters.AddWithValue("@role", user.Role);
             command.Parameters.AddWithValue("@createdAt", user.CreatedAt);
             command.Parameters.AddWithValue("@updatedAt", user.UpdatedAt);
 
@@ -110,7 +107,6 @@ namespace didaktos.backend.Repositories
                     Name = (string)reader["name"],
                     Email = (string)reader["email"],
                     PasswordHash = (string)reader["password_hash"],
-                    Role = (string)reader["role"],
                     CreatedAt = (DateTime)reader["created_at"],
                     UpdatedAt = (DateTime)reader["updated_at"],
                 };
