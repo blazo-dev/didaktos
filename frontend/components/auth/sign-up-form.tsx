@@ -4,7 +4,6 @@ import { FormEvent } from "react"
 import { Button } from "../ui/button"
 import { Input } from "../ui/input"
 import { PasswordInput } from "./password-input"
-import { Select } from "../ui/select"
 
 interface SignUpFormProps {
     onShowSignIn: () => void
@@ -19,7 +18,6 @@ export function SignUpForm({ onShowSignIn }: SignUpFormProps) {
             firstName: formData.get('firstName'),
             lastName: formData.get('lastName'),
             email: formData.get('email'),
-            role: formData.get('role'),
             password: formData.get('password'),
             confirmPassword: formData.get('confirmPassword'),
         }
@@ -60,19 +58,6 @@ export function SignUpForm({ onShowSignIn }: SignUpFormProps) {
                     label="Email Address"
                     placeholder="Enter your email"
                     required
-                />
-
-                <Select
-                    id="signup-role"
-                    name="role"
-                    label="I am a"
-                    placeholder="Select your role"
-                    required
-                    options={[
-                        { value: "student", label: "Student" },
-                        { value: "instructor", label: "Instructor" },
-                        { value: "admin", label: "Administrator" }
-                    ]}
                 />
 
                 <PasswordInput
