@@ -1,6 +1,0 @@
-@GeminiCallAPI_HostAddress = http://localhost:5272
-
-GET {{GeminiCallAPI_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

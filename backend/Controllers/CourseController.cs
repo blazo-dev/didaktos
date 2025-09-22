@@ -18,10 +18,9 @@ using Npgsql;
 namespace didaktos.backend.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/courses")]
     public class CourseController : ControllerBase
     {
-        private readonly string _connectionString;
         private readonly ICourseService _courseService;
         private readonly ICourseRepository _courseRepository;
 
@@ -31,13 +30,13 @@ namespace didaktos.backend.Controllers
             _courseRepository = courseRepository;
         }
 
-        [HttpGet("courses")]
-        public async Task<IActionResult> GetCourses([FromBody] GeminiPrompt prompt)
-        {
-            return Ok();
-        }
+        //[HttpGet]
+        //public async Task<IActionResult> GetCourses([FromBody] GeminiPrompt prompt)
+        //{
+        //    return Ok();
+        //}
 
-        [HttpPost("courses")]
+        [HttpPost]
         public async Task<IActionResult> CreateCourses([FromBody] CourseRequestDto request)
         {
             {
@@ -66,40 +65,40 @@ namespace didaktos.backend.Controllers
             }
         }
 
-        private async Task<Enrollment> CreateEnrollmentAsync(Enrollment course)
-        {
-            using var connection = new NpgsqlConnection(_connectionString);
-            await connection.OpenAsync();
+        // private async Task<Enrollment> CreateEnrollmentAsync(Enrollment course)
+        // {
+        //     using var connection = new NpgsqlConnection(_connectionString);
+        //     await connection.OpenAsync();
 
-            const string sql =
-                @"
-                INSERT INTO users (id, status, instructor_id, course_id, created_at, updated_at)
-                VALUES (@id, @status, @instructor_id, @course_id, @createdAt, @updatedAt)
-                RETURNING id, status, instructor_id, course_id, created_at, updated_at";
+        //     const string sql =
+        //         @"
+        //         INSERT INTO users (id, status, instructor_id, course_id, created_at, updated_at)
+        //         VALUES (@id, @status, @instructor_id, @course_id, @createdAt, @updatedAt)
+        //         RETURNING id, status, instructor_id, course_id, created_at, updated_at";
 
-            using var command = new NpgsqlCommand(sql, connection);
-            command.Parameters.AddWithValue("@id", course.Id);
-            command.Parameters.AddWithValue("@status", course.Status);
-            command.Parameters.AddWithValue("@course_id", course.CourseId);
-            command.Parameters.AddWithValue("@instructor_id", course.InstructorId);
-            command.Parameters.AddWithValue("@created_at", course.CreatedAt);
-            command.Parameters.AddWithValue("@updated_at", course.UpdatedAt);
+        //     using var command = new NpgsqlCommand(sql, connection);
+        //     command.Parameters.AddWithValue("@id", course.Id);
+        //     command.Parameters.AddWithValue("@status", course.Status);
+        //     command.Parameters.AddWithValue("@course_id", course.CourseId);
+        //     command.Parameters.AddWithValue("@instructor_id", course.InstructorId);
+        //     command.Parameters.AddWithValue("@created_at", course.CreatedAt);
+        //     command.Parameters.AddWithValue("@updated_at", course.UpdatedAt);
 
-            using var reader = await command.ExecuteReaderAsync();
-            if (await reader.ReadAsync())
-            {
-                return new Enrollment
-                {
-                    Id = (Guid)reader["id"],
-                    Status = (string)reader["status"],
-                    CourseId = (Guid)reader["course_id"],
-                    InstructorId = (Guid)reader["instructor_id"],
-                    CreatedAt = (DateTime)reader["created_at"],
-                    UpdatedAt = (DateTime)reader["updated_at"],
-                };
-            }
+        //     using var reader = await command.ExecuteReaderAsync();
+        //     if (await reader.ReadAsync())
+        //     {
+        //         return new Enrollment
+        //         {
+        //             Id = (Guid)reader["id"],
+        //             Status = (string)reader["status"],
+        //             CourseId = (Guid)reader["course_id"],
+        //             InstructorId = (Guid)reader["instructor_id"],
+        //             CreatedAt = (DateTime)reader["created_at"],
+        //             UpdatedAt = (DateTime)reader["updated_at"],
+        //         };
+        //     }
 
-            throw new InvalidOperationException("Failed to Enroll");
-        }
+        //     throw new InvalidOperationException("Failed to Enroll");
+        // }
     }
 }

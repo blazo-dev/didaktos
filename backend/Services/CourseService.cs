@@ -8,7 +8,7 @@ using Npgsql;
 
 namespace didaktos.backend.Services
 {
-    public class CourseService
+    public class CourseService : ICourseService
     {
         private readonly ICourseRepository _courseRepository;
 
@@ -56,6 +56,11 @@ namespace didaktos.backend.Services
                     Errors = new { exception = ex.Message },
                 };
             }
+        }
+
+        public Task<Course?> GetCourseByInstructorIdAsync(Guid id)
+        {
+            throw new NotImplementedException();
         }
     }
 }
