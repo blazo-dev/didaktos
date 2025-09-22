@@ -24,7 +24,7 @@ namespace didaktos.backend.Repositories
 
             const string sql =
                 @"
-                SELECT id, name, email, password_hash, role, created_at, updated_at 
+                SELECT id, name, email, password_hash, created_at, updated_at 
                 FROM users 
                 WHERE email = @email";
 
@@ -55,7 +55,7 @@ namespace didaktos.backend.Repositories
 
             const string sql =
                 @"
-                SELECT id, name, email, password_hash, role, created_at, updated_at 
+                SELECT id, name, email, password_hash, created_at, updated_at 
                 FROM users 
                 WHERE id = @id";
 
@@ -86,9 +86,9 @@ namespace didaktos.backend.Repositories
 
             const string sql =
                 @"
-                INSERT INTO users (id, name, email, password_hash, role, created_at, updated_at)
-                VALUES (@id, @name, @email, @passwordHash, @role::user_role, @createdAt, @updatedAt)
-                RETURNING id, name, email, password_hash, role, created_at, updated_at";
+                INSERT INTO users (id, name, email, password_hash, created_at, updated_at)
+                VALUES (@id, @name, @email, @passwordHash, @createdAt, @updatedAt)
+                RETURNING id, name, email, password_hash, created_at, updated_at";
 
             using var command = new NpgsqlCommand(sql, connection);
             command.Parameters.AddWithValue("@id", user.Id);
