@@ -34,7 +34,6 @@ namespace didaktos.backend.Controllers
         public async Task<ActionResult<HttpResponseDto<List<ModuleDto>>>> GetCourseModules(Guid id)
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            Console.WriteLine(userIdClaim ?? "No userId claim found");
             if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
             {
                 return Unauthorized(
