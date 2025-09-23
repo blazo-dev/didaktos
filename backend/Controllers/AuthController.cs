@@ -105,7 +105,9 @@ namespace didaktos.backend.Controllers
         [Authorize]
         public IActionResult Logout()
         {
-            return Ok(new { Message = "Logout successful" });
+            return Ok(
+                new HttpResponseDto<object> { Success = true, Message = "Logout successful" }
+            );
         }
     }
 }

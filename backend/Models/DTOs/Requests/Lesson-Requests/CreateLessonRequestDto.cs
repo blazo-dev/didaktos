@@ -2,12 +2,12 @@ using System.ComponentModel.DataAnnotations;
 
 namespace didaktos.backend.Models.DTOs
 {
-    public class CourseRequestDto
+    public class CreateLessonRequestDto
     {
         [Required]
-        [MinLength(8, ErrorMessage = "The title must be at least 8 characters")]
+        [StringLength(255, MinimumLength = 1)]
         public string Title { get; set; } = string.Empty;
 
-        public string Description { get; set; } = string.Empty;
+        public string? Content { get; set; }
     }
 }

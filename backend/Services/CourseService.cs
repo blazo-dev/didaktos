@@ -1,8 +1,6 @@
 using didaktos.backend.Interfaces;
 using didaktos.backend.Models;
 using didaktos.backend.Models.DTOs;
-using didaktos.backend.Models.DTOs.Requests;
-using didaktos.backend.Models.DTOs.Response;
 
 namespace didaktos.backend.Services
 {
