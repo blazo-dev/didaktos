@@ -11,7 +11,7 @@ using Microsoft.Extensions.Configuration;
 namespace didaktos.backend.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/assistant")]
     public class AssistantAIController : ControllerBase
     {
         private readonly HttpClient _httpClient;
