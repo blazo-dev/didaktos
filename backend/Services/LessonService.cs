@@ -71,7 +71,7 @@ namespace didaktos.backend.Services
                 {
                     Success = true,
                     Message = $"Retrieved {lessonDtos.Count} lessons for module",
-                    Data = new { lessons = lessonDtos },
+                    Data = lessonDtos,
                     Errors = null,
                 };
             }
