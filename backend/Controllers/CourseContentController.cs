@@ -101,7 +101,7 @@ namespace didaktos.backend.Controllers
                 false when result.Message == "Course not found" => NotFound(result),
                 false
                     when result.Message.Contains(
-                        "Access denied. User is not the owner of the Course"
+                        "Access denied. Only course instructors can create modules"
                     ) => Forbid(),
                 _ => BadRequest(result),
             };

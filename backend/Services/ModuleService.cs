@@ -225,7 +225,7 @@ namespace didaktos.backend.Services
                     return new HttpResponseDto<object>
                     {
                         Success = false,
-                        Message = "Access denied. Only course owners can delete modules",
+                        Message = "Access denied. Only course instructors can delete modules",
                     };
                 }
 
