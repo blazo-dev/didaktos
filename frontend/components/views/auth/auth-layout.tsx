@@ -1,6 +1,7 @@
 "use client";
 
-import { useAuthStore } from "@/stores/auth-store";
+import Loader from "@/components/layout/loader";
+import { useAuth } from "@/hooks/auth/use-auth";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
@@ -9,15 +10,18 @@ interface AuthLayoutProps {
 }
 
 export function AuthLayout({ children }: AuthLayoutProps) {
-    const { user } = useAuthStore();
+    const { user, isLoading } = useAuth();
     const router = useRouter();
 
     useEffect(() => {
-        if (user) {
-            router.replace("/courses"); // Redirect to courses if already logged in
-        }
-    }, [user, router]);
+        if (!isLoading && user)
+            router.replace("/courses"); // Redirect if already logged in
 
+    }, [isLoading, user, router]);
+
+    if (isLoading) {
+        return <Loader text="Checking authentication..." />;
+    }
 
     return (
         <div className="space-y-8 g-container gap-6">

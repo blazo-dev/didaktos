@@ -23,7 +23,7 @@ export function ThemeToggle() {
             size="icon"
             aria-label="Toggle theme"
         >
-            {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            {isDark ? <Sun /> : <Moon />}
         </Button>
     );
 }

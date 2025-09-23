@@ -7,7 +7,7 @@ import { useMutation } from "@tanstack/react-query";
 
 export function useSignUp() {
     const addToast = useToastStore((state) => state.addToast);
-    const setUser = useAuthStore((state) => state.setUser);
+    const login = useAuthStore((state) => state.login);
 
     return useMutation({
         mutationFn: (data: SignUpRequest) =>
@@ -16,13 +16,7 @@ export function useSignUp() {
                 body: JSON.stringify(data),
             }),
         onSuccess: (res) => {
-            // Save token
-            localStorage.setItem("token", res.data.token);
-
-            // Save user globally
-            setUser(res.data.user);
-
-            // Show success toast
+            login(res.data.user, res.data.token);
             addToast({
                 message: "Registration successful!",
                 type: "success",

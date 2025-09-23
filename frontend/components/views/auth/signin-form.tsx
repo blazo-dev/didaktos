@@ -57,6 +57,7 @@ export function SignInForm() {
                     type="submit"
                     variant="secondary"
                     className="w-full"
+                    size="lg"
                     disabled={signInMutation.isPending}
                 >
                     {signInMutation.isPending ? "Signing in..." : "Sign In"}

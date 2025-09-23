@@ -1,5 +1,6 @@
 "use client";
 
+import Loader from "@/components/layout/loader";
 import { useAuthStore } from "@/stores/auth-store";
 import { useToastStore } from "@/stores/toast-store";
 import { useQueryClient } from "@tanstack/react-query";
@@ -8,23 +9,20 @@ import { useEffect } from "react";
 
 export default function Logout() {
     const router = useRouter();
-    const { setUser } = useAuthStore();
+    const { logout } = useAuthStore();
     const { addToast } = useToastStore();
     const queryClient = useQueryClient();
 
     useEffect(() => {
-        // Redirect to login page
-        router.replace("/");
+        logout();
 
-        // Clear session data
-        localStorage.removeItem("token");
-        setUser(null);
-        queryClient.clear(); // clear all queries
+        queryClient.clear();
 
-        // Show toast
         addToast({ type: "info", message: "You have logged out" });
 
-    }, [setUser, addToast, queryClient, router]);
+        router.replace("/");
 
-    return null; // No UI needed
+    }, [logout, addToast, queryClient, router]);
+
+    return <Loader text="Logging out..." />;
 }

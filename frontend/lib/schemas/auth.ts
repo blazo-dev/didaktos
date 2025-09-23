@@ -15,10 +15,12 @@ export const signInSchema = baseAuthSchema;
 // Sign-Up schema extends base
 export const signUpSchema = baseAuthSchema
     .extend({
-        name: z.string().min(1, { message: "Name is required" }),
+        name: z
+            .string()
+            .min(2, { message: "Name must be at least 2 characters" }),
         confirmPassword: z
             .string()
-            .min(1, { message: "Please confirm your password" }),
+            .min(2, { message: "Please confirm your password" }),
     })
     .refine((data) => data.password === data.confirmPassword, {
         message: "Passwords do not match",

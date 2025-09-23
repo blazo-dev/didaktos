@@ -76,6 +76,7 @@ export function Toast({ message, type = "info", duration = 4000, onClose }: Toas
                     <div
                         className="h-full bg-white/40 animate-progress"
                         style={{
+                            animationDuration: `${duration}ms`,
                             animationPlayState: isExiting ? 'paused' : 'running'
                         }}
                     />

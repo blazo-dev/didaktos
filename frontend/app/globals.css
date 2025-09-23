@@ -28,7 +28,7 @@
 
   --animate-enter: slideInRight 0.3s ease-out forwards;
   --animate-exit: slideOutRight 0.3s ease-in forwards;
-  --animate-progress: progressBar 4s linear forwards;
+  --animate-progress: progressBar 1s linear forwards;
 
 
 }

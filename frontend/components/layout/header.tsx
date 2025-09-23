@@ -28,7 +28,7 @@ export function Header({ toggleSidebar, showSidebar = false, isLanding = false }
           {showSidebar && (
             <div className="flex items-center gap-4 lg:hidden">
               <Button variant="ghost" size="icon" onClick={toggleSidebar}>
-                <MenuIcon className="w-12 h-12" />
+                <MenuIcon />
               </Button>
             </div>
           )}{
