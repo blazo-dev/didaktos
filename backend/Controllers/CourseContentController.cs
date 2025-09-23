@@ -12,14 +12,14 @@ namespace didaktos.backend.Controllers
     public class CourseContentController : ControllerBase
     {
         private readonly IModuleService _moduleService;
+        private readonly ILessonService _lessonService;
 
-        // private readonly ILessonService _lessonService;
         // private readonly IAssignmentService _assignmentService;
 
-        public CourseContentController(IModuleService moduleService)
+        public CourseContentController(IModuleService moduleService, ILessonService lessonService)
         {
             _moduleService = moduleService;
-            // _lessonService = lessonService;
+            _lessonService = lessonService;
             // _assignmentService = assignmentService;
         }
 
@@ -34,7 +34,6 @@ namespace didaktos.backend.Controllers
         public async Task<ActionResult<HttpResponseDto<List<ModuleDto>>>> GetCourseModules(Guid id)
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            Console.WriteLine(userIdClaim ?? "No userId claim found");
             if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
             {
                 return Unauthorized(
@@ -187,11 +186,175 @@ namespace didaktos.backend.Controllers
 
         #endregion
 
-        #region Lesson Endpoints (Placeholder for future implementation)
+        #region Lesson Endpoints
 
-        // TODO: Implement lesson endpoints
-        // [HttpGet("{courseId}/modules/{moduleId}/lessons")]
-        // [HttpPost("{courseId}/modules/{moduleId}/lessons")]
+        /// <summary>
+        /// Get all lessons for a specific module
+        /// </summary>
+        /// <param name="moduleId">Module ID</param>
+        /// <returns>List of lessons for the module</returns>
+        [HttpGet("modules/{moduleId}/lessons")]
+        public async Task<ActionResult<HttpResponseDto<List<LessonDto>>>> GetModuleLessons(
+            Guid moduleId
+        )
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized(
+                    new HttpResponseDto<List<LessonDto>>
+                    {
+                        Success = false,
+                        Message = "Invalid or missing authentication token",
+                    }
+                );
+            }
+
+            var result = await _lessonService.GetModuleLessonsAsync(moduleId, userId);
+
+            return result.Success switch
+            {
+                true => Ok(result),
+                false when result.Message == "Module not found" => NotFound(result),
+                false when result.Message.Contains("Access denied") => Forbid(),
+                _ => BadRequest(result),
+            };
+        }
+
+        /// <summary>
+        /// Create a new lesson in a module
+        /// </summary>
+        /// <param name="moduleId">Module ID</param>
+        /// <param name="request">Lesson creation request</param>
+        /// <returns>Created lesson</returns>
+        [HttpPost("modules/{moduleId}/lessons")]
+        public async Task<ActionResult<HttpResponseDto<LessonDto>>> CreateLesson(
+            Guid moduleId,
+            [FromBody] CreateLessonRequestDto request
+        )
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(
+                    new HttpResponseDto<LessonDto>
+                    {
+                        Success = false,
+                        Message = "Invalid request data",
+                        Errors = ModelState,
+                    }
+                );
+            }
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized(
+                    new HttpResponseDto<LessonDto>
+                    {
+                        Success = false,
+                        Message = "Invalid or missing authentication token",
+                    }
+                );
+            }
+
+            var result = await _lessonService.CreateLessonAsync(moduleId, request, userId);
+
+            return result.Success switch
+            {
+                true => CreatedAtAction(nameof(GetModuleLessons), new { moduleId }, result),
+                false when result.Message == "Module not found" => NotFound(result),
+                false when result.Message.Contains("Access denied") => Forbid(),
+                _ => BadRequest(result),
+            };
+        }
+
+        /// <summary>
+        /// Update a lesson's title and content
+        /// </summary>
+        /// <param name="lessonId">Lesson ID</param>
+        /// <param name="request">Lesson update request</param>
+        /// <returns>Updated lesson</returns>
+        [HttpPut("lessons/{lessonId}")]
+        public async Task<ActionResult<HttpResponseDto<LessonResponseDto>>> UpdateLesson(
+            Guid lessonId,
+            [FromBody] UpdateLessonRequestDto request
+        )
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(
+                    new HttpResponseDto<LessonResponseDto>
+                    {
+                        Success = false,
+                        Message = "Invalid request data",
+                        Errors = ModelState,
+                    }
+                );
+            }
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized(
+                    new HttpResponseDto<LessonResponseDto>
+                    {
+                        Success = false,
+                        Message = "Invalid or missing authentication token",
+                    }
+                );
+            }
+
+            var result = await _lessonService.UpdateLessonAsync(lessonId, request, userId);
+
+            return result.Success switch
+            {
+                true => Ok(result),
+                false when result.Message == "Lesson not found" => NotFound(result),
+                false when result.Message.Contains("Access denied") => Forbid(),
+                _ => BadRequest(result),
+            };
+        }
+
+        /// <summary>
+        /// Delete a lesson
+        /// </summary>
+        /// <param name="lessonId">Lesson ID</param>
+        /// <returns>Success response</returns>
+        [HttpDelete("lessons/{lessonId}")]
+        public async Task<ActionResult<HttpResponseDto<object>>> DeleteLesson(Guid lessonId)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized(
+                    new HttpResponseDto<object>
+                    {
+                        Success = false,
+                        Message = "Invalid or missing authentication token",
+                    }
+                );
+            }
+
+            var result = await _lessonService.DeleteLessonAsync(lessonId, userId);
+
+            return result.Success switch
+            {
+                true => Ok(result),
+                false when result.Message == "Lesson not found" => NotFound(result),
+                false when result.Message.Contains("Access denied") => Forbid(),
+                _ => BadRequest(result),
+            };
+        }
+
+        #endregion
+
+        #region Assignment Endpoints (Placeholder for future implementation)
+
+        // TODO: Implement assignment endpoints
+        // [HttpGet("modules/{moduleId}/assignments")]
+        // [HttpPost("modules/{moduleId}/assignments")]
+        // [HttpPut("assignments/{assignmentId}")]
+        // [HttpDelete("assignments/{assignmentId}")]
 
         #endregion
     }
