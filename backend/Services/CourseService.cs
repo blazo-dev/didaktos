@@ -69,14 +69,7 @@ namespace didaktos.backend.Services
                 {
                     Success = true,
                     Message = "Courses retrieved successfully",
-                    Data = new CourseReadResponseDto
-                    {
-                        Id = Courses!.Id,
-                        Title = Courses.Title,
-                        Description = Courses.Description,
-                        InstructorId = Courses.InstructorId,
-                        InstructorName = Courses.InstructorName,
-                    },
+                    Data = Courses,
                 };
             }
             catch (Exception ex)
