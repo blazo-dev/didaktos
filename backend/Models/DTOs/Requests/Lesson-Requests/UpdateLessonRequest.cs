@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace didaktos.backend.Models.DTOs
 {
-    public class CreateLessonRequestDto
+    public class UpdateLessonRequestDto
     {
         [Required]
         [StringLength(255, MinimumLength = 1)]
