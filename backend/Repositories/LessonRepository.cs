@@ -159,7 +159,7 @@ namespace didaktos.backend.Repositories
             const string sql =
                 @"
                 UPDATE lessons
-                SET title = @title, content = @content, module_id = @moduleId, updated_at = @updatedAt
+                SET title = @title, content = @content, updated_at = @updatedAt
                 WHERE id = @id
                 RETURNING id, title, content, module_id, created_at, updated_at";
 
