@@ -3,7 +3,7 @@ using didaktos.backend.Models;
 using didaktos.backend.Models.DTOs.Response;
 using Npgsql;
 
-namespace didaktos.backend.Services
+namespace didaktos.backend.Repositories
 {
     public class CourseRepository : ICourseRepository
     {

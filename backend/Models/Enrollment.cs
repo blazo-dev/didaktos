@@ -11,7 +11,7 @@ namespace didaktos.backend.Models
         public string Status { get; set; } = string.Empty;
 
         [Required]
-        public Guid InstructorId { get; set; }
+        public Guid StudentId { get; set; }
 
         [Required]
         public Guid CourseId { get; set; }
