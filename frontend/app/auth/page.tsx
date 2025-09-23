@@ -1,12 +1,7 @@
-import { AppLayout } from "@/components/layout/app-layout";
-import { AuthLayout } from "@/components/views/auth/auth-layout";
+import { redirect } from "next/navigation";
 
 function AuthPage() {
-    return (
-        <AppLayout>
-            <AuthLayout />
-        </AppLayout>
-    )
+    redirect("/auth/signin");
 }
 
 export default AuthPage

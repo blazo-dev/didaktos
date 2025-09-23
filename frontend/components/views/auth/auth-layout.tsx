@@ -2,12 +2,13 @@
 
 import { useAuthStore } from "@/stores/auth-store";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { SignInForm } from "./signin-form";
-import { SignUpForm } from "./signup-form";
+import { useEffect } from "react";
 
-export function AuthLayout() {
-    const [showSignUp, setShowSignUp] = useState(false);
+interface AuthLayoutProps {
+    children: React.ReactNode;
+}
+
+export function AuthLayout({ children }: AuthLayoutProps) {
     const { user } = useAuthStore();
     const router = useRouter();
 
@@ -18,15 +19,11 @@ export function AuthLayout() {
     }, [user, router]);
 
 
-    const handleShowSignUp = () => setShowSignUp(true);
-    const handleShowSignIn = () => setShowSignUp(false);
-
     return (
         <div className="space-y-8 g-container gap-6">
             <div className="h-full grid place-items-center">
                 <div className="w-full max-w-lg py-8">
-                    {!showSignUp && <SignInForm onShowSignUp={handleShowSignUp} />}
-                    {showSignUp && <SignUpForm onShowSignIn={handleShowSignIn} />}
+                    {children}
                 </div>
             </div>
         </div>

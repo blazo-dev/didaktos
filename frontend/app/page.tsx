@@ -79,7 +79,7 @@ export default function Home() {
           </p>
           <div className="flex justify-center">
             <Button asChild size="lg" variant={"secondary"}>
-              <Link href="/auth">Start Now</Link>
+              <Link href="/auth/signup">Start Now</Link>
             </Button>
           </div>
         </section>

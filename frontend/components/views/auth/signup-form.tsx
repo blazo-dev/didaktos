@@ -1,16 +1,13 @@
 "use client"
 
+import { useSignUp } from "@/hooks/auth/use-signup"
+import Link from "next/link"
 import { FormEvent } from "react"
 import { Button } from "../../ui/button"
 import { Input } from "../../ui/input"
 import { PasswordInput } from "./password-input"
-import { useSignUp } from "@/hooks/auth/use-signup"
 
-interface SignUpFormProps {
-    onShowSignIn: () => void
-}
-
-export function SignUpForm({ onShowSignIn }: SignUpFormProps) {
+export function SignUpForm() {
     const signUpMutation = useSignUp()
 
     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -87,12 +84,11 @@ export function SignUpForm({ onShowSignIn }: SignUpFormProps) {
                         Already have an account?
                     </span>
                     <Button
-                        type="button"
                         variant={"link"}
                         className="p-0 pl-1"
-                        onClick={onShowSignIn}
+                        asChild
                     >
-                        Sign in
+                        <Link href="/auth/signin">Sign In</Link>
                     </Button>
                 </div>
             </form>

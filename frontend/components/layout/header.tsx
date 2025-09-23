@@ -38,7 +38,7 @@ export function Header({ toggleSidebar, showSidebar = false, isLanding = false }
                   {user ? (
                     <Link href="/courses">Go to dashboard</Link>
                   ) : (
-                    <Link href="/auth">Sign In</Link>
+                    <Link href="/auth/signin">Sign In</Link>
                   )}
                 </Button>
               </div>

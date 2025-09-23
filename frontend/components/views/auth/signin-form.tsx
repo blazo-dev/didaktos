@@ -1,17 +1,14 @@
 "use client"
 
 import { useSignIn } from "@/hooks/auth/use-signin";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent } from "react";
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
 import { PasswordInput } from "./password-input";
 
-interface SignInFormProps {
-    onShowSignUp: () => void;
-}
-
-export function SignInForm({ onShowSignUp }: SignInFormProps) {
+export function SignInForm() {
     const router = useRouter();
     const signInMutation = useSignIn();
 
@@ -55,19 +52,18 @@ export function SignInForm({ onShowSignUp }: SignInFormProps) {
                     required
                 />
 
-                <Button type="submit" className="w-full" disabled={signInMutation.isPending}>
+                <Button type="submit" variant={"secondary"} className="w-full" disabled={signInMutation.isPending}>
                     {signInMutation.isPending ? "Signing in..." : "Sign In"}
                 </Button>
 
                 <div className="text-center">
                     <span className="text-muted-foreground">Don't have an account?</span>
                     <Button
-                        type="button"
                         variant={"link"}
                         className="p-0 pl-1"
-                        onClick={onShowSignUp}
+                        asChild
                     >
-                        Sign up
+                        <Link href="/auth/signup">Sign Up</Link>
                     </Button>
                 </div>
             </form>

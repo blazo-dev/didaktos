@@ -6,7 +6,7 @@ const generalLinks = [
   { href: "/dashboard", label: "Dashboard", icon: Home },
   { href: "/courses", label: "Courses", icon: BookOpenIcon },
   { href: "/profile", label: "Profile", icon: User },
-  { href: "/logout", label: "Logout", icon: LogOut },
+  { href: "/auth/logout", label: "Logout", icon: LogOut },
 ]
 
 const infoLinks = [

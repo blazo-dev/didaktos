@@ -1,43 +1,29 @@
-"use client"
+"use client";
 
-import { Moon, Sun } from "lucide-react"
-import { useEffect, useState } from "react"
-import { Button } from "../ui/button"
+import { Button } from "@/components/ui/button";
+import { Moon, Sun } from "lucide-react";
+import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
 
 export function ThemeToggle() {
-    const [isDark, setIsDark] = useState(false)
+    const { theme, setTheme } = useTheme();
+    const [mounted, setMounted] = useState(false);
 
-    useEffect(() => {
-        // Check if dark mode is enabled on mount
-        const isDarkMode = document.documentElement.classList.contains('dark')
-        setIsDark(isDarkMode)
-    }, [])
+    // Mark the component as mounted on client
+    useEffect(() => setMounted(true), []);
 
-    const toggleTheme = () => {
-        const newTheme = !isDark
-        setIsDark(newTheme)
+    if (!mounted || !theme) return null; // wait until theme is available
 
-        if (newTheme) {
-            document.documentElement.classList.add('dark')
-            localStorage.setItem('theme', 'dark')
-        } else {
-            document.documentElement.classList.remove('dark')
-            localStorage.setItem('theme', 'light')
-        }
-    }
+    const isDark = theme === "dark";
 
     return (
         <Button
-            onClick={toggleTheme}
+            onClick={() => setTheme(isDark ? "light" : "dark")}
             variant="ghost"
             size="icon"
             aria-label="Toggle theme"
         >
-            {isDark ? (
-                <Sun className="w-5 h-5" />
-            ) : (
-                <Moon className="w-5 h-5" />
-            )}
+            {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
         </Button>
-    )
+    );
 }
