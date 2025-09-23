@@ -143,5 +143,118 @@ namespace didaktos.backend.Services
                 };
             }
         }
+
+        public async Task<HttpResponseDto<ModuleResponseDto>> UpdateModuleAsync(
+            Guid moduleId,
+            UpdateModuleRequestDto request,
+            Guid userId
+        )
+        {
+            try
+            {
+                var existingModule = await _moduleRepository.GetModuleByIdAsync(moduleId);
+                if (existingModule == null)
+                {
+                    return new HttpResponseDto<ModuleResponseDto>
+                    {
+                        Success = false,
+                        Message = "Module not found",
+                    };
+                }
+
+                var courseId = await _moduleRepository.GetModuleCourseIdAsync(moduleId);
+
+                if (!await _courseRepository.IsUserInstructorOfCourseAsync(userId, courseId))
+                {
+                    return new HttpResponseDto<ModuleResponseDto>
+                    {
+                        Success = false,
+                        Message = "Access denied. Only course instructors can update modules",
+                    };
+                }
+
+                existingModule.Title = request.Title;
+                existingModule.UpdatedAt = DateTime.UtcNow;
+
+                var updatedModule = await _moduleRepository.UpdateModuleAsync(existingModule);
+
+                var moduleDto = new ModuleResponseDto
+                {
+                    Id = updatedModule.Id,
+                    Title = updatedModule.Title,
+                    CourseId = updatedModule.CourseId,
+                    UpdatedAt = updatedModule.UpdatedAt,
+                };
+
+                return new HttpResponseDto<ModuleResponseDto>
+                {
+                    Success = true,
+                    Message = "Module updated successfully",
+                    Data = moduleDto,
+                };
+            }
+            catch (Exception ex)
+            {
+                return new HttpResponseDto<ModuleResponseDto>
+                {
+                    Success = false,
+                    Message = "Failed to update module",
+                    Errors = new { exception = ex.Message },
+                };
+            }
+        }
+
+        public async Task<HttpResponseDto<object>> DeleteModuleAsync(Guid moduleId, Guid userId)
+        {
+            try
+            {
+                var existingModule = await _moduleRepository.GetModuleByIdAsync(moduleId);
+                if (existingModule == null)
+                {
+                    return new HttpResponseDto<object>
+                    {
+                        Success = false,
+                        Message = "Module not found",
+                    };
+                }
+
+                var courseId = await _moduleRepository.GetModuleCourseIdAsync(moduleId);
+
+                if (!await _courseRepository.IsUserInstructorOfCourseAsync(userId, courseId))
+                {
+                    return new HttpResponseDto<object>
+                    {
+                        Success = false,
+                        Message = "Access denied. Only course owners can delete modules",
+                    };
+                }
+
+                var deleted = await _moduleRepository.DeleteModuleAsync(moduleId);
+
+                if (!deleted)
+                {
+                    return new HttpResponseDto<object>
+                    {
+                        Success = false,
+                        Message = "Failed to delete module",
+                    };
+                }
+
+                return new HttpResponseDto<object>
+                {
+                    Success = true,
+                    Message = "Module deleted successfully",
+                };
+            }
+            catch (Exception ex)
+            {
+                return new HttpResponseDto<object>
+                {
+                    Success = false,
+                    Message = "Failed to delete module",
+                    Errors = new { exception = ex.Message },
+                };
+            }
+        }
     }
 }

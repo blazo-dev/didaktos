@@ -10,5 +10,11 @@ namespace didaktos.backend.Interfaces
             CreateModuleRequestDto request,
             Guid userId
         );
+        Task<HttpResponseDto<ModuleResponseDto>> UpdateModuleAsync(
+            Guid moduleId,
+            UpdateModuleRequestDto request,
+            Guid userId
+        );
+        Task<HttpResponseDto<object>> DeleteModuleAsync(Guid moduleId, Guid userId);
     }
 }

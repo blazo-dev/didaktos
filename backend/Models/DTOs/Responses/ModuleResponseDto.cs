@@ -5,7 +5,6 @@ namespace didaktos.backend.Models.DTOs
         public Guid Id { get; set; }
         public string Title { get; set; } = string.Empty;
         public Guid CourseId { get; set; }
-        public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
     }
 }

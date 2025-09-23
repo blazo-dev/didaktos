@@ -146,5 +146,51 @@ namespace didaktos.backend.Repositories
 
             throw new InvalidOperationException("Module not found or has no course ID");
         }
+
+        public async Task<Module> UpdateModuleAsync(Module module)
+        {
+            using var connection = new NpgsqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            const string sql =
+                @"
+                UPDATE modules 
+                SET title = @title, updated_at = @updatedAt
+                WHERE id = @id
+                RETURNING id, title, course_id, created_at, updated_at";
+
+            using var command = new NpgsqlCommand(sql, connection);
+            command.Parameters.AddWithValue("@id", module.Id);
+            command.Parameters.AddWithValue("@title", module.Title);
+            command.Parameters.AddWithValue("@updatedAt", module.UpdatedAt);
+
+            using var reader = await command.ExecuteReaderAsync();
+            if (await reader.ReadAsync())
+            {
+                return new Module
+                {
+                    Id = (Guid)reader["id"],
+                    Title = (string)reader["title"],
+                    CourseId = (Guid)reader["course_id"],
+                    CreatedAt = (DateTime)reader["created_at"],
+                    UpdatedAt = (DateTime)reader["updated_at"],
+                };
+            }
+
+            throw new InvalidOperationException("Failed to update module");
+        }
+
+        public async Task<bool> DeleteModuleAsync(Guid moduleId)
+        {
+            using var connection = new NpgsqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            const string sql = "DELETE FROM modules WHERE id = @moduleId";
+            using var command = new NpgsqlCommand(sql, connection);
+            command.Parameters.AddWithValue("@moduleId", moduleId);
+
+            var rowsAffected = await command.ExecuteNonQueryAsync();
+            return rowsAffected > 0;
+        }
     }
 }

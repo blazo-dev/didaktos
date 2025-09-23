@@ -75,7 +75,6 @@ namespace didaktos.backend.Controllers
         public async Task<ActionResult<UserDto>> GetCurrentUser()
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            Console.WriteLine(userIdClaim ?? "No userId claim found");
             if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
             {
                 return Unauthorized();
@@ -88,11 +87,16 @@ namespace didaktos.backend.Controllers
             }
 
             return Ok(
-                new UserDto
+                new HttpResponseDto<object>
                 {
-                    Id = user.Id,
-                    Name = user.Name,
-                    Email = user.Email,
+                    Success = true,
+                    Message = "Current User",
+                    Data = new UserDto
+                    {
+                        Id = user.Id,
+                        Name = user.Name,
+                        Email = user.Email,
+                    },
                 }
             );
         }
@@ -101,7 +105,9 @@ namespace didaktos.backend.Controllers
         [Authorize]
         public IActionResult Logout()
         {
-            return Ok(new { Message = "Logout successful" });
+            return Ok(
+                new HttpResponseDto<object> { Success = true, Message = "Logout successful" }
+            );
         }
     }
 }
