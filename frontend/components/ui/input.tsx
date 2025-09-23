@@ -1,41 +1,40 @@
+import { UseFormRegisterReturn } from "react-hook-form";
+
 interface InputProps {
-    id: string
-    name: string
-    type?: "text" | "email" | "tel" | "url"
-    placeholder: string
-    required?: boolean
-    className?: string
-    label: string
-    value?: string
-    onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
+    id: string;
+    label: string;
+    placeholder: string;
+    type?: "text" | "email" | "tel" | "url";
+    required?: boolean;
+    className?: string;
+    register?: UseFormRegisterReturn; // React Hook Form integration
+    error?: string; // Inline error message
 }
 
 export function Input({
     id,
-    name,
-    type = "text",
+    label,
     placeholder,
+    type = "text",
     required = false,
     className = "",
-    label,
-    value,
-    onChange
+    register,
+    error
 }: InputProps) {
     return (
-        <div>
+        <div className="flex flex-col">
             <label htmlFor={id} className="block text-sm font-medium mb-2">
                 {label}
             </label>
             <input
                 type={type}
                 id={id}
-                name={name}
                 required={required}
-                value={value}
-                onChange={onChange}
-                className={`w-full px-4 py-3 border border-border rounded-lg bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-secondary/80 transition-colors ${className}`}
                 placeholder={placeholder}
+                {...register}
+                className={`w-full px-4 py-3 border rounded-lg bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-secondary/80 transition-colors ${error ? "border-red-500" : "border-border"} ${className}`}
             />
+            {error && <span className="text-red-500 text-sm mt-1">{error}</span>}
         </div>
-    )
+    );
 }

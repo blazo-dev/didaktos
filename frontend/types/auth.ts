@@ -1,12 +1,13 @@
-export interface LoginRequest {
+export interface SignInRequest {
     email: string;
     password: string;
 }
 
-export interface RegisterRequest {
+export interface SignUpRequest {
     name: string;
     email: string;
     password: string;
+    confirmPassword: string;
 }
 
 export interface AuthResponse {

@@ -1,7 +1,7 @@
 import { apiFetch } from "@/lib/api";
 import { useAuthStore } from "@/stores/auth-store";
 import { useToastStore } from "@/stores/toast-store";
-import { LoginRequest } from "@/types/auth";
+import { SignInRequest } from "@/types/auth";
 import { useMutation } from "@tanstack/react-query";
 
 export function useSignIn() {
@@ -9,7 +9,7 @@ export function useSignIn() {
     const setUser = useAuthStore((state) => state.setUser);
 
     return useMutation({
-        mutationFn: (data: LoginRequest) =>
+        mutationFn: (data: SignInRequest) =>
             apiFetch<{ data: { token: string; user: any } }>("/auth/login", {
                 method: "POST",
                 body: JSON.stringify(data),
