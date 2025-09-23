@@ -1,7 +1,6 @@
 using System.Security.Claims;
 using didaktos.backend.Interfaces;
 using didaktos.backend.Models.DTOs;
-using didaktos.backend.Models.DTOs.Requests;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

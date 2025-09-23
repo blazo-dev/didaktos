@@ -1,6 +1,5 @@
 using didaktos.backend.Models;
 using didaktos.backend.Models.DTOs;
-using didaktos.backend.Models.DTOs.Requests;
 
 namespace didaktos.backend.Interfaces
 {
