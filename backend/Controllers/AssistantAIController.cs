@@ -42,7 +42,7 @@ namespace didaktos.backend.Controllers
             else if (prompt.Choice == "Schedule")
             {
                 fullRequest =
-                    "Do not add any introduction or commentary. Create a schedule using a time frame that a college student could learn all the material in the following leson. Text:"
+                    "Do not add any introduction or commentary. Create a schedule using a time frame that a college student could learn all the material in the following lesson. Text:"
                     + prompt.Text;
             }
             else
