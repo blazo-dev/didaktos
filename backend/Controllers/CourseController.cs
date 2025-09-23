@@ -22,7 +22,6 @@ namespace didaktos.backend.Controllers
         public async Task<IActionResult> GetCourses()
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            Console.WriteLine($"Creating course for user: {userIdClaim}");
             if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
             {
                 return Unauthorized();
@@ -55,7 +54,6 @@ namespace didaktos.backend.Controllers
         public async Task<IActionResult> CreateCourses([FromBody] CourseRequestDto request)
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            Console.WriteLine($"Creating course for user: {userIdClaim}");
             if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
             {
                 return Unauthorized();
