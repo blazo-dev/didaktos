@@ -52,27 +52,29 @@ namespace didaktos.backend.Services
             throw new InvalidOperationException("Failed to create course");
         }
 
-        public async Task<CourseResponseDto?> SelectCourseByInstructorIdAsync()
+        public async Task<CourseReadResponseDto?> SelectCoursesAsync()
         {
             using var connection = new NpgsqlConnection(_connectionString);
             await connection.OpenAsync();
 
             const string sql =
                 @"
-                SELECT id, title, description, instructor_id 
-                FROM courses";
+                SELECT courses.id, title, description, instructor_id, name  
+                FROM courses
+                JOIN users ON courses.instructor_id = users.id;";
 
             using var command = new NpgsqlCommand(sql, connection);
 
             using var reader = await command.ExecuteReaderAsync();
             if (await reader.ReadAsync())
             {
-                return new CourseResponseDto
+                return new CourseReadResponseDto
                 {
                     Id = (Guid)reader["id"],
                     Title = (string)reader["title"],
                     Description = (string)reader["description"],
                     InstructorId = (Guid)reader["instructor_id"],
+                    InstructorName = (string)reader["name"],
                 };
             }
 

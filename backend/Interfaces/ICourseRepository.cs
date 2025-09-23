@@ -6,7 +6,7 @@ namespace didaktos.backend.Interfaces
 {
     public interface ICourseRepository
     {
-        Task<CourseResponseDto?> SelectCourseByInstructorIdAsync();
+        Task<CourseReadResponseDto?> SelectCoursesAsync();
         Task<CourseResponseDto> InsertCourseAsync(Course course);
     }
 }

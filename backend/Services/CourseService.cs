@@ -3,6 +3,7 @@ using didaktos.backend.Models;
 using didaktos.backend.Models.DTOs;
 using didaktos.backend.Models.DTOs.Requests;
 using didaktos.backend.Models.DTOs.Response;
+
 namespace didaktos.backend.Services
 {
     public class CourseService : ICourseService
@@ -14,7 +15,10 @@ namespace didaktos.backend.Services
             _courseRepository = courseRepository;
         }
 
-        public async Task<HttpResponseDto<object>> CreateCourseAsync(CourseRequestDto request, Guid instructorId)
+        public async Task<HttpResponseDto<object>> CreateCourseAsync(
+            CourseRequestDto request,
+            Guid instructorId
+        )
         {
             try
             {
@@ -55,9 +59,35 @@ namespace didaktos.backend.Services
             }
         }
 
-        public Task<Course?> GetCourseByInstructorIdAsync(Guid id)
+        public async Task<HttpResponseDto<object>> GetCoursesAsync()
         {
-            throw new NotImplementedException();
+            try
+            {
+                var Courses = await _courseRepository.SelectCoursesAsync();
+
+                return new HttpResponseDto<object>
+                {
+                    Success = true,
+                    Message = "Courses retrieved successfully",
+                    Data = new CourseReadResponseDto
+                    {
+                        Id = Courses!.Id,
+                        Title = Courses.Title,
+                        Description = Courses.Description,
+                        InstructorId = Courses.InstructorId,
+                        InstructorName = Courses.InstructorName,
+                    },
+                };
+            }
+            catch (Exception ex)
+            {
+                return new HttpResponseDto<object>
+                {
+                    Success = false,
+                    Message = "Retrieval of courses failed",
+                    Errors = new { exception = ex.Message },
+                };
+            }
         }
     }
 }

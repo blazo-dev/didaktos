@@ -18,11 +18,37 @@ namespace didaktos.backend.Controllers
             _courseService = courseService;
         }
 
-        //[HttpGet]
-        //public async Task<IActionResult> GetCourses([FromBody] GeminiPrompt prompt)
-        //{
-        //    return Ok();
-        //}
+        [HttpGet]
+        public async Task<IActionResult> GetCourses()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            Console.WriteLine($"Creating course for user: {userIdClaim}");
+            if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(
+                    new HttpResponseDto<object>
+                    {
+                        Success = false,
+                        Message = "Invalid request data",
+                        Errors = ModelState,
+                    }
+                );
+            }
+
+            var result = await _courseService.GetCoursesAsync();
+
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+
+            return BadRequest(result);
+        }
 
         [HttpPost]
         [Authorize]
@@ -34,7 +60,6 @@ namespace didaktos.backend.Controllers
             {
                 return Unauthorized();
             }
-
 
             if (!ModelState.IsValid)
             {
@@ -56,7 +81,6 @@ namespace didaktos.backend.Controllers
             }
 
             return BadRequest(result);
-
         }
 
         // private async Task<Enrollment> CreateEnrollmentAsync(Enrollment course)
