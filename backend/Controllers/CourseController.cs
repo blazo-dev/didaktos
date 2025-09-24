@@ -19,6 +19,7 @@ namespace didaktos.backend.Controllers
             _enrollmentService = enrollmentService;
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetCourses()
         {
