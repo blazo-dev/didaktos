@@ -1,4 +1,4 @@
-import { apiFetch } from "@/lib/api";
+import { apiFetch } from "@/lib/api/api";
 import { useAuthStore } from "@/stores/auth-store";
 import { useToastStore } from "@/stores/toast-store";
 import { SignInRequest } from "@/types/auth";
@@ -6,7 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 
 export function useSignIn() {
     const addToast = useToastStore((state) => state.addToast);
-    const login = useAuthStore((state) => state.login); 
+    const login = useAuthStore((state) => state.login);
 
     return useMutation({
         mutationFn: (data: SignInRequest) =>

@@ -1,12 +1,12 @@
 "use client";
 
-import { apiFetch } from "@/lib/api";
+import { apiFetch } from "@/lib/api/api";
 import { useAuthStore } from "@/stores/auth-store";
 import { useToastStore } from "@/stores/toast-store";
 import { User } from "@/types/auth";
 import { HttpResponse } from "@/types/http";
 import { useQuery } from "@tanstack/react-query";
-import { useRouter, usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 /**
