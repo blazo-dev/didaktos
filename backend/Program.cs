@@ -88,6 +88,8 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IModuleService, ModuleService>();
 builder.Services.AddScoped<ICourseService, CourseService>();
 builder.Services.AddScoped<ILessonService, LessonService>();
+builder.Services.AddScoped<IAssignmentRepository, AssignmentRepository>();
+builder.Services.AddScoped<IAssignmentService, AssignmentService>();
 
 builder.Services.AddScoped<JwtTokenGenerator>();
 

@@ -8,8 +8,8 @@ namespace didaktos.backend.Interfaces
         Task<Assignment> CreateAssignmentAsync(Assignment assignment);
         Task<Assignment?> GetAssignmentByIdAsync(Guid assignmentId);
         Task<bool> AssignmentExistsAsync(Guid assignmentId);
-        Task<Guid> GetLessonModuleIdAsync(Guid lessonId);
-        Task<Lesson> UpdateLessonAsync(Lesson lesson);
-        Task<bool> DeleteLessonAsync(Guid lessonId);
+        Task<Guid> GetAssignmentModuleIdAsync(Guid assignmentId);
+        Task<Assignment> UpdateAssignmentAsync(Assignment assignment);
+        Task<bool> DeleteAssignmentAsync(Guid assignmentId);
     }
 }
