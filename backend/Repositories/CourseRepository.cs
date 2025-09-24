@@ -59,7 +59,7 @@ namespace didaktos.backend.Repositories
 
             const string sql =
                 @"
-                SELECT courses.id, title, description, instructor_id, name  
+                SELECT courses.id, title, description, instructor_id, name, email  
                 FROM courses
                 JOIN users ON courses.instructor_id = users.id;";
 
@@ -76,8 +76,12 @@ namespace didaktos.backend.Repositories
                         Id = (Guid)reader["id"],
                         Title = (string)reader["title"],
                         Description = (string)reader["description"],
-                        InstructorId = (Guid)reader["instructor_id"],
-                        InstructorName = (string)reader["name"],
+                        Instructor = new UserDto
+                        {
+                            Id = (Guid)reader["instructor_id"],
+                            Name = (string)reader["name"],
+                            Email = (string)reader["email"],
+                        },
                     }
                 );
             }
