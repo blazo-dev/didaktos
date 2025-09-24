@@ -15,7 +15,7 @@ export function Header({ toggleSidebar, showSidebar = false, isLanding = false }
 
   return (
     <header className="g-container gap-6 border-b border-border bg-surface">
-      <div className="w-full px-4 py-4 flex items-center justify-between">
+      <div className="w-full py-4 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
           <div className="w-8 h-8 bg-secondary rounded-lg flex items-center justify-center">
             <span className="text-secondary-foreground font-bold text-lg">D</span>
@@ -36,7 +36,7 @@ export function Header({ toggleSidebar, showSidebar = false, isLanding = false }
               <div className="flex items-center gap-4">
                 <Button asChild size="sm" variant="secondary">
                   {user ? (
-                    <Link href="/courses">Go to dashboard</Link>
+                    <Link href="/dashboard">Go to dashboard</Link>
                   ) : (
                     <Link href="/auth/signin">Sign In</Link>
                   )}

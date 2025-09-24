@@ -15,7 +15,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
 
     useEffect(() => {
         if (!isLoading && user)
-            router.replace("/courses"); // Redirect if already logged in
+            router.replace("/dashboard"); // Redirect if already logged in
 
     }, [isLoading, user, router]);
 

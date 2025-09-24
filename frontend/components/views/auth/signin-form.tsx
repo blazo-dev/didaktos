@@ -22,7 +22,7 @@ export function SignInForm() {
 
     const onSubmit = (data: SignInRequest) => {
         signInMutation.mutate(data, {
-            onSuccess: () => router.push("/courses"),
+            onSuccess: () => router.push("/dashboard"),
         });
     };
 

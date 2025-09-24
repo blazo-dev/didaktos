@@ -10,7 +10,7 @@ interface ProtectedPageProps {
     children: React.ReactNode;
 }
 
-function ProtectedPage({ children, loadingText = "Loading..." }: ProtectedPageProps) {
+function ProtectedPage({ children, loadingText = "Checking credentials..." }: ProtectedPageProps) {
     const { user, isLoading } = useAuth();
     const router = useRouter();
 
