@@ -67,7 +67,12 @@ namespace didaktos.backend.Controllers
 
             var result = await _authService.LoginAsync(request);
 
-            return result.Success ? Ok(result) : BadRequest(result);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+
+            return BadRequest(result);
         }
 
         [HttpGet("me")]
