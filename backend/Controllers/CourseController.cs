@@ -122,7 +122,7 @@ namespace didaktos.backend.Controllers
             };
         }
 
-        [HttpPost]
+        [HttpPost("enrollments")]
         [Authorize]
         public async Task<IActionResult> CreateEnrollment(
             [FromBody] EnrollmentAddRequestDto request
@@ -146,7 +146,7 @@ namespace didaktos.backend.Controllers
                 );
             }
 
-            var result = await _enrollmentService.CreateEnrollmentAsync(request);
+            var result = await _enrollmentService.CreateEnrollmentAsync(request, userId);
 
             if (result.Success)
             {
@@ -156,7 +156,7 @@ namespace didaktos.backend.Controllers
             return BadRequest(result);
         }
 
-        [HttpGet]
+        [HttpGet("enrollments")]
         public async Task<IActionResult> GetEnrollments()
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -187,7 +187,7 @@ namespace didaktos.backend.Controllers
             return BadRequest(result);
         }
 
-        [HttpPut]
+        [HttpPut("enrollments")]
         public async Task<IActionResult> CloseEnrollments([FromBody] Guid CourseId)
         {
             if (!ModelState.IsValid)
@@ -216,15 +216,12 @@ namespace didaktos.backend.Controllers
 
             var result = await _enrollmentService.CloseEnrollmentsAsync(CourseId, userId);
 
-            return result.Success switch
+            if (result.Success)
             {
-                true => Ok(result),
-                false when result.Message == "You are already enrolled in this course" => NotFound(
-                    result
-                ),
-                false when result.Message.Contains("Access denied") => Forbid(),
-                _ => BadRequest(result),
-            };
+                return Ok(result);
+            }
+
+            return BadRequest(result);
         }
     }
 }

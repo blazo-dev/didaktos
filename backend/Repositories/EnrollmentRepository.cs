@@ -20,8 +20,8 @@ public class EnrollmentRepository : IEnrollmentRepository
         await connection.OpenAsync();
         const string sql =
             @"
-                INSERT INTO courses (id, status, student_id, course_id, created_at, updated_at)
-                VALUES (@id, @status, @student_id, @course_id, @createdAt, @updatedAt)
+                INSERT INTO enrollments (id, status, student_id, course_id, created_at, updated_at)
+                VALUES (@id, @status, @student_id, @course_id, @created_At, @updated_At)
                 RETURNING id, status, student_id, course_id, created_at, updated_at";
         using var command = new NpgsqlCommand(sql, connection);
         command.Parameters.AddWithValue("@id", enrollment.Id);
@@ -50,12 +50,12 @@ public class EnrollmentRepository : IEnrollmentRepository
         await connection.OpenAsync();
         const string sql =
             @"
-                SELECT id, student_id, course_id 
+                SELECT id, student_id, course_id, status 
                 FROM enrollments
-                WHERE id = @id AND status = 'enrolled'";
+                WHERE student_id = @userId AND status = 'active'";
 
         using var command = new NpgsqlCommand(sql, connection);
-        command.Parameters.AddWithValue("@id", userId);
+        command.Parameters.AddWithValue("@userId", userId);
 
         var enrollment = new List<EnrollmentReadResponseDto>();
         using var reader = await command.ExecuteReaderAsync();
@@ -68,6 +68,7 @@ public class EnrollmentRepository : IEnrollmentRepository
                     Id = (Guid)reader["id"],
                     StudentId = (Guid)reader["student_id"],
                     CourseId = (Guid)reader["course_id"],
+                    Status = (String)reader["status"],
                 }
             );
         }
@@ -83,7 +84,7 @@ public class EnrollmentRepository : IEnrollmentRepository
         const string sql =
             @"
                 UPDATE enrollments 
-                SET status = 'closed', updated_at = @updatedAt
+                SET status = 'completed', updated_at = @updatedAt
                 WHERE course_id = @id
                 RETURNING status, course_id";
 

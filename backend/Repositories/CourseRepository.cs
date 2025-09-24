@@ -95,7 +95,7 @@ namespace didaktos.backend.Repositories
                 UPDATE courses 
                 SET description = @description, title = @title, updated_at = @updatedAt
                 WHERE id = @id
-                RETURNING title, course_id, description";
+                RETURNING title, id, description";
 
             using var command = new NpgsqlCommand(sql, connection);
             command.Parameters.AddWithValue("@id", Course.Id);
@@ -108,13 +108,57 @@ namespace didaktos.backend.Repositories
             {
                 return new CourseEditDto
                 {
-                    Title = (string)reader["status"],
-                    Id = (Guid)reader["course_id"],
+                    Title = (string)reader["title"],
+                    Id = (Guid)reader["id"],
                     Description = (string)reader["description"],
                 };
             }
 
-            throw new InvalidOperationException("Failed to close enrollment");
+            throw new InvalidOperationException("Failed to update course");
+        }
+
+        public async Task<bool> CourseExistsAsync(Guid courseId)
+        {
+            using var connection = new NpgsqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            const string sql = "SELECT COUNT(1) FROM courses WHERE id = @courseId";
+            using var command = new NpgsqlCommand(sql, connection);
+            command.Parameters.AddWithValue("@courseId", courseId);
+
+            var count = await command.ExecuteScalarAsync();
+            return Convert.ToInt32(count) > 0;
+        }
+
+        public async Task<bool> IsUserInstructorOfCourseAsync(Guid userId, Guid courseId)
+        {
+            using var connection = new NpgsqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            const string sql =
+                "SELECT COUNT(1) FROM courses WHERE id = @courseId AND instructor_id = @userId";
+            using var command = new NpgsqlCommand(sql, connection);
+            command.Parameters.AddWithValue("@courseId", courseId);
+            command.Parameters.AddWithValue("@userId", userId);
+
+            var count = await command.ExecuteScalarAsync();
+            return Convert.ToInt32(count) > 0;
+        }
+
+        public async Task<bool> IsUserEnrolledInCourseAsync(Guid userId, Guid courseId)
+        {
+            using var connection = new NpgsqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            // Assuming there's an enrollments table - you can adjust this based on your actual structure
+            const string sql =
+                "SELECT COUNT(1) FROM enrollments WHERE student_id = @userId AND course_id = @courseId";
+            using var command = new NpgsqlCommand(sql, connection);
+            command.Parameters.AddWithValue("@userId", userId);
+            command.Parameters.AddWithValue("@courseId", courseId);
+
+            var count = await command.ExecuteScalarAsync();
+            return Convert.ToInt32(count) > 0;
         }
     }
 }

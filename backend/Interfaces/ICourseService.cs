@@ -11,6 +11,6 @@ namespace didaktos.backend.Interfaces
             Guid instructorId
         );
 
-        Task<HttpResponseDto<object>> EditCourseAsync(CourseEditDto Course, Guid UserId);
+        Task<HttpResponseDto<object>> EditCourseAsync(CourseEditDto course, Guid userId);
     }
 }

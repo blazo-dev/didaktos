@@ -82,13 +82,13 @@ namespace didaktos.backend.Services
         }
 
         public async Task<HttpResponseDto<object>> EditCourseAsync(
-            CourseEditDto Course,
-            Guid UserId
+            CourseEditDto course,
+            Guid userId
         )
         {
             try
             {
-                if (!await _courseRepository.IsUserInstructorOfCourseAsync(UserId, Course.Id))
+                if (!await _courseRepository.IsUserInstructorOfCourseAsync(userId, course.Id))
                 {
                     return new HttpResponseDto<object>
                     {
@@ -97,7 +97,7 @@ namespace didaktos.backend.Services
                     };
                 }
 
-                var updatedcourseInfo = await _courseRepository.UpdateCourseAsync(Course);
+                var updatedcourseInfo = await _courseRepository.UpdateCourseAsync(course);
 
                 var courseEditDto = new CourseEditDto
                 {
@@ -109,7 +109,7 @@ namespace didaktos.backend.Services
                 return new HttpResponseDto<object>
                 {
                     Success = true,
-                    Message = "Enrollments closed Successfully",
+                    Message = "Course updated Successfully",
                     Data = courseEditDto,
                 };
             }
@@ -118,7 +118,7 @@ namespace didaktos.backend.Services
                 return new HttpResponseDto<object>
                 {
                     Success = false,
-                    Message = "Failed to close enrollments",
+                    Message = "Failed to update course",
                     Errors = new { exception = ex.Message },
                 };
             }

@@ -7,14 +7,20 @@ namespace didaktos.backend.Services
     public class EnrollmentService : IEnrollmentService
     {
         private readonly IEnrollmentRepository _enrollmentRepository;
+        private readonly ICourseRepository _courseRepository;
 
-        public EnrollmentService(IEnrollmentRepository enrollmentRepository)
+        public EnrollmentService(
+            IEnrollmentRepository enrollmentRepository,
+            ICourseRepository courseRepository
+        )
         {
             _enrollmentRepository = enrollmentRepository;
+            _courseRepository = courseRepository;
         }
 
         public async Task<HttpResponseDto<object>> CreateEnrollmentAsync(
-            EnrollmentAddRequestDto request
+            EnrollmentAddRequestDto request,
+            Guid studentId
         )
         {
             try
@@ -22,12 +28,39 @@ namespace didaktos.backend.Services
                 var enrollment = new Enrollment
                 {
                     Id = Guid.NewGuid(),
-                    Status = "enrolled",
-                    StudentId = request.StudentId,
+                    Status = "active",
+                    StudentId = studentId,
                     CourseId = request.CourseId,
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow,
                 };
+
+                if (
+                    await _courseRepository.IsUserInstructorOfCourseAsync(
+                        studentId,
+                        request.CourseId
+                    )
+                )
+                {
+                    return new HttpResponseDto<object>
+                    {
+                        Success = false,
+                        Message = "User cannot be enrolled in their own course",
+                    };
+                }
+
+                var existingModule = await _courseRepository.IsUserEnrolledInCourseAsync(
+                    studentId,
+                    request.CourseId
+                );
+                if (existingModule)
+                {
+                    return new HttpResponseDto<object>
+                    {
+                        Success = false,
+                        Message = "You are already enrolled in this course",
+                    };
+                }
 
                 var createdEnrollment = await _enrollmentRepository.InsertEnrollmentAsync(
                     enrollment
@@ -81,24 +114,11 @@ namespace didaktos.backend.Services
             }
         }
 
-        public async Task<HttpResponseDto<object>> CloseEnrollmentsAsync(Guid CourseId, Guid UserId)
+        public async Task<HttpResponseDto<object>> CloseEnrollmentsAsync(Guid courseId, Guid userId)
         {
             try
             {
-                var existingModule = await _enrollmentRepository.IsUserEnrolledInCourseAsync(
-                    UserId,
-                    CourseId
-                );
-                if (!(existingModule == false))
-                {
-                    return new HttpResponseDto<object>
-                    {
-                        Success = false,
-                        Message = "You are already enrolled in this course",
-                    };
-                }
-
-                if (!await _courseRepository.IsUserInstructorOfCourseAsync(UserId, CourseId))
+                if (!await _courseRepository.IsUserInstructorOfCourseAsync(userId, courseId))
                 {
                     return new HttpResponseDto<object>
                     {
@@ -108,7 +128,7 @@ namespace didaktos.backend.Services
                 }
 
                 var updatedEnrollmentInfo = await _enrollmentRepository.UpdateEnrollmentsAsync(
-                    CourseId
+                    courseId
                 );
 
                 var moduleDto = new EnrollmentCloseResponseDto
