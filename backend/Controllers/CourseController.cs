@@ -83,7 +83,7 @@ namespace didaktos.backend.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> EditCourse([FromBody] CourseEditRequestDto request)
+        public async Task<IActionResult> EditCourse([FromBody] CourseEditDto request)
         {
             if (!ModelState.IsValid)
             {
