@@ -82,7 +82,7 @@ namespace didaktos.backend.Repositories
                     {
                         Id = (Guid)reader["id"],
                         Title = (string)reader["title"],
-                        Description = (string?)reader["description"],
+                        Description = reader["description"] as string,
                         Instructor = new UserDto
                         {
                             Id = (Guid)reader["instructor_id"],
