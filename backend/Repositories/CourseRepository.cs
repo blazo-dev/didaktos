@@ -64,36 +64,168 @@ namespace didaktos.backend.Repositories
             using var connection = new NpgsqlConnection(_connectionString);
             await connection.OpenAsync();
 
-            const string sql =
+            // Get all courses with their instructors
+            const string coursesSql =
                 @"
                 SELECT courses.id, title, description, instructor_id, name, email  
                 FROM courses
-                JOIN users ON courses.instructor_id = users.id;";
+                JOIN users ON courses.instructor_id = users.id
+                ORDER BY courses.title;";
 
-            using var command = new NpgsqlCommand(sql, connection);
+            using var command = new NpgsqlCommand(coursesSql, connection);
+            var coursesDict = new Dictionary<Guid, CourseReadResponseDto>();
 
-            var courses = new List<CourseReadResponseDto>();
-            using var reader = await command.ExecuteReaderAsync();
+            using var coursesCommand = new NpgsqlCommand(coursesSql, connection);
+            using var coursesReader = await coursesCommand.ExecuteReaderAsync();
 
-            while (await reader.ReadAsync())
+            while (await coursesReader.ReadAsync())
             {
-                courses.Add(
-                    new CourseReadResponseDto
+                var courseId = (Guid)coursesReader["id"];
+                if (!coursesDict.ContainsKey(courseId))
+                {
+                    var courseDto = new CourseReadResponseDto
                     {
-                        Id = (Guid)reader["id"],
-                        Title = (string)reader["title"],
-                        Description = reader["description"] as string,
+                        Id = courseId,
+                        Title = (string)coursesReader["title"],
+                        Description = coursesReader["description"] as string,
                         Instructor = new UserDto
                         {
-                            Id = (Guid)reader["instructor_id"],
-                            Name = (string)reader["name"],
-                            Email = (string)reader["email"],
+                            Id = (Guid)coursesReader["instructor_id"],
+                            Name = (string)coursesReader["name"],
+                            Email = (string)coursesReader["email"],
                         },
-                    }
-                );
+                        Modules = new List<ModuleDto>(),
+                    };
+                    coursesDict[courseId] = courseDto;
+                }
+            }
+            await coursesReader.CloseAsync();
+
+            if (coursesDict.Count == 0)
+            {
+                return new List<CourseReadResponseDto>();
             }
 
-            return courses;
+            // Get all modules for the retrieved courses
+            var courseIds = coursesDict.Keys.ToList();
+            var courseIdsParams = string.Join(
+                ", ",
+                courseIds.Select((id, index) => $"@courseId{index}")
+            );
+
+            var modulesSql =
+                $@"
+                SELECT id, title, course_id
+                FROM modules
+                WHERE course_id IN ({courseIdsParams})
+                ORDER BY title;";
+
+            var modulesDict = new Dictionary<Guid, ModuleDto>();
+
+            using var modulesCommand = new NpgsqlCommand(modulesSql, connection);
+            for (int i = 0; i < courseIds.Count; i++)
+            {
+                modulesCommand.Parameters.AddWithValue($"@courseId{i}", courseIds[i]);
+            }
+
+            using var modulesReader = await modulesCommand.ExecuteReaderAsync();
+            while (await modulesReader.ReadAsync())
+            {
+                var moduleId = (Guid)modulesReader["id"];
+                var courseId = (Guid)modulesReader["course_id"];
+                var moduleDto = new ModuleDto
+                {
+                    Id = moduleId,
+                    Title = (string)modulesReader["title"],
+                    CourseId = courseId,
+                    Lessons = new List<LessonDto>(),
+                    Assignments = new List<AssignmentDto>(),
+                };
+                modulesDict[moduleId] = moduleDto;
+
+                if (coursesDict.ContainsKey(courseId))
+                {
+                    coursesDict[courseId].Modules.Add(moduleDto);
+                }
+            }
+            await modulesReader.CloseAsync();
+
+            if (modulesDict.Count == 0)
+            {
+                return coursesDict.Values.ToList();
+            }
+
+            // Get all lessons for the retrieved modules
+            var moduleIds = modulesDict.Keys.ToList();
+            var moduleIdsParams = string.Join(
+                ", ",
+                moduleIds.Select((id, index) => $"@moduleId{index}")
+            );
+
+            var lessonsSql =
+                $@"
+                SELECT id, title, content, module_id
+                FROM lessons
+                WHERE module_id IN ({moduleIdsParams})
+                ORDER BY title;";
+
+            using var lessonsCommand = new NpgsqlCommand(lessonsSql, connection);
+            for (int i = 0; i < moduleIds.Count; i++)
+            {
+                lessonsCommand.Parameters.AddWithValue($"@moduleId{i}", moduleIds[i]);
+            }
+
+            using var lessonsReader = await lessonsCommand.ExecuteReaderAsync();
+            while (await lessonsReader.ReadAsync())
+            {
+                var lessonDto = new LessonDto
+                {
+                    Id = (Guid)lessonsReader["id"],
+                    Title = (string)lessonsReader["title"],
+                    Content = (string)lessonsReader["content"],
+                    ModuleId = (Guid)lessonsReader["module_id"],
+                };
+                var moduleId = lessonDto.ModuleId;
+                if (modulesDict.ContainsKey(moduleId))
+                {
+                    modulesDict[moduleId].Lessons.Add(lessonDto);
+                }
+            }
+            await lessonsReader.CloseAsync();
+
+            // Get all assignments for the retrieved modules
+            var assignmentsSql =
+                $@"
+                SELECT id, title, description, module_id, due_date
+                FROM assignments
+                WHERE module_id IN ({moduleIdsParams})
+                ORDER BY title;";
+
+            using var assignmentsCommand = new NpgsqlCommand(assignmentsSql, connection);
+            for (int i = 0; i < moduleIds.Count; i++)
+            {
+                assignmentsCommand.Parameters.AddWithValue($"@moduleId{i}", moduleIds[i]);
+            }
+
+            using var assignmentsReader = await assignmentsCommand.ExecuteReaderAsync();
+            while (await assignmentsReader.ReadAsync())
+            {
+                var assignmentDto = new AssignmentDto
+                {
+                    Id = (Guid)assignmentsReader["id"],
+                    Title = (string)assignmentsReader["title"],
+                    Description = assignmentsReader["description"] as string ?? string.Empty,
+                    ModuleId = (Guid)assignmentsReader["module_id"],
+                    DueDate = assignmentsReader["due_date"] as DateTime?,
+                };
+                var moduleId = assignmentDto.ModuleId;
+                if (modulesDict.ContainsKey(moduleId))
+                {
+                    modulesDict[moduleId].Assignments.Add(assignmentDto);
+                }
+            }
+
+            return coursesDict.Values.ToList();
         }
 
         public async Task<Course?> GetCourseByIdAsync(Guid courseId)
