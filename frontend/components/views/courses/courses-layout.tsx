@@ -61,7 +61,7 @@ export function CoursesLayout() {
                 {/* Header */}
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-3xl font-bold">My Courses</h1>
+                        <h1 className="text-3xl font-bold">Courses</h1>
                         <p className="text-muted-foreground">
                             Manage and continue your learning journey
                         </p>
@@ -95,33 +95,27 @@ export function CoursesLayout() {
                     <div className="flex items-center gap-2">
                         <Filter className="h-4 w-4 text-muted-foreground" />
                         <div className="flex bg-muted rounded-lg p-1">
-                            <button
+                            <Button
+                                variant={"ghost"}
                                 onClick={() => setFilterType('all')}
-                                className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${filterType === 'all'
-                                    ? 'bg-background text-foreground shadow-sm'
-                                    : 'text-muted-foreground hover:text-foreground'
-                                    }`}
+                                className={`${filterType === 'all' ? 'text-foreground shadow-sm' : ''}`}
                             >
                                 All Courses
-                            </button>
-                            <button
+                            </Button>
+                            <Button
+                                variant={"ghost"}
                                 onClick={() => setFilterType('owned')}
-                                className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${filterType === 'owned'
-                                    ? 'bg-background text-foreground shadow-sm'
-                                    : 'text-muted-foreground hover:text-foreground'
-                                    }`}
+                                className={`${filterType === 'owned' ? 'text-foreground shadow-sm' : ''}`}
                             >
                                 My Courses ({ownedCoursesCount})
-                            </button>
-                            <button
+                            </Button>
+                            <Button
+                                variant={"ghost"}
                                 onClick={() => setFilterType('enrolled')}
-                                className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${filterType === 'enrolled'
-                                    ? 'bg-background text-foreground shadow-sm'
-                                    : 'text-muted-foreground hover:text-foreground'
-                                    }`}
+                                className={`${filterType === 'enrolled' ? 'text-foreground shadow-sm' : ''}`}
                             >
                                 Enrolled ({enrolledCoursesCount})
-                            </button>
+                            </Button>
                         </div>
                     </div>
 
