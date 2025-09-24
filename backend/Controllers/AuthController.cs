@@ -10,12 +10,12 @@ namespace didaktos.backend.Controllers
     [Route("api/auth")]
     public class AuthController : ControllerBase
     {
-        private readonly IAuthService _authService;
+        private readonly IUserService _userService;
         private readonly IUserRepository _userRepository;
 
-        public AuthController(IAuthService authService, IUserRepository userRepository)
+        public AuthController(IUserService userService, IUserRepository userRepository)
         {
-            _authService = authService;
+            _userService = userService;
             _userRepository = userRepository;
         }
 
@@ -36,7 +36,7 @@ namespace didaktos.backend.Controllers
                 );
             }
 
-            var result = await _authService.RegisterAsync(request);
+            var result = await _userService.RegisterAsync(request);
 
             if (result.Success)
             {
@@ -65,7 +65,7 @@ namespace didaktos.backend.Controllers
                 );
             }
 
-            var result = await _authService.LoginAsync(request);
+            var result = await _userService.LoginAsync(request);
 
             if (result.Success)
             {

@@ -7,20 +7,24 @@ using Microsoft.AspNetCore.Mvc;
 namespace didaktos.backend.Controllers
 {
     [ApiController]
-    [Route("api/courses")]
+    [Route("api/")]
     [Authorize] // Require authentication for all endpoints
     public class CourseContentController : ControllerBase
     {
         private readonly IModuleService _moduleService;
         private readonly ILessonService _lessonService;
 
-        // private readonly IAssignmentService _assignmentService;
+        private readonly IAssignmentService _assignmentService;
 
-        public CourseContentController(IModuleService moduleService, ILessonService lessonService)
+        public CourseContentController(
+            IModuleService moduleService,
+            ILessonService lessonService,
+            IAssignmentService assignmentService
+        )
         {
             _moduleService = moduleService;
             _lessonService = lessonService;
-            // _assignmentService = assignmentService;
+            _assignmentService = assignmentService;
         }
 
         #region Module Endpoints
@@ -30,7 +34,7 @@ namespace didaktos.backend.Controllers
         /// </summary>
         /// <param name="id">Course ID</param>
         /// <returns>List of modules for the course</returns>
-        [HttpGet("{id}/modules")]
+        [HttpGet("courses/{id}/modules")]
         public async Task<ActionResult<HttpResponseDto<List<ModuleDto>>>> GetCourseModules(Guid id)
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -61,7 +65,7 @@ namespace didaktos.backend.Controllers
         /// <param name="id">Course ID</param>
         /// <param name="request">Module creation request</param>
         /// <returns>Created module</returns>
-        [HttpPost("{id}/modules")]
+        [HttpPost("courses/{id}/modules")]
         public async Task<ActionResult<HttpResponseDto<ModuleDto>>> CreateCourseModule(
             Guid id,
             [FromBody] CreateModuleRequestDto request
@@ -265,7 +269,7 @@ namespace didaktos.backend.Controllers
         /// <param name="lessonId">Lesson ID</param>
         /// <param name="request">Lesson update request</param>
         /// <returns>Updated lesson</returns>
-        [HttpPut("lessons/{lessonId}")]
+        [HttpPut("modules/lessons/{lessonId}")]
         public async Task<ActionResult<HttpResponseDto<LessonResponseDto>>> UpdateLesson(
             Guid lessonId,
             [FromBody] UpdateLessonRequestDto request
@@ -310,7 +314,7 @@ namespace didaktos.backend.Controllers
         /// </summary>
         /// <param name="lessonId">Lesson ID</param>
         /// <returns>Success response</returns>
-        [HttpDelete("lessons/{lessonId}")]
+        [HttpDelete("modules/lessons/{lessonId}")]
         public async Task<ActionResult<HttpResponseDto<object>>> DeleteLesson(Guid lessonId)
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -337,13 +341,165 @@ namespace didaktos.backend.Controllers
 
         #endregion
 
-        #region Assignment Endpoints (Placeholder for future implementation)
+        #region Assignment Endpoints
 
-        // TODO: Implement assignment endpoints
-        // [HttpGet("modules/{moduleId}/assignments")]
-        // [HttpPost("modules/{moduleId}/assignments")]
-        // [HttpPut("assignments/{assignmentId}")]
-        // [HttpDelete("assignments/{assignmentId}")]
+        /// <summary>
+        /// Get all assignments for a specific module
+        /// </summary>
+        /// <param name="moduleId">Module ID</param>
+        /// <returns>List of assignments for the module</returns>
+        [HttpGet("modules/{moduleId}/assignments")]
+        public async Task<ActionResult<HttpResponseDto<List<AssignmentDto>>>> GetModuleAssignments(
+            Guid moduleId
+        )
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized(
+                    new HttpResponseDto<List<AssignmentDto>>
+                    {
+                        Success = false,
+                        Message = "Invalid or missing authentication token",
+                    }
+                );
+            }
+
+            var result = await _assignmentService.GetModuleAssignmentsAsync(moduleId, userId);
+
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+
+            return BadRequest(result);
+        }
+
+        /// <summary>
+        /// Create a new assignment in a module
+        /// </summary>
+        /// <param name="moduleId">Module ID</param>
+        /// <param name="request">Assignment creation request</param>
+        /// <returns>Created assignment</returns>
+        [HttpPost("modules/{moduleId}/assignments")]
+        public async Task<ActionResult<HttpResponseDto<AssignmentDto>>> CreateAssignment(
+            Guid moduleId,
+            [FromBody] CreateAssignmentRequestDto request
+        )
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(
+                    new HttpResponseDto<AssignmentDto>
+                    {
+                        Success = false,
+                        Message = "Invalid request data",
+                        Errors = ModelState,
+                    }
+                );
+            }
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized(
+                    new HttpResponseDto<AssignmentDto>
+                    {
+                        Success = false,
+                        Message = "Invalid or missing authentication token",
+                    }
+                );
+            }
+
+            var result = await _assignmentService.CreateAssignmentAsync(moduleId, request, userId);
+
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+
+            return BadRequest(result);
+        }
+
+        /// <summary>
+        /// Update an assignment's title and content
+        /// </summary>
+        /// <param name="assignmentId">Assignment ID</param>
+        /// <param name="request">Assignment update request</param>
+        /// <returns>Updated assignment</returns>
+        [HttpPut("modules/assignments/{assignmentId}")]
+        public async Task<ActionResult<HttpResponseDto<AssignmentResponseDto>>> UpdateAssignment(
+            Guid assignmentId,
+            [FromBody] UpdateAssignmentRequestDto request
+        )
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(
+                    new HttpResponseDto<AssignmentResponseDto>
+                    {
+                        Success = false,
+                        Message = "Invalid request data",
+                        Errors = ModelState,
+                    }
+                );
+            }
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized(
+                    new HttpResponseDto<AssignmentResponseDto>
+                    {
+                        Success = false,
+                        Message = "Invalid or missing authentication token",
+                    }
+                );
+            }
+
+            var result = await _assignmentService.UpdateAssignmentAsync(
+                assignmentId,
+                request,
+                userId
+            );
+
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+
+            return BadRequest(result);
+        }
+
+        /// <summary>
+        /// Delete an assignment
+        /// </summary>
+        /// <param name="assignmentId">Assignment ID</param>
+        /// <returns>Success response</returns>
+        [HttpDelete("modules/assignments/{assignmentId}")]
+        public async Task<ActionResult<HttpResponseDto<object>>> DeleteAssignment(Guid assignmentId)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized(
+                    new HttpResponseDto<object>
+                    {
+                        Success = false,
+                        Message = "Invalid or missing authentication token",
+                    }
+                );
+            }
+
+            var result = await _assignmentService.DeleteAssignmentAsync(assignmentId, userId);
+
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+
+            return BadRequest(result);
+        }
 
         #endregion
     }

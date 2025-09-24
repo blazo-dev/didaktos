@@ -9,7 +9,7 @@ namespace didaktos.backend.Models.DTOs
         public string Title { get; set; } = string.Empty;
 
         [Required]
-        [StringLength(255, MinimumLength = 1)]
+        [MinLength(1)]
         public string Content { get; set; } = string.Empty;
     }
 }
