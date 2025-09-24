@@ -94,6 +94,7 @@ namespace didaktos.backend.Repositories
                             Name = (string)coursesReader["name"],
                             Email = (string)coursesReader["email"],
                         },
+                        Enrollments = new List<Guid>(),
                         Modules = new List<ModuleDto>(),
                     };
                     coursesDict[courseId] = courseDto;
@@ -222,6 +223,31 @@ namespace didaktos.backend.Repositories
                 if (modulesDict.ContainsKey(moduleId))
                 {
                     modulesDict[moduleId].Assignments.Add(assignmentDto);
+                }
+            }
+            await assignmentsReader.CloseAsync();
+
+            // Get all enrollments for the retrieved courses
+            var enrollmentsSql =
+                $@"
+                SELECT student_id, course_id
+                FROM enrollments
+                WHERE course_id IN ({courseIdsParams}) AND status = 'active';";
+
+            using var enrollmentsCommand = new NpgsqlCommand(enrollmentsSql, connection);
+            for (int i = 0; i < courseIds.Count; i++)
+            {
+                enrollmentsCommand.Parameters.AddWithValue($"@courseId{i}", courseIds[i]);
+            }
+
+            using var enrollmentsReader = await enrollmentsCommand.ExecuteReaderAsync();
+            while (await enrollmentsReader.ReadAsync())
+            {
+                var courseId = (Guid)enrollmentsReader["course_id"];
+                var studentId = (Guid)enrollmentsReader["student_id"];
+                if (coursesDict.ContainsKey(courseId))
+                {
+                    coursesDict[courseId].Enrollments.Add(studentId);
                 }
             }
 
