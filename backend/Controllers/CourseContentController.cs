@@ -47,13 +47,12 @@ namespace didaktos.backend.Controllers
 
             var result = await _moduleService.GetCourseModulesAsync(id, userId);
 
-            return result.Success switch
+            if (result.Success)
             {
-                true => Ok(result),
-                false when result.Message == "Course not found" => NotFound(result),
-                false when result.Message.Contains("Access denied") => Forbid(),
-                _ => BadRequest(result),
-            };
+                return Ok(result);
+            }
+
+            return BadRequest(result);
         }
 
         /// <summary>
@@ -94,16 +93,12 @@ namespace didaktos.backend.Controllers
 
             var result = await _moduleService.CreateModuleAsync(id, request, userId);
 
-            return result.Success switch
+            if (result.Success)
             {
-                true => CreatedAtAction(nameof(GetCourseModules), new { id }, result),
-                false when result.Message == "Course not found" => NotFound(result),
-                false
-                    when result.Message.Contains(
-                        "Access denied. Only course instructors can create modules"
-                    ) => Forbid(),
-                _ => BadRequest(result),
-            };
+                return Ok(result);
+            }
+
+            return BadRequest(result);
         }
 
         /// <summary>
@@ -144,13 +139,12 @@ namespace didaktos.backend.Controllers
 
             var result = await _moduleService.UpdateModuleAsync(moduleId, request, userId);
 
-            return result.Success switch
+            if (result.Success)
             {
-                true => Ok(result),
-                false when result.Message == "Module not found" => NotFound(result),
-                false when result.Message.Contains("Access denied") => Forbid(),
-                _ => BadRequest(result),
-            };
+                return Ok(result);
+            }
+
+            return BadRequest(result);
         }
 
         /// <summary>
@@ -175,13 +169,12 @@ namespace didaktos.backend.Controllers
 
             var result = await _moduleService.DeleteModuleAsync(moduleId, userId);
 
-            return result.Success switch
+            if (result.Success)
             {
-                true => Ok(result),
-                false when result.Message == "Module not found" => NotFound(result),
-                false when result.Message.Contains("Access denied") => Forbid(),
-                _ => BadRequest(result),
-            };
+                return Ok(result);
+            }
+
+            return BadRequest(result);
         }
 
         #endregion
@@ -212,13 +205,12 @@ namespace didaktos.backend.Controllers
 
             var result = await _lessonService.GetModuleLessonsAsync(moduleId, userId);
 
-            return result.Success switch
+            if (result.Success)
             {
-                true => Ok(result),
-                false when result.Message == "Module not found" => NotFound(result),
-                false when result.Message.Contains("Access denied") => Forbid(),
-                _ => BadRequest(result),
-            };
+                return Ok(result);
+            }
+
+            return BadRequest(result);
         }
 
         /// <summary>
@@ -259,13 +251,12 @@ namespace didaktos.backend.Controllers
 
             var result = await _lessonService.CreateLessonAsync(moduleId, request, userId);
 
-            return result.Success switch
+            if (result.Success)
             {
-                true => CreatedAtAction(nameof(GetModuleLessons), new { moduleId }, result),
-                false when result.Message == "Module not found" => NotFound(result),
-                false when result.Message.Contains("Access denied") => Forbid(),
-                _ => BadRequest(result),
-            };
+                return Ok(result);
+            }
+
+            return BadRequest(result);
         }
 
         /// <summary>
@@ -306,13 +297,12 @@ namespace didaktos.backend.Controllers
 
             var result = await _lessonService.UpdateLessonAsync(lessonId, request, userId);
 
-            return result.Success switch
+            if (result.Success)
             {
-                true => Ok(result),
-                false when result.Message == "Lesson not found" => NotFound(result),
-                false when result.Message.Contains("Access denied") => Forbid(),
-                _ => BadRequest(result),
-            };
+                return Ok(result);
+            }
+
+            return BadRequest(result);
         }
 
         /// <summary>
@@ -337,13 +327,12 @@ namespace didaktos.backend.Controllers
 
             var result = await _lessonService.DeleteLessonAsync(lessonId, userId);
 
-            return result.Success switch
+            if (result.Success)
             {
-                true => Ok(result),
-                false when result.Message == "Lesson not found" => NotFound(result),
-                false when result.Message.Contains("Access denied") => Forbid(),
-                _ => BadRequest(result),
-            };
+                return Ok(result);
+            }
+
+            return BadRequest(result);
         }
 
         #endregion

@@ -80,5 +80,48 @@ namespace didaktos.backend.Services
                 };
             }
         }
+
+        public async Task<HttpResponseDto<object>> EditCourseAsync(
+            CourseEditDto course,
+            Guid userId
+        )
+        {
+            try
+            {
+                if (!await _courseRepository.IsUserInstructorOfCourseAsync(userId, course.Id))
+                {
+                    return new HttpResponseDto<object>
+                    {
+                        Success = false,
+                        Message = "Access denied. Only course instructors can edit the course",
+                    };
+                }
+
+                var updatedcourseInfo = await _courseRepository.UpdateCourseAsync(course);
+
+                var courseEditDto = new CourseEditDto
+                {
+                    Title = updatedcourseInfo.Title,
+                    Id = updatedcourseInfo.Id,
+                    Description = updatedcourseInfo.Description,
+                };
+
+                return new HttpResponseDto<object>
+                {
+                    Success = true,
+                    Message = "Course updated Successfully",
+                    Data = courseEditDto,
+                };
+            }
+            catch (Exception ex)
+            {
+                return new HttpResponseDto<object>
+                {
+                    Success = false,
+                    Message = "Failed to update course",
+                    Errors = new { exception = ex.Message },
+                };
+            }
+        }
     }
 }
