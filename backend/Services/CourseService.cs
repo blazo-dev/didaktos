@@ -93,7 +93,7 @@ namespace didaktos.backend.Services
                     return new HttpResponseDto<object>
                     {
                         Success = false,
-                        Message = "Access denied. Only course instructors can close the course",
+                        Message = "Access denied. Only course instructors can edit the course",
                     };
                 }
 

@@ -69,7 +69,7 @@ namespace didaktos.backend.Services
                 return new HttpResponseDto<object>
                 {
                     Success = true,
-                    Message = "Enrollment successfull",
+                    Message = "Enrollment successful",
                     Data = new EnrollmentAddResponseDto
                     {
                         Id = createdEnrollment.Id,

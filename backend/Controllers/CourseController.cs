@@ -83,6 +83,7 @@ namespace didaktos.backend.Controllers
         }
 
         [HttpPut]
+        [Authorize]
         public async Task<IActionResult> EditCourse([FromBody] CourseEditDto request)
         {
             if (!ModelState.IsValid)
@@ -154,24 +155,13 @@ namespace didaktos.backend.Controllers
         }
 
         [HttpGet("enrollments")]
+        [Authorize]
         public async Task<IActionResult> GetEnrollments()
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
             {
                 return Unauthorized();
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(
-                    new HttpResponseDto<object>
-                    {
-                        Success = false,
-                        Message = "Invalid request data",
-                        Errors = ModelState,
-                    }
-                );
             }
 
             var result = await _enrollmentService.GetEnrollmentsAsync(userId);
@@ -185,6 +175,7 @@ namespace didaktos.backend.Controllers
         }
 
         [HttpPut("enrollments")]
+        [Authorize]
         public async Task<IActionResult> CloseEnrollments([FromBody] Guid CourseId)
         {
             if (!ModelState.IsValid)
