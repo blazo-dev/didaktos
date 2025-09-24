@@ -11,8 +11,7 @@ export interface Course {
     modules: Module[];
     createdAt: string;
     updatedAt: string;
-    status: "active" | "inactive" | "completed";
-    enrollmentCode?: string;
+    status: "active" | "draft" | "completed" | "archived";
 }
 
 export interface Module {

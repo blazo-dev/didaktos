@@ -17,7 +17,7 @@ const infoLinks = [
 
 export function Sidebar() {
   return (
-    <aside className="w-64 h-full flex flex-col bg-surface border-r border-surface-border">
+    <aside className="sticky top-18 w-full flex flex-col">
       <div className="space-y-4 p-4">
         <h3 className="text-sm font-medium text-secondary mb-4">General</h3>
 

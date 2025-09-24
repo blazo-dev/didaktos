@@ -14,7 +14,7 @@ export function Header({ toggleSidebar, showSidebar = false, isLanding = false }
   const { user } = useAuthStore();
 
   return (
-    <header className="g-container gap-6 border-b border-border bg-surface">
+    <header className="sticky top-0 g-container gap-6 border-b border-border bg-surface z-50">
       <div className="w-full py-4 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
           <div className="w-8 h-8 bg-secondary rounded-lg flex items-center justify-center">

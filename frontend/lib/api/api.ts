@@ -1,3 +1,5 @@
+import { useAuthStore } from "@/stores/auth-store";
+
 export const API_URL =
     process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
@@ -20,3 +22,9 @@ export async function apiFetch<T>(
 
     return res.json();
 }
+
+// Helper function to get auth headers
+export const getAuthHeaders = (): Record<string, string> => {
+    const token = useAuthStore.getState().token;
+    return token ? { Authorization: `Bearer ${token}` } : {};
+};

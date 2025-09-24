@@ -5,6 +5,7 @@ import Loader from "@/components/layout/loader";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useCourses } from "@/hooks/courses/use-courses";
+import { useEnrollments } from "@/hooks/enrollments/use-enrollments";
 import { useAuthStore } from "@/stores/auth-store";
 import { BookOpen, Filter, Plus, Search } from "lucide-react";
 import { useState } from "react";
@@ -12,14 +13,17 @@ import { CourseCard } from "./course-card";
 
 export function CoursesLayout() {
     const { user } = useAuthStore();
-    const { data: courses, isLoading } = useCourses();
+    const { data: maybeCourses, isLoading } = useCourses();
+    const courses = maybeCourses || [];
+    const { data: maybeEnrollments } = useEnrollments();
+    const enrollments = maybeEnrollments || [];
     const [searchTerm, setSearchTerm] = useState('');
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showEnrollModal, setShowEnrollModal] = useState(false);
     const [filterType, setFilterType] = useState<'all' | 'owned' | 'enrolled'>('all');
 
     // Filter courses based on user relationship and search term
-    const filteredCourses = courses?.filter(course => {
+    const filteredCourses = courses.filter(course => {
         // Text search filter
         const matchesSearch = course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
             course.description.toLowerCase().includes(searchTerm.toLowerCase());
@@ -28,7 +32,7 @@ export function CoursesLayout() {
 
         // Relationship filter
         const isOwner = course.instructor.id === user?.id;
-        const isEnrolled = course.students.some(student => student.id === user?.id);
+        const isEnrolled = true;
 
         switch (filterType) {
             case 'owned':
@@ -39,12 +43,12 @@ export function CoursesLayout() {
             default:
                 return isOwner || isEnrolled;
         }
-    }) || [];
+    });
 
-    // Count different types of courses
-    const ownedCoursesCount = courses?.filter(course => course.instructor.id === user?.id).length || 0;
-    const enrolledCoursesCount = courses?.filter(course =>
-        course.students.some(student => student.id === user?.id) && course.instructor.id !== user?.id
+    // // Count different types of courses
+    const ownedCoursesCount = courses.filter(course => course.instructor.id === user?.id).length || 0;
+    const enrolledCoursesCount = enrollments.filter(enrollment =>
+        enrollment.studentId === user?.id
     ).length || 0;
 
     if (isLoading) {

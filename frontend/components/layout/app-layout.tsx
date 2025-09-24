@@ -55,13 +55,15 @@ export function AppLayout({ children, showSidebar = false, showHeader = true, is
       {showHeader && (
         <Header toggleSidebar={() => setIsSidebarVisible(!isSidebarVisible)} showSidebar={showSidebar} isLanding={isLanding} />
       )}
-      <div className="flex relative">
+      <div className="flex relative h-full">
         {(isSidebarVisible && showSidebar) && (
           <div
             className="absolute inset-0 z-40 lg:block lg:relative bg-muted/80 lg:bg-transparent"
             onClick={handleOverlayClick}
           >
-            <Sidebar />
+            <div className="relative w-64 h-full flex flex-col bg-surface border-r border-surface-border">
+              <Sidebar />
+            </div>
           </div>
         )}
         <main className="flex-1 grid">{children}</main>

@@ -1,13 +1,7 @@
 import { useAuthStore } from "@/stores/auth-store";
 import { HttpResponse } from "@/types/http";
 import { Assignment, Course, Lesson, Module } from "../../types/course";
-import { apiFetch } from "./api";
-
-// Helper function to get auth headers
-const getAuthHeaders = (): Record<string, string> => {
-    const token = useAuthStore.getState().token;
-    return token ? { Authorization: `Bearer ${token}` } : {};
-};
+import { apiFetch, getAuthHeaders } from "./api";
 
 export const coursesApi = {
     // Course CRUD operations
@@ -19,8 +13,7 @@ export const coursesApi = {
             },
         });
 
-        console.log("Fetched courses:", response);
-        return response.data;
+        return response.data ?? [];
     },
 
     async getCourse(id: string): Promise<Course> {

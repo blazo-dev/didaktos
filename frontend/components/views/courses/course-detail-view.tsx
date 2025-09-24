@@ -14,20 +14,178 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useAuth } from '../../../hooks/auth/use-auth';
 import { useCourse } from '../../../hooks/courses/use-course';
+import { Course } from '../../../types/course';
 import Loader from '../../layout/loader';
 import { Button } from '../../ui/button';
 import { Card } from '../../ui/card';
 import { ModuleAccordion } from './module-accordion';
 
+// Fake course object for testing
+const FAKE_COURSE: Course = {
+  id: 'course-123',
+  title: 'Advanced React Development',
+  description: 'Master advanced React concepts including hooks, context, performance optimization, and modern patterns. Build production-ready applications with confidence.',
+  status: 'active',
+  instructor: {
+    id: 'instructor-456',
+    name: 'Sarah Johnson',
+    email: 'sarah.johnson@example.com'
+  },
+  students: [
+    {
+      id: 'student-789',
+      name: 'Alex Chen',
+      email: 'alex.chen@example.com',
+      enrolledAt: '2024-01-15T10:30:00Z'
+    },
+    {
+      id: 'student-101',
+      name: 'Maria Garcia',
+      email: 'maria.garcia@example.com',
+      enrolledAt: '2024-01-20T14:15:00Z'
+    },
+    {
+      id: 'student-202',
+      name: 'David Kim',
+      email: 'david.kim@example.com',
+      enrolledAt: '2024-02-01T09:45:00Z'
+    }
+  ],
+  modules: [
+    {
+      id: 'module-1',
+      courseId: 'course-123',
+      title: 'React Fundamentals Review',
+      description: 'Quick review of React basics before diving into advanced topics',
+      order: 1,
+      isPublished: true,
+      lessons: [
+        {
+          id: 'lesson-1-1',
+          moduleId: 'module-1',
+          title: 'Components and JSX',
+          content: 'Understanding React components and JSX syntax',
+          type: 'video',
+          order: 1,
+          duration: 25
+        },
+        {
+          id: 'lesson-1-2',
+          moduleId: 'module-1',
+          title: 'Props and State',
+          content: 'Managing component props and local state',
+          type: 'interactive',
+          order: 2,
+          duration: 30
+        }
+      ],
+      assignments: [
+        {
+          id: 'assignment-1-1',
+          moduleId: 'module-1',
+          title: 'Build a Todo Component',
+          description: 'Create a functional todo list component using hooks',
+          dueDate: '2024-12-01T23:59:59Z',
+          maxPoints: 100,
+          type: 'project'
+        }
+      ]
+    },
+    {
+      id: 'module-2',
+      courseId: 'course-123',
+      title: 'Advanced Hooks',
+      description: 'Deep dive into React hooks including custom hooks and advanced patterns',
+      order: 2,
+      isPublished: true,
+      lessons: [
+        {
+          id: 'lesson-2-1',
+          moduleId: 'module-2',
+          title: 'useEffect Mastery',
+          content: 'Advanced useEffect patterns and cleanup',
+          type: 'video',
+          order: 1,
+          duration: 45
+        },
+        {
+          id: 'lesson-2-2',
+          moduleId: 'module-2',
+          title: 'Custom Hooks',
+          content: 'Creating reusable custom hooks',
+          type: 'text',
+          order: 2,
+          duration: 35
+        },
+        {
+          id: 'lesson-2-3',
+          moduleId: 'module-2',
+          title: 'useCallback and useMemo',
+          content: 'Performance optimization with memoization',
+          type: 'video',
+          order: 3,
+          duration: 40
+        }
+      ],
+      assignments: [
+        {
+          id: 'assignment-2-1',
+          moduleId: 'module-2',
+          title: 'Custom Hook Challenge',
+          description: 'Build a custom hook for data fetching with error handling',
+          dueDate: '2024-12-08T23:59:59Z',
+          maxPoints: 150,
+          type: 'project'
+        },
+        {
+          id: 'assignment-2-2',
+          moduleId: 'module-2',
+          title: 'Performance Quiz',
+          description: 'Test your understanding of React performance optimization',
+          dueDate: '2024-12-10T23:59:59Z',
+          maxPoints: 50,
+          type: 'quiz'
+        }
+      ]
+    },
+    {
+      id: 'module-3',
+      courseId: 'course-123',
+      title: 'Context and State Management',
+      description: 'Managing global state with Context API and state management libraries',
+      order: 3,
+      isPublished: false,
+      lessons: [
+        {
+          id: 'lesson-3-1',
+          moduleId: 'module-3',
+          title: 'React Context API',
+          content: 'Using Context for global state management',
+          type: 'video',
+          order: 1,
+          duration: 50
+        }
+      ],
+      assignments: []
+    }
+  ],
+  createdAt: '2024-01-10T08:00:00Z',
+  updatedAt: '2024-11-15T16:30:00Z'
+};
+
 interface CourseDetailViewProps {
   courseId: string;
+  useFakeData?: boolean; // Optional prop to use fake data for testing
 }
 
-export function CourseDetailView({ courseId }: CourseDetailViewProps) {
+export function CourseDetailView({ courseId, useFakeData = false }: CourseDetailViewProps) {
   const router = useRouter();
   const { user } = useAuth();
-  const { data: course, isLoading } = useCourse(courseId);
+  const { data: courseData, isLoading } = useCourse(courseId);
   const [showCreateModule, setShowCreateModule] = useState(false);
+
+  // Use fake data if useFakeData prop is true, otherwise use real data
+  const course = useFakeData ? FAKE_COURSE : courseData;
 
   // Check if current user is the owner/creator of this course
   const isOwner = course?.instructor.id === user?.id;
@@ -38,7 +196,7 @@ export function CourseDetailView({ courseId }: CourseDetailViewProps) {
   // User can view course if they are the owner or enrolled
   const canView = isOwner || isEnrolled;
 
-  if (isLoading) {
+  if (!useFakeData && isLoading) {
     return <Loader text="Loading course..." />;
   }
 
@@ -131,10 +289,10 @@ export function CourseDetailView({ courseId }: CourseDetailViewProps) {
               </span>
             )}
             <span className={`px-2 py-1 rounded-full text-xs font-medium ${course.status === 'active'
-                ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                : course.status === 'completed'
-                  ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
-                  : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200'
+              ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+              : course.status === 'completed'
+                ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+                : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200'
               }`}>
               {course.status.charAt(0).toUpperCase() + course.status.slice(1)}
             </span>
@@ -222,3 +380,19 @@ export function CourseDetailView({ courseId }: CourseDetailViewProps) {
     </div>
   );
 }
+
+/*
+ * Example usage with fake data:
+ * 
+ * import { CourseDetailView } from './course-detail-view';
+ * 
+ * // To use fake data for testing/development
+ * function TestPage() {
+ *   return <CourseDetailView courseId="any-id" useFakeData={true} />;
+ * }
+ * 
+ * // To use real data from API
+ * function ProductionPage({ params }) {
+ *   return <CourseDetailView courseId={params.id} />;
+ * }
+ */

@@ -1,3 +1,4 @@
+import ProtectedPage from "@/components/layout/protected-page";
 import { CourseDetailView } from "@/components/views/courses/course-detail-view";
 
 interface CoursePageProps {
@@ -8,5 +9,9 @@ interface CoursePageProps {
 
 export default async function CoursePage({ params }: CoursePageProps) {
     const { id } = await params;
-    return <CourseDetailView courseId={id} />;
+    return (
+        <ProtectedPage>
+            <CourseDetailView courseId={id} useFakeData={true} />
+        </ProtectedPage>
+    );
 }

@@ -1,22 +1,20 @@
 'use client';
 
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { useAuth } from '@/hooks/auth/use-auth';
 import { useDeleteCourse } from '@/hooks/courses/use-delete-course';
+import { useEnrollments } from '@/hooks/enrollments/use-enrollments';
+import { Course } from '@/types/course';
 import {
-    BookOpen,
-    Calendar,
     Edit,
     Eye,
     MoreVertical,
     Trash2,
-    User,
-    Users
+    User
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { Course } from '../../../types/course';
-import { Button } from '../../ui/button';
-import { Card } from '../../ui/card';
 
 interface CourseCardProps {
     course: Course;
@@ -25,6 +23,7 @@ interface CourseCardProps {
 export function CourseCard({ course }: CourseCardProps) {
     const router = useRouter();
     const { user } = useAuth();
+    const { data: enrollments } = useEnrollments();
     const [showMenu, setShowMenu] = useState(false);
     const deleteCourse = useDeleteCourse();
 
@@ -32,7 +31,9 @@ export function CourseCard({ course }: CourseCardProps) {
     const isOwner = user?.id === course.instructor.id;
 
     // Check if current user is enrolled as a student
-    const isEnrolled = course.students.some(student => student.id === user?.id);
+    const isEnrolled = enrollments?.some(enrollment => enrollment.courseId === course.id && enrollment.studentId === user?.id);
+
+    // const studentCount = enrollments?.filter(enrollment => enrollment.courseId === course.id).length || 0;
 
     const handleViewCourse = () => {
         router.push(`/courses/${course.id}`);
@@ -110,17 +111,17 @@ export function CourseCard({ course }: CourseCardProps) {
                         {course.description}
                     </p>
                 </div>
-
+                {/* 
                 <div className="flex items-center justify-between text-sm text-muted-foreground">
                     <div className="flex items-center">
                         <Users className="h-4 w-4 mr-1" />
-                        {course.students.length} students
+                        {studentCount} students
                     </div>
                     <div className="flex items-center">
                         <BookOpen className="h-4 w-4 mr-1" />
                         {course.modules.length} modules
                     </div>
-                </div>
+                </div> */}
 
                 {/* Show instructor info if user is not the owner */}
                 {!isOwner && (
@@ -146,10 +147,10 @@ export function CourseCard({ course }: CourseCardProps) {
                 )}
 
                 <div className="flex items-center justify-between pt-4 border-t">
-                    <div className="flex items-center text-sm text-muted-foreground">
+                    {/* <div className="flex items-center text-sm text-muted-foreground">
                         <Calendar className="h-4 w-4 mr-1" />
                         {new Date(course.updatedAt).toLocaleDateString()}
-                    </div>
+                    </div> */}
 
                     <Button onClick={handleViewCourse} size="sm">
                         <Eye className="h-4 w-4 mr-2" />
