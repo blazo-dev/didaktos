@@ -72,7 +72,6 @@ namespace didaktos.backend.Repositories
                 JOIN users ON courses.instructor_id = users.id
                 ORDER BY courses.title;";
 
-            using var command = new NpgsqlCommand(coursesSql, connection);
             var coursesDict = new Dictionary<Guid, CourseReadResponseDto>();
 
             using var coursesCommand = new NpgsqlCommand(coursesSql, connection);
@@ -156,42 +155,92 @@ namespace didaktos.backend.Repositories
                 return coursesDict.Values.ToList();
             }
 
-            // Get all lessons for the retrieved modules
-            var moduleIds = modulesDict.Keys.ToList();
-            var moduleIdsParams = string.Join(
+            // Fetch all modules, lessons, assignments, and enrollments in a single query using JOINs
+            var courseIds = coursesDict.Keys.ToList();
+            var courseIdsParams = string.Join(
                 ", ",
-                moduleIds.Select((id, index) => $"@moduleId{index}")
+                courseIds.Select((id, index) => $"@courseId{index}")
             );
 
-            var lessonsSql =
-                $@"
-                SELECT id, title, content, module_id
-                FROM lessons
-                WHERE module_id IN ({moduleIdsParams})
-                ORDER BY title;";
+            var joinSql = $@"
+                SELECT 
+                    c.id as course_id, c.title as course_title, c.description as course_description,
+                    m.id as module_id, m.title as module_title, m.description as module_description,
+                    l.id as lesson_id, l.title as lesson_title, l.content as lesson_content,
+                    a.id as assignment_id, a.title as assignment_title, a.description as assignment_description,
+                    e.id as enrollment_id, e.user_id as enrollment_user_id
+                FROM courses c
+                LEFT JOIN modules m ON m.course_id = c.id
+                LEFT JOIN lessons l ON l.module_id = m.id
+                LEFT JOIN assignments a ON a.module_id = m.id
+                LEFT JOIN enrollments e ON e.course_id = c.id
+                WHERE c.id IN ({courseIdsParams})
+                ORDER BY c.title, m.title, l.title, a.title;";
 
-            using var lessonsCommand = new NpgsqlCommand(lessonsSql, connection);
-            for (int i = 0; i < moduleIds.Count; i++)
+            using var joinCommand = new NpgsqlCommand(joinSql, connection);
+            for (int i = 0; i < courseIds.Count; i++)
             {
-                lessonsCommand.Parameters.AddWithValue($"@moduleId{i}", moduleIds[i]);
+                joinCommand.Parameters.AddWithValue($"@courseId{i}", courseIds[i]);
             }
 
-            using var lessonsReader = await lessonsCommand.ExecuteReaderAsync();
-            while (await lessonsReader.ReadAsync())
+            using var reader = await joinCommand.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
             {
-                var lessonDto = new LessonDto
+                var courseId = reader["course_id"] == DBNull.Value ? Guid.Empty : (Guid)reader["course_id"];
+                var moduleId = reader["module_id"] == DBNull.Value ? Guid.Empty : (Guid)reader["module_id"];
+                var lessonId = reader["lesson_id"] == DBNull.Value ? Guid.Empty : (Guid)reader["lesson_id"];
+                var assignmentId = reader["assignment_id"] == DBNull.Value ? Guid.Empty : (Guid)reader["assignment_id"];
+                var enrollmentId = reader["enrollment_id"] == DBNull.Value ? Guid.Empty : (Guid)reader["enrollment_id"];
+
+                // Modules
+                if (moduleId != Guid.Empty && modulesDict.ContainsKey(moduleId))
                 {
-                    Id = (Guid)lessonsReader["id"],
-                    Title = (string)lessonsReader["title"],
-                    Content = (string)lessonsReader["content"],
-                    ModuleId = (Guid)lessonsReader["module_id"],
-                };
-                var moduleId = lessonDto.ModuleId;
-                if (modulesDict.ContainsKey(moduleId))
+                    var moduleDto = modulesDict[moduleId];
+
+                    // Lessons
+                    if (lessonId != Guid.Empty && !moduleDto.Lessons.Any(l => l.Id == lessonId))
+                    {
+                        var lessonDto = new LessonDto
+                        {
+                            Id = lessonId,
+                            Title = reader["lesson_title"] == DBNull.Value ? null : (string)reader["lesson_title"],
+                            Content = reader["lesson_content"] == DBNull.Value ? null : (string)reader["lesson_content"],
+                            ModuleId = moduleId,
+                        };
+                        moduleDto.Lessons.Add(lessonDto);
+                    }
+
+                    // Assignments
+                    if (assignmentId != Guid.Empty && !moduleDto.Assignments.Any(a => a.Id == assignmentId))
+                    {
+                        var assignmentDto = new AssignmentDto
+                        {
+                            Id = assignmentId,
+                            Title = reader["assignment_title"] == DBNull.Value ? null : (string)reader["assignment_title"],
+                            Description = reader["assignment_description"] == DBNull.Value ? null : (string)reader["assignment_description"],
+                            ModuleId = moduleId,
+                        };
+                        moduleDto.Assignments.Add(assignmentDto);
+                    }
+                }
+
+                // Enrollments
+                if (enrollmentId != Guid.Empty && coursesDict.ContainsKey(courseId))
                 {
-                    modulesDict[moduleId].Lessons.Add(lessonDto);
+                    var courseDto = coursesDict[courseId];
+                    if (!courseDto.Enrollments.Any(e => e.Id == enrollmentId))
+                    {
+                        var enrollmentDto = new EnrollmentDto
+                        {
+                            Id = enrollmentId,
+                            UserId = reader["enrollment_user_id"] == DBNull.Value ? Guid.Empty : (Guid)reader["enrollment_user_id"],
+                            CourseId = courseId,
+                        };
+                        courseDto.Enrollments.Add(enrollmentDto);
+                    }
                 }
             }
+            await reader.CloseAsync();
             await lessonsReader.CloseAsync();
 
             // Get all assignments for the retrieved modules
