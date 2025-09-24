@@ -20,6 +20,10 @@ namespace didaktos.backend.Repositories
 
         public async Task<CourseResponseDto> InsertCourseAsync(Course course)
         {
+            // Add null check for the course parameter
+            if (course == null)
+                throw new ArgumentNullException(nameof(course));
+
             using var connection = new NpgsqlConnection(_connectionString);
             await connection.OpenAsync();
 
@@ -32,10 +36,13 @@ namespace didaktos.backend.Repositories
             using var command = new NpgsqlCommand(sql, connection);
             command.Parameters.AddWithValue("@id", course.Id);
             command.Parameters.AddWithValue("@title", course.Title);
-            command.Parameters.AddWithValue("@description", course.Description);
             command.Parameters.AddWithValue("@instructor_id", course.InstructorId);
             command.Parameters.AddWithValue("@createdAt", DateTime.UtcNow);
             command.Parameters.AddWithValue("@updatedAt", DateTime.UtcNow);
+            command.Parameters.AddWithValue(
+                "@description",
+                (object?)course.Description ?? DBNull.Value
+            );
 
             using var reader = await command.ExecuteReaderAsync();
             if (await reader.ReadAsync())
@@ -44,7 +51,7 @@ namespace didaktos.backend.Repositories
                 {
                     Id = (Guid)reader["id"],
                     Title = (string)reader["title"],
-                    Description = (string)reader["description"],
+                    Description = reader["description"] as string,
                     InstructorId = (Guid)reader["instructor_id"],
                 };
             }
@@ -75,7 +82,7 @@ namespace didaktos.backend.Repositories
                     {
                         Id = (Guid)reader["id"],
                         Title = (string)reader["title"],
-                        Description = (string)reader["description"],
+                        Description = (string?)reader["description"],
                         Instructor = new UserDto
                         {
                             Id = (Guid)reader["instructor_id"],
@@ -132,9 +139,12 @@ namespace didaktos.backend.Repositories
 
             using var command = new NpgsqlCommand(sql, connection);
             command.Parameters.AddWithValue("@id", Course.Id);
-            command.Parameters.AddWithValue("@description", Course.Description);
             command.Parameters.AddWithValue("@title", Course.Title);
             command.Parameters.AddWithValue("@updatedAt", DateTime.UtcNow);
+            command.Parameters.AddWithValue(
+                "@description",
+                (object?)Course.Description ?? DBNull.Value
+            );
 
             using var reader = await command.ExecuteReaderAsync();
             if (await reader.ReadAsync())
@@ -143,7 +153,7 @@ namespace didaktos.backend.Repositories
                 {
                     Title = (string)reader["title"],
                     Id = (Guid)reader["id"],
-                    Description = (string)reader["description"],
+                    Description = (string?)reader["description"],
                 };
             }
 

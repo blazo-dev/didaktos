@@ -25,7 +25,7 @@ namespace didaktos.backend.Services
                 {
                     Id = Guid.NewGuid(),
                     Title = request.Title,
-                    Description = request.Description.ToLower(),
+                    Description = request.Description,
                     InstructorId = instructorId,
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow,
