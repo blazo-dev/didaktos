@@ -176,7 +176,6 @@ namespace didaktos.backend.Repositories
             command.Parameters.AddWithValue("@id", assignment.Id);
             command.Parameters.AddWithValue("@title", assignment.Title);
             command.Parameters.AddWithValue("@description", assignment.Description);
-            command.Parameters.AddWithValue("@moduleId", assignment.ModuleId);
             command.Parameters.AddWithValue("@updatedAt", assignment.UpdatedAt);
             command.Parameters.AddWithValue(
                 "@dueDate",

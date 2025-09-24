@@ -376,10 +376,10 @@ namespace didaktos.backend.Controllers
         }
 
         /// <summary>
-        /// Create a new lesson in a module
+        /// Create a new assignment in a module
         /// </summary>
         /// <param name="moduleId">Module ID</param>
-        /// <param name="request">Lesson creation request</param>
+        /// <param name="request">Assignment creation request</param>
         /// <returns>Created assignment</returns>
         [HttpPost("modules/{moduleId}/assignments")]
         public async Task<ActionResult<HttpResponseDto<AssignmentDto>>> CreateAssignment(
@@ -422,7 +422,7 @@ namespace didaktos.backend.Controllers
         }
 
         /// <summary>
-        /// Update a assignment's title and content
+        /// Update an assignment's title and content
         /// </summary>
         /// <param name="assignmentId">Assignment ID</param>
         /// <param name="request">Assignment update request</param>
@@ -472,7 +472,7 @@ namespace didaktos.backend.Controllers
         }
 
         /// <summary>
-        /// Delete a assignment
+        /// Delete an assignment
         /// </summary>
         /// <param name="assignmentId">Assignment ID</param>
         /// <returns>Success response</returns>
