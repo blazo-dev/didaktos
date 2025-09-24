@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace didaktos.backend.Models.DTOs.Response
+namespace didaktos.backend.Models.DTOs
 {
     public class CourseReadResponseDto
     {
@@ -15,8 +15,6 @@ namespace didaktos.backend.Models.DTOs.Response
         public string Description { get; set; } = string.Empty;
 
         [Required]
-        public Guid InstructorId { get; set; }
-
-        public string InstructorName { get; set; } = string.Empty;
+        public UserDto Instructor { get; set; } = new UserDto();
     }
 }

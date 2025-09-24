@@ -4,8 +4,8 @@ namespace didaktos.backend.Models
 {
     public class Module
     {
-        [Required]
         [Key]
+        [Required]
         public Guid Id { get; set; }
 
         [MinLength(8, ErrorMessage = "Title must be at least 8 characters")]

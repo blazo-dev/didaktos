@@ -67,7 +67,12 @@ namespace didaktos.backend.Controllers
 
             var result = await _authService.LoginAsync(request);
 
-            return result.Success ? Ok(result) : BadRequest(result);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+
+            return BadRequest(result);
         }
 
         [HttpGet("me")]
@@ -105,7 +110,9 @@ namespace didaktos.backend.Controllers
         [Authorize]
         public IActionResult Logout()
         {
-            return Ok(new { Message = "Logout successful" });
+            return Ok(
+                new HttpResponseDto<object> { Success = true, Message = "Logout successful" }
+            );
         }
     }
 }
