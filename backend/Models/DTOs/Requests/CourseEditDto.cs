@@ -2,10 +2,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace didaktos.backend.Models.DTOs
 {
-    public class CourseReadResponseDto
+    public class CourseEditDto
     {
         [Required]
-        [Key]
         public Guid Id { get; set; }
 
         [Required]
@@ -13,10 +12,5 @@ namespace didaktos.backend.Models.DTOs
         public string Title { get; set; } = string.Empty;
 
         public string Description { get; set; } = string.Empty;
-
-        [Required]
-        public Guid InstructorId { get; set; }
-
-        public string InstructorName { get; set; } = string.Empty;
     }
 }

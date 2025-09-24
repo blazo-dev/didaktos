@@ -1,6 +1,5 @@
 using didaktos.backend.Models;
 using didaktos.backend.Models.DTOs;
-using didaktos.backend.Models.DTOs.Response;
 
 namespace didaktos.backend.Interfaces
 {
@@ -8,5 +7,6 @@ namespace didaktos.backend.Interfaces
     {
         Task<List<CourseReadResponseDto>> SelectCoursesAsync();
         Task<CourseResponseDto> InsertCourseAsync(Course course);
+        Task<CourseEditDto> UpdateCourseAsync(CourseEditDto Course);
     }
 }

@@ -1,7 +1,6 @@
 using System.Security.Claims;
 using didaktos.backend.Interfaces;
 using didaktos.backend.Models.DTOs;
-using didaktos.backend.Models.DTOs.Requests;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,10 +11,12 @@ namespace didaktos.backend.Controllers
     public class CourseController : ControllerBase
     {
         private readonly ICourseService _courseService;
+        private readonly IEnrollmentService _enrollmentService;
 
-        public CourseController(ICourseService courseService)
+        public CourseController(ICourseService courseService, IEnrollmentService enrollmentService)
         {
             _courseService = courseService;
+            _enrollmentService = enrollmentService;
         }
 
         [HttpGet]
@@ -81,40 +82,149 @@ namespace didaktos.backend.Controllers
             return BadRequest(result);
         }
 
-        // private async Task<Enrollment> CreateEnrollmentAsync(Enrollment course)
-        // {
-        //     using var connection = new NpgsqlConnection(_connectionString);
-        //     await connection.OpenAsync();
+        [HttpPut]
+        public async Task<IActionResult> EditCourse([FromBody] CourseEditRequestDto request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(
+                    new HttpResponseDto<object>
+                    {
+                        Success = false,
+                        Message = "Invalid request data",
+                        Errors = ModelState,
+                    }
+                );
+            }
 
-        //     const string sql =
-        //         @"
-        //         INSERT INTO courses (id, status, instructor_id, course_id, created_at, updated_at)
-        //         VALUES (@id, @status, @instructor_id, @course_id, @createdAt, @updatedAt)
-        //         RETURNING id, status, instructor_id, course_id, created_at, updated_at";
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized(
+                    new HttpResponseDto<object>
+                    {
+                        Success = false,
+                        Message = "Invalid or missing authentication token",
+                    }
+                );
+            }
 
-        //     using var command = new NpgsqlCommand(sql, connection);
-        //     command.Parameters.AddWithValue("@id", course.Id);
-        //     command.Parameters.AddWithValue("@status", course.Status);
-        //     command.Parameters.AddWithValue("@course_id", course.CourseId);
-        //     command.Parameters.AddWithValue("@instructor_id", course.InstructorId);
-        //     command.Parameters.AddWithValue("@created_at", course.CreatedAt);
-        //     command.Parameters.AddWithValue("@updated_at", course.UpdatedAt);
+            var result = await _courseService.EditCourseAsync(request, userId);
 
-        //     using var reader = await command.ExecuteReaderAsync();
-        //     if (await reader.ReadAsync())
-        //     {
-        //         return new Enrollment
-        //         {
-        //             Id = (Guid)reader["id"],
-        //             Status = (string)reader["status"],
-        //             CourseId = (Guid)reader["course_id"],
-        //             InstructorId = (Guid)reader["instructor_id"],
-        //             CreatedAt = (DateTime)reader["created_at"],
-        //             UpdatedAt = (DateTime)reader["updated_at"],
-        //         };
-        //     }
+            return result.Success switch
+            {
+                true => Ok(result),
+                false when result.Message == "You are already enrolled in this course" => NotFound(
+                    result
+                ),
+                false when result.Message.Contains("Access denied") => Forbid(),
+                _ => BadRequest(result),
+            };
+        }
 
-        //     throw new InvalidOperationException("Failed to Enroll");
-        // }
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> CreateEnrollment(
+            [FromBody] EnrollmentAddRequestDto request
+        )
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(
+                    new HttpResponseDto<object>
+                    {
+                        Success = false,
+                        Message = "Invalid request data",
+                        Errors = ModelState,
+                    }
+                );
+            }
+
+            var result = await _enrollmentService.CreateEnrollmentAsync(request);
+
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+
+            return BadRequest(result);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetEnrollments()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(
+                    new HttpResponseDto<object>
+                    {
+                        Success = false,
+                        Message = "Invalid request data",
+                        Errors = ModelState,
+                    }
+                );
+            }
+
+            var result = await _enrollmentService.GetEnrollmentsAsync(userId);
+
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+
+            return BadRequest(result);
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> CloseEnrollments([FromBody] Guid CourseId)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(
+                    new HttpResponseDto<object>
+                    {
+                        Success = false,
+                        Message = "Invalid request data",
+                        Errors = ModelState,
+                    }
+                );
+            }
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized(
+                    new HttpResponseDto<object>
+                    {
+                        Success = false,
+                        Message = "Invalid or missing authentication token",
+                    }
+                );
+            }
+
+            var result = await _enrollmentService.CloseEnrollmentsAsync(CourseId, userId);
+
+            return result.Success switch
+            {
+                true => Ok(result),
+                false when result.Message == "You are already enrolled in this course" => NotFound(
+                    result
+                ),
+                false when result.Message.Contains("Access denied") => Forbid(),
+                _ => BadRequest(result),
+            };
+        }
     }
 }

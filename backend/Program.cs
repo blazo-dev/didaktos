@@ -82,6 +82,8 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ICourseService, CourseService>();
 builder.Services.AddScoped<ICourseRepository, CourseRepository>();
+builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();
+builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
 builder.Services.AddScoped<JwtTokenGenerator>();
 
 // Add CORS for Next.js frontend

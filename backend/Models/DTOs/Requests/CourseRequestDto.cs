@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace didaktos.backend.Models.DTOs.Requests
+namespace didaktos.backend.Models.DTOs
 {
     public class CourseRequestDto
     {

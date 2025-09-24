@@ -1,6 +1,5 @@
 using didaktos.backend.Models;
 using didaktos.backend.Models.DTOs;
-using didaktos.backend.Models.DTOs.Requests;
 
 namespace didaktos.backend.Interfaces
 {
@@ -11,5 +10,7 @@ namespace didaktos.backend.Interfaces
             CourseRequestDto request,
             Guid instructorId
         );
+
+        Task<HttpResponseDto<object>> EditCourseAsync(CourseEditDto Course, Guid UserId);
     }
 }

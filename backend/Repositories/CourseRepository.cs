@@ -1,6 +1,6 @@
 using didaktos.backend.Interfaces;
 using didaktos.backend.Models;
-using didaktos.backend.Models.DTOs.Response;
+using didaktos.backend.Models.DTOs;
 using Npgsql;
 
 namespace didaktos.backend.Repositories
@@ -83,6 +83,38 @@ namespace didaktos.backend.Repositories
             }
 
             return courses;
+        }
+
+        public async Task<CourseEditDto> UpdateCourseAsync(CourseEditDto Course)
+        {
+            using var connection = new NpgsqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            const string sql =
+                @"
+                UPDATE courses 
+                SET description = @description, title = @title, updated_at = @updatedAt
+                WHERE id = @id
+                RETURNING title, course_id, description";
+
+            using var command = new NpgsqlCommand(sql, connection);
+            command.Parameters.AddWithValue("@id", Course.Id);
+            command.Parameters.AddWithValue("@description", Course.Description);
+            command.Parameters.AddWithValue("@title", Course.Title);
+            command.Parameters.AddWithValue("@updatedAt", DateTime.UtcNow);
+
+            using var reader = await command.ExecuteReaderAsync();
+            if (await reader.ReadAsync())
+            {
+                return new CourseEditDto
+                {
+                    Title = (string)reader["status"],
+                    Id = (Guid)reader["course_id"],
+                    Description = (string)reader["description"],
+                };
+            }
+
+            throw new InvalidOperationException("Failed to close enrollment");
         }
     }
 }
