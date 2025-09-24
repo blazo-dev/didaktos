@@ -85,6 +85,35 @@ namespace didaktos.backend.Repositories
             return courses;
         }
 
+        public async Task<Course?> GetCourseByIdAsync(Guid courseId)
+        {
+            using var connection = new NpgsqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            const string sql =
+                @"
+                SELECT id, title, description, instructor_id
+                FROM courses 
+                WHERE id = @courseId";
+
+            using var command = new NpgsqlCommand(sql, connection);
+            command.Parameters.AddWithValue("@courseId", courseId);
+
+            using var reader = await command.ExecuteReaderAsync();
+            if (await reader.ReadAsync())
+            {
+                return new Course
+                {
+                    Id = (Guid)reader["id"],
+                    Title = (string)reader["title"],
+                    Description = reader["description"] as string,
+                    InstructorId = (Guid)reader["instructor_id"],
+                };
+            }
+
+            return null;
+        }
+
         public async Task<CourseEditDto> UpdateCourseAsync(CourseEditDto Course)
         {
             using var connection = new NpgsqlConnection(_connectionString);

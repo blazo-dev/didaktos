@@ -5,6 +5,8 @@ namespace didaktos.backend.Interfaces
 {
     public interface ICourseRepository
     {
+        Task<Course?> GetCourseByIdAsync(Guid courseId);
+
         Task<List<CourseReadResponseDto>> SelectCoursesAsync();
         Task<CourseResponseDto> InsertCourseAsync(Course course);
         Task<CourseEditDto> UpdateCourseAsync(CourseEditDto Course);
