@@ -64,143 +64,142 @@ namespace didaktos.backend.Repositories
             using var connection = new NpgsqlConnection(_connectionString);
             await connection.OpenAsync();
 
+            // Single optimized query to get all data in separate result sets
             const string sql =
                 @"
-                SELECT 
-                    c.id as course_id,
-                    c.title as course_title,
-                    c.description as course_description,
-                    c.instructor_id,
-                    u.name as instructor_name,
-                    u.email as instructor_email,
-                    m.id as module_id,
-                    m.title as module_title,
-                    l.id as lesson_id,
-                    l.title as lesson_title,
-                    l.content as lesson_content,
-                    l.created_at as lesson_created_at,
-                    l.updated_at as lesson_updated_at,
-                    a.id as assignment_id,
-                    a.title as assignment_title,
-                    a.description as assignment_description,
-                    a.created_at as assignment_created_at,
-                    a.updated_at as assignment_updated_at,
-                    a.due_date as assignment_due_date,
-                    e.student_id
+                -- Get courses with instructors
+                SELECT c.id, c.title, c.description, c.instructor_id, u.name, u.email  
                 FROM courses c
                 JOIN users u ON c.instructor_id = u.id
-                LEFT JOIN modules m ON c.id = m.course_id
-                LEFT JOIN lessons l ON m.id = l.module_id
-                LEFT JOIN assignments a ON m.id = a.module_id
-                LEFT JOIN enrollments e ON c.id = e.course_id
-                ORDER BY c.title, m.title, l.title, a.title;";
+                ORDER BY c.title;
+
+                -- Get modules
+                SELECT m.id, m.title, m.course_id
+                FROM modules m
+                JOIN courses c ON m.course_id = c.id
+                ORDER BY c.title, m.title;
+
+                -- Get lessons
+                SELECT l.id, l.title, l.content, l.module_id, l.created_at, l.updated_at
+                FROM lessons l
+                JOIN modules m ON l.module_id = m.id
+                JOIN courses c ON m.course_id = c.id
+                ORDER BY c.title, m.title, l.title;
+
+                -- Get assignments
+                SELECT a.id, a.title, a.description, a.module_id, a.created_at, a.updated_at, a.due_date
+                FROM assignments a
+                JOIN modules m ON a.module_id = m.id
+                JOIN courses c ON m.course_id = c.id
+                ORDER BY c.title, m.title, a.title;
+
+                -- Get enrollments
+                SELECT e.course_id, e.student_id
+                FROM enrollments e
+                JOIN courses c ON e.course_id = c.id
+                ORDER BY c.title;";
 
             using var command = new NpgsqlCommand(sql, connection);
             using var reader = await command.ExecuteReaderAsync();
 
+            // Read courses
             var coursesDict = new Dictionary<Guid, CourseReadResponseDto>();
-            var modulesDict = new Dictionary<Guid, ModuleDto>();
+            while (await reader.ReadAsync())
+            {
+                var courseId = (Guid)reader["id"];
+                coursesDict[courseId] = new CourseReadResponseDto
+                {
+                    Id = courseId,
+                    Title = (string)reader["title"],
+                    Description = reader["description"] as string,
+                    Instructor = new UserDto
+                    {
+                        Id = (Guid)reader["instructor_id"],
+                        Name = (string)reader["name"],
+                        Email = (string)reader["email"],
+                    },
+                    Modules = new List<ModuleDto>(),
+                    Enrollments = new List<Guid>(),
+                };
+            }
 
+            // Move to next result set (modules)
+            await reader.NextResultAsync();
+            var modulesDict = new Dictionary<Guid, ModuleDto>();
+            while (await reader.ReadAsync())
+            {
+                var moduleId = (Guid)reader["id"];
+                var courseId = (Guid)reader["course_id"];
+
+                var module = new ModuleDto
+                {
+                    Id = moduleId,
+                    Title = (string)reader["title"],
+                    CourseId = courseId,
+                    Lessons = new List<LessonDto>(),
+                    Assignments = new List<AssignmentDto>(),
+                };
+
+                modulesDict[moduleId] = module;
+                if (coursesDict.ContainsKey(courseId))
+                {
+                    coursesDict[courseId].Modules.Add(module);
+                }
+            }
+
+            // Move to next result set (lessons)
+            await reader.NextResultAsync();
+            while (await reader.ReadAsync())
+            {
+                var moduleId = (Guid)reader["module_id"];
+
+                if (modulesDict.ContainsKey(moduleId))
+                {
+                    modulesDict[moduleId]
+                        .Lessons.Add(
+                            new LessonDto
+                            {
+                                Id = (Guid)reader["id"],
+                                Title = (string)reader["title"],
+                                Content = reader["content"] as string ?? string.Empty,
+                                ModuleId = moduleId,
+                            }
+                        );
+                }
+            }
+
+            // Move to next result set (assignments)
+            await reader.NextResultAsync();
+            while (await reader.ReadAsync())
+            {
+                var moduleId = (Guid)reader["module_id"];
+
+                if (modulesDict.ContainsKey(moduleId))
+                {
+                    modulesDict[moduleId]
+                        .Assignments.Add(
+                            new AssignmentDto
+                            {
+                                Id = (Guid)reader["id"],
+                                Title = (string)reader["title"],
+                                Description = reader["description"] as string ?? string.Empty,
+                                ModuleId = moduleId,
+                                DueDate = reader["due_date"] as DateTime?,
+                            }
+                        );
+                }
+            }
+
+            // Move to next result set (enrollments)
+            await reader.NextResultAsync();
             while (await reader.ReadAsync())
             {
                 var courseId = (Guid)reader["course_id"];
+                var studentId = (Guid)reader["student_id"];
 
-                // Handle course
-                if (!coursesDict.ContainsKey(courseId))
+                if (coursesDict.ContainsKey(courseId))
                 {
-                    coursesDict[courseId] = new CourseReadResponseDto
-                    {
-                        Id = courseId,
-                        Title = (string)reader["course_title"],
-                        Description = reader["course_description"] as string,
-                        Instructor = new UserDto
-                        {
-                            Id = (Guid)reader["instructor_id"],
-                            Name = (string)reader["instructor_name"],
-                            Email = (string)reader["instructor_email"],
-                        },
-                        Modules = new List<ModuleDto>(),
-                        Enrollments = new List<Guid>(),
-                    };
-                }
-
-                // Handle module
-                var moduleIdValue = reader["module_id"];
-                if (moduleIdValue != DBNull.Value)
-                {
-                    var moduleId = (Guid)moduleIdValue;
-
-                    if (!modulesDict.ContainsKey(moduleId))
-                    {
-                        var module = new ModuleDto
-                        {
-                            Id = moduleId,
-                            Title = (string)reader["module_title"],
-                            CourseId = courseId,
-                            Lessons = new List<LessonDto>(),
-                            Assignments = new List<AssignmentDto>(),
-                        };
-
-                        modulesDict[moduleId] = module;
-                        coursesDict[courseId].Modules.Add(module);
-                    }
-
-                    // Handle lesson
-                    var lessonIdValue = reader["lesson_id"];
-                    if (lessonIdValue != DBNull.Value)
-                    {
-                        var lessonId = (Guid)lessonIdValue;
-                        var currentModule = modulesDict[moduleId];
-
-                        if (!currentModule.Lessons.Any(l => l.Id == lessonId))
-                        {
-                            currentModule.Lessons.Add(
-                                new LessonDto
-                                {
-                                    Id = lessonId,
-                                    Title = (string)reader["lesson_title"],
-                                    Content = reader["lesson_content"] as string ?? string.Empty,
-                                    ModuleId = moduleId,
-                                }
-                            );
-                        }
-                    }
-
-                    // Handle assignment
-                    var assignmentIdValue = reader["assignment_id"];
-                    if (assignmentIdValue != DBNull.Value)
-                    {
-                        var assignmentId = (Guid)assignmentIdValue;
-                        var currentModule = modulesDict[moduleId];
-
-                        if (!currentModule.Assignments.Any(a => a.Id == assignmentId))
-                        {
-                            currentModule.Assignments.Add(
-                                new AssignmentDto
-                                {
-                                    Id = assignmentId,
-                                    Title = (string)reader["assignment_title"],
-                                    Description =
-                                        reader["assignment_description"] as string ?? string.Empty,
-                                    ModuleId = moduleId,
-                                    DueDate = reader["assignment_due_date"] as DateTime?,
-                                }
-                            );
-                        }
-                    }
-                }
-
-                // Handle enrollment
-                var studentIdValue = reader["student_id"];
-                if (studentIdValue != DBNull.Value)
-                {
-                    var studentId = (Guid)studentIdValue;
-                    var currentCourse = coursesDict[courseId];
-
-                    if (!currentCourse.Enrollments.Contains(studentId))
-                    {
-                        currentCourse.Enrollments.Add(studentId);
-                    }
+                    coursesDict[courseId].Enrollments.Add(studentId);
                 }
             }
 
