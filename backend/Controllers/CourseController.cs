@@ -111,15 +111,12 @@ namespace didaktos.backend.Controllers
 
             var result = await _courseService.EditCourseAsync(request, userId);
 
-            return result.Success switch
+            if (result.Success)
             {
-                true => Ok(result),
-                false when result.Message == "You are already enrolled in this course" => NotFound(
-                    result
-                ),
-                false when result.Message.Contains("Access denied") => Forbid(),
-                _ => BadRequest(result),
-            };
+                return Ok(result);
+            }
+
+            return BadRequest(result);
         }
 
         [HttpPost("enrollments")]
