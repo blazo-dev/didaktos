@@ -55,10 +55,10 @@ export function ModuleAccordion({ modules, courseId, canEdit, isEnrolled }: Modu
                     const isExpanded = expandedModules.has(module.id);
 
                     return (
-                        <Card key={module.id} className="overflow-hidden">
+                        <Card key={module.id} className="p-0 gap-0 overflow-hidden bg-surface border-border">
                             {/* Module Header */}
                             <div
-                                className="p-4 cursor-pointer hover:bg-gray-50 transition-colors"
+                                className="px-4 py-6 cursor-pointer hover:bg-muted/50 transition-colors"
                                 onClick={() => toggleModule(module.id)}
                             >
                                 <div className="flex items-center justify-between">
@@ -89,7 +89,7 @@ export function ModuleAccordion({ modules, courseId, canEdit, isEnrolled }: Modu
                                                 variant="ghost"
                                                 size="sm"
                                                 onClick={() => handleDeleteModule(module.id, module.title)}
-                                                className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                                className="text-destructive hover:text-destructive hover:bg-destructive/10 transition-colors"
                                             >
                                                 <Trash2 className="h-4 w-4" />
                                             </Button>
@@ -100,7 +100,7 @@ export function ModuleAccordion({ modules, courseId, canEdit, isEnrolled }: Modu
 
                             {/* Module Content */}
                             {isExpanded && (
-                                <div className="border-t bg-gray-50/50 p-4 space-y-4">
+                                <div className="border-t border-border bg-muted/30 p-4 space-y-4">
                                     {module.description && (
                                         <p className="text-muted-foreground">{module.description}</p>
                                     )}
@@ -131,7 +131,7 @@ export function ModuleAccordion({ modules, courseId, canEdit, isEnrolled }: Modu
                                                     .map((lesson) => (
                                                         <div
                                                             key={lesson.id}
-                                                            className="flex items-center justify-between p-3 bg-white rounded-lg border cursor-pointer hover:bg-gray-50"
+                                                            className="flex items-center justify-between p-3 bg-surface rounded-lg border border-border cursor-pointer hover:bg-muted/50 transition-colors"
                                                             onClick={() => router.push(`/courses/${courseId}/modules/${module.id}/lessons/${lesson.id}`)}
                                                         >
                                                             <div className="flex items-center space-x-3">
@@ -181,11 +181,11 @@ export function ModuleAccordion({ modules, courseId, canEdit, isEnrolled }: Modu
                                                 {module.assignments.map((assignment) => (
                                                     <div
                                                         key={assignment.id}
-                                                        className="flex items-center justify-between p-3 bg-white rounded-lg border cursor-pointer hover:bg-gray-50"
+                                                        className="flex items-center justify-between p-3 bg-surface rounded-lg border border-border cursor-pointer hover:bg-muted/50 transition-colors"
                                                         onClick={() => router.push(`/courses/${courseId}/modules/${module.id}/assignments/${assignment.id}`)}
                                                     >
                                                         <div className="flex items-center space-x-3">
-                                                            <FileText className="h-4 w-4 text-orange-500" />
+                                                            <FileText className="h-4 w-4 text-accent-secondary" />
                                                             <div>
                                                                 <p className="font-medium">{assignment.title}</p>
                                                                 <div className="flex items-center space-x-4 text-sm text-muted-foreground">
