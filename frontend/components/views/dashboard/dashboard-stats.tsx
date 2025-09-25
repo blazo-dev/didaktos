@@ -1,5 +1,6 @@
 "use client"
 
+import { Course } from "@/types/course"
 import { Book, CheckCircle, Clipboard, TrendingUp } from "lucide-react"
 
 interface StatCardProps {
@@ -25,11 +26,19 @@ function StatCard({ icon, value, label, bgColor }: StatCardProps) {
     )
 }
 
-export function DashboardStats() {
+// Add proper interface for props
+interface DashboardStatsProps {
+    courses: Course[];
+}
+
+export function DashboardStats({ courses }: DashboardStatsProps) {
+    // Calculate the actual count of courses
+    const activeCourses = courses?.length || 0
+
     const stats = [
         {
             icon: <Book className="w-6 h-6 text-blue-600" />,
-            value: 5,
+            value: activeCourses,
             label: "Active Courses",
             bgColor: "bg-blue-600/40"
         },
