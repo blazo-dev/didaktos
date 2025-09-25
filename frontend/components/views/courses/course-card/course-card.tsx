@@ -82,11 +82,11 @@ export function CourseCard({ course }: CourseCardProps) {
                         <MoreVertical className="h-4 w-4" />
                     </Button>
                     {showMenu && (
-                        <div className="absolute right-0 mt-2 border rounded-lg shadow-lg bg-white z-10 py-1">
+                        <div className="grid absolute right-0 mt-2 border rounded-lg shadow-lg bg-surface z-10 overflow-hidden">
                             <Button
                                 variant="ghost"
                                 size="sm"
-                                className="w-full justify-start"
+                                className="w-full justify-start rounded-none"
                                 onClick={handleEditCourse}
                             >
                                 <Edit className="h-4 w-4 mr-2" />
@@ -95,7 +95,7 @@ export function CourseCard({ course }: CourseCardProps) {
                             <Button
                                 variant="ghost"
                                 size="sm"
-                                className="w-full justify-start text-red-600"
+                                className="w-full justify-start text-red-600 rounded-none"
                                 onClick={handleDeleteCourse}
                             >
                                 <Trash2 className="h-4 w-4 mr-2" />
