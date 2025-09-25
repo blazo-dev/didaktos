@@ -5,12 +5,12 @@ using didaktos.backend.Utils;
 
 namespace didaktos.backend.Services
 {
-    public class AuthService : IAuthService
+    public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
         private readonly JwtTokenGenerator _jwtTokenGenerator;
 
-        public AuthService(IUserRepository userRepository, JwtTokenGenerator jwtTokenGenerator)
+        public UserService(IUserRepository userRepository, JwtTokenGenerator jwtTokenGenerator)
         {
             _userRepository = userRepository;
             _jwtTokenGenerator = jwtTokenGenerator;
