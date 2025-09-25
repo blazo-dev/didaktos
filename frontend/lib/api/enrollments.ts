@@ -2,8 +2,6 @@ import { Enrollment } from "@/types/enrollment";
 import { HttpResponse } from "@/types/http";
 import { apiFetch, getAuthHeaders } from "./api";
 
-// Helper function to get auth headers
-
 export const enrollmentsApi = {
     // Enrollment CRUD operations
     async getEnrollments(): Promise<Enrollment[]> {
@@ -12,23 +10,24 @@ export const enrollmentsApi = {
             {
                 method: "GET",
                 headers: {
+                    // 👈 asegurar header
                     ...getAuthHeaders(),
                 },
             }
         );
 
-        console.log("Fetched enrollments:", response);
         return response.data;
     },
 
-    async createEnrollment(
-        enrollmentData: Omit<Enrollment, "id" | "createdAt" | "updatedAt">
-    ): Promise<Enrollment> {
+    async createEnrollment(enrollmentData: {
+        courseId: string;
+    }): Promise<Enrollment> {
         const response = await apiFetch<HttpResponse<Enrollment>>(
             "/courses/enrollments",
             {
                 method: "POST",
                 headers: {
+                    "Content-Type": "application/json",
                     ...getAuthHeaders(),
                 },
                 body: JSON.stringify(enrollmentData),
@@ -46,6 +45,7 @@ export const enrollmentsApi = {
             {
                 method: "PUT",
                 headers: {
+                    "Content-Type": "application/json",
                     ...getAuthHeaders(),
                 },
                 body: JSON.stringify(courseData),

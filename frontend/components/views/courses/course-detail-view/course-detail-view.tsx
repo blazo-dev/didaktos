@@ -13,7 +13,7 @@ interface CourseDetailViewProps {
     useFakeData?: boolean;
 }
 
-export function CourseDetailView({ courseId, useFakeData = false }: CourseDetailViewProps) {
+export function CourseDetailView({ courseId }: CourseDetailViewProps) {
     const { course, isOwner, isEnrolled, isLoading } = useCourseById(courseId);
     const [showCreateModule, setShowCreateModule] = useState(false);
 
@@ -21,9 +21,7 @@ export function CourseDetailView({ courseId, useFakeData = false }: CourseDetail
     // User can view course if they are the owner or enrolled
     const canView = isOwner || isEnrolled;
 
-    console.log({ course, isOwner, isEnrolled });
-
-    if (!useFakeData && isLoading) {
+    if (isLoading) {
         return <Loader text="Loading course..." />;
     }
 

@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/card';
 import { useDeleteCourse } from '@/hooks/courses/use-delete-course';
 import { useAuthStore } from '@/stores/auth-store';
+import { useCoursesStore } from '@/stores/courses-store';
 import { Course } from '@/types/course';
 import {
     BookOpen,
@@ -32,6 +33,7 @@ export function CourseCard({ course }: CourseCardProps) {
     const router = useRouter();
     const [showMenu, setShowMenu] = useState(false);
     const deleteCourse = useDeleteCourse();
+    const { setCurrentCourse } = useCoursesStore();
     const { user } = useAuthStore();
 
 
@@ -39,6 +41,7 @@ export function CourseCard({ course }: CourseCardProps) {
     const isEnrolled = course.enrollments.includes(user!.id);
 
     const handleViewCourse = () => {
+        setCurrentCourse(course);
         router.push(`/courses/${course.id}`);
     };
 
