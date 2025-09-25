@@ -8,9 +8,9 @@ export const useDeleteModule = (courseId: string) => {
 
     return useMutation({
         mutationFn: (moduleId: string) =>
-            coursesApi.deleteModule(courseId, moduleId),
+            coursesApi.deleteModule(moduleId),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["courses", courseId] });
+            queryClient.invalidateQueries({ queryKey: ["courses"] });
             addToast({
                 type: "success",
                 message: "Module deleted successfully!",

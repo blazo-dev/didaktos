@@ -16,7 +16,7 @@ export const useUpdateModule = (courseId: string) => {
             data: Partial<Module>;
         }) => coursesApi.updateModule(courseId, moduleId, data),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["courses", courseId] });
+            queryClient.invalidateQueries({ queryKey: ["courses"] });
             addToast({
                 type: "success",
                 message: "Module updated successfully!",

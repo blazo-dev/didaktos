@@ -94,7 +94,7 @@ export const coursesApi = {
         moduleData: Partial<Module>
     ): Promise<Module> {
         const response = await apiFetch<HttpResponse<Module>>(
-            `/courses/${courseId}/modules/${moduleId}`,
+            `/modules/${moduleId}`,
             {
                 method: "PUT",
                 headers: {
@@ -107,9 +107,9 @@ export const coursesApi = {
         return response.data;
     },
 
-    async deleteModule(courseId: string, moduleId: string): Promise<void> {
+    async deleteModule(moduleId: string): Promise<void> {
         await apiFetch<HttpResponse<void>>(
-            `/courses/${courseId}/modules/${moduleId}`,
+            `/modules/${moduleId}`,
             {
                 method: "DELETE",
                 headers: {

@@ -9,6 +9,7 @@ import { CourseModulesSection } from './course-modules-section';
 import { CourseNotFound } from './course-not-found';
 import { ModuleModal } from "@/components/modals/module-modal";
 
+
 interface CourseDetailViewProps {
     courseId: string;
     useFakeData?: boolean;
@@ -78,6 +79,17 @@ export function CourseDetailView({ courseId }: CourseDetailViewProps) {
                 courseId={courseId}
                 onSuccess={handleModuleSuccess}
             />
+
+            {/* Edit Module Modals - one for each existing module */}
+            {course.modules.map((module) => (
+                <ModuleModal
+                    key={`edit-modal-${module.id}`}
+                    modalId={`edit-module-${module.id}`}
+                    courseId={courseId}
+                    module={module}
+                    onSuccess={handleModuleSuccess}
+                />
+            ))}
         </div>
     );
 }
