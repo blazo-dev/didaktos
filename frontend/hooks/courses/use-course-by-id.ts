@@ -14,22 +14,19 @@ export function useCourseById(id: string) {
     const { user } = useAuth();
 
     const { course, isOwner, isEnrolled } = useMemo(() => {
-        if (!coursesData)
+        if (!coursesData || !id) {
             return { course: null, isOwner: false, isEnrolled: false };
+        }
 
-        const isOwner = coursesData.some(
-            (course) => course.instructor.id === user?.id
-        );
-        const isEnrolled = coursesData.some((course) =>
-            course.enrollments.includes(user?.id || "")
+        const course = coursesData.find((c) => c.id === id) || null;
+
+        const isOwner = Boolean(course && course.instructor.id === user?.id);
+        const isEnrolled = Boolean(
+            course && course.enrollments.includes(user?.id || "")
         );
 
-        return {
-            course: coursesData.find((course) => course.id === id),
-            isOwner,
-            isEnrolled,
-        };
-    }, [coursesData]);
+        return { course, isOwner, isEnrolled };
+    }, [coursesData, id, user?.id]);
 
     return {
         course,

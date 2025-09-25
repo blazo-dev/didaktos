@@ -3,7 +3,6 @@
 import { AppLayout } from "@/components/layout/app-layout";
 import Loader from "@/components/layout/loader";
 import { useCourses } from "@/hooks/courses/use-courses";
-import { useEnrollments } from "@/hooks/enrollments/use-enrollments";
 import { useAuthStore } from "@/stores/auth-store";
 import { useState } from "react";
 import { CoursesFilters, FilterType } from "./courses-filters";
@@ -14,8 +13,6 @@ export function CoursesLayout() {
     const { user } = useAuthStore();
     const { data: maybeCourses, isLoading } = useCourses();
     const courses = maybeCourses || [];
-    const { data: maybeEnrollments } = useEnrollments();
-    const enrollments = maybeEnrollments || [];
     const [searchTerm, setSearchTerm] = useState('');
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showEnrollModal, setShowEnrollModal] = useState(false);
@@ -31,7 +28,8 @@ export function CoursesLayout() {
 
         // Relationship filter
         const isOwner = course.instructor.id === user?.id;
-        const isEnrolled = true;
+        const isEnrolled = course.enrollments.includes(user?.id || "");
+
 
         switch (filterType) {
             case 'owned':
@@ -40,14 +38,14 @@ export function CoursesLayout() {
                 return isEnrolled && !isOwner; // Only show courses where user is enrolled but not owner
             case 'all':
             default:
-                return isOwner || isEnrolled;
+                return true;
         }
     });
 
     // Count different types of courses
     const ownedCoursesCount = courses.filter(course => course.instructor.id === user?.id).length || 0;
-    const enrolledCoursesCount = enrollments.filter(enrollment =>
-        enrollment.studentId === user?.id
+    const enrolledCoursesCount = courses.filter(course =>
+        course.enrollments.includes(user!.id)
     ).length || 0;
 
     const handleCreateCourse = () => setShowCreateModal(true);
@@ -83,22 +81,6 @@ export function CoursesLayout() {
                     onCreateCourse={handleCreateCourse}
                     onEnrollCourse={handleEnrollCourse}
                 />
-
-                {/* TODO: Add Modals */}
-                {/* 
-                {showCreateModal && (
-                    <CreateCourseModal
-                        isOpen={showCreateModal}
-                        onClose={() => setShowCreateModal(false)}
-                    />
-                )}
-                {showEnrollModal && (
-                    <EnrollCourseModal
-                        isOpen={showEnrollModal}
-                        onClose={() => setShowEnrollModal(false)}
-                    />
-                )}
-                */}
             </div>
         </AppLayout>
     );

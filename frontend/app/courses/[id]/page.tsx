@@ -1,3 +1,4 @@
+import { AppLayout } from "@/components/layout/app-layout";
 import ProtectedPage from "@/components/layout/protected-page";
 import { CourseDetailView } from "@/components/views/courses/course-detail-view/course-detail-view";
 
@@ -11,7 +12,9 @@ export default async function CoursePage({ params }: CoursePageProps) {
     const { id } = await params;
     return (
         <ProtectedPage>
-            <CourseDetailView courseId={id} useFakeData={true} />
+            <AppLayout showSidebar showHeader>
+                <CourseDetailView courseId={id} useFakeData={true} />
+            </AppLayout>
         </ProtectedPage>
     );
 }

@@ -1,6 +1,5 @@
 'use client';
 
-import { AppLayout } from '@/components/layout/app-layout';
 import { useCourseById } from '@/hooks/courses/use-course-by-id';
 import { useState } from 'react';
 import Loader from '../../../layout/loader';
@@ -20,7 +19,9 @@ export function CourseDetailView({ courseId, useFakeData = false }: CourseDetail
 
 
     // User can view course if they are the owner or enrolled
-    const canView = isOwner || isEnrolled || true;
+    const canView = isOwner || isEnrolled;
+
+    console.log({ course, isOwner, isEnrolled });
 
     if (!useFakeData && isLoading) {
         return <Loader text="Loading course..." />;
@@ -38,38 +39,26 @@ export function CourseDetailView({ courseId, useFakeData = false }: CourseDetail
     const totalAssignments = course.modules.reduce((acc, module) => acc + module.assignments.length, 0);
 
     return (
-        <AppLayout showSidebar showHeader>
-            <div className='w-full space-y-4 px-4 sm:px-6 lg:px-8 py-8'>
-                <CourseDetailHeader
-                    courseId={courseId}
-                    isOwner={isOwner}
-                    onCreateModule={() => setShowCreateModule(true)}
-                />
-                <CourseInfoCard
-                    course={course}
-                    isOwner={isOwner}
-                    isEnrolled={isEnrolled}
-                    totalLessons={totalLessons}
-                    totalAssignments={totalAssignments}
-                />
-                <CourseModulesSection
-                    modules={course.modules}
-                    courseId={course.id}
-                    isOwner={isOwner}
-                    isEnrolled={isEnrolled}
-                    onCreateModule={() => setShowCreateModule(true)}
-                />
-                {/* TODO: Add Create Module Modal */}
-                {/*
-                      {showCreateModule && (
-                <CreateModuleModal
-                  courseId={courseId}
-                  isOpen={showCreateModule}
-                  onClose={() => setShowCreateModule(false)}
-                />
-                      )}
-                      */}
-            </div>
-        </AppLayout>
+        <div className='w-full space-y-4 px-4 sm:px-6 lg:px-8 py-8'>
+            <CourseDetailHeader
+                courseId={courseId}
+                isOwner={isOwner}
+                onCreateModule={() => setShowCreateModule(true)}
+            />
+            <CourseInfoCard
+                course={course}
+                isOwner={isOwner}
+                isEnrolled={isEnrolled}
+                totalLessons={totalLessons}
+                totalAssignments={totalAssignments}
+            />
+            <CourseModulesSection
+                modules={course.modules}
+                courseId={course.id}
+                isOwner={isOwner}
+                isEnrolled={isEnrolled}
+                onCreateModule={() => setShowCreateModule(true)}
+            />
+        </div>
     );
 }
