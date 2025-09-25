@@ -4,12 +4,15 @@ namespace didaktos.backend.Interfaces
 {
     public interface IEnrollmentService
     {
-        Task<HttpResponseDto<object>> CreateEnrollmentAsync(
+        Task<HttpResponseDto<EnrollmentAddResponseDto>> CreateEnrollmentAsync(
             EnrollmentAddRequestDto request,
             Guid studentId
         );
-        Task<HttpResponseDto<object>> GetEnrollmentsAsync(Guid userId);
+        Task<HttpResponseDto<List<EnrollmentReadResponseDto>>> GetEnrollmentsAsync(Guid userId);
 
-        Task<HttpResponseDto<object>> CloseEnrollmentsAsync(Guid courseId, Guid studentId);
+        Task<HttpResponseDto<EnrollmentCloseResponseDto>> CloseEnrollmentsAsync(
+            Guid courseId,
+            Guid studentId
+        );
     }
 }
