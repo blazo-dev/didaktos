@@ -9,21 +9,7 @@ interface Course {
     progress: number
 }
 
-export function CurrentCourses() {
-    const courses: Course[] = [
-        {
-            id: "cs101",
-            title: "Computer Science 101",
-            instructor: "Prof. Johnson",
-            progress: 75
-        },
-        {
-            id: "math201",
-            title: "Mathematics 201",
-            instructor: "Prof. Davis",
-            progress: 92
-        }
-    ]
+export function CurrentCourses({ courses }: { courses : Course[] }) {
 
     return (
         <section>

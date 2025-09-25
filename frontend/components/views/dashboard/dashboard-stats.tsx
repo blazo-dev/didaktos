@@ -1,6 +1,7 @@
 "use client"
 
 import { Course } from "@/types/course"
+import { DashboardStats as DashboardStatsType } from "@/hooks/dashboard/use-dashboard-data" // Import the stats type
 import { Book, CheckCircle, Clipboard, TrendingUp } from "lucide-react"
 
 interface StatCardProps {
@@ -26,16 +27,18 @@ function StatCard({ icon, value, label, bgColor }: StatCardProps) {
     )
 }
 
-// Add proper interface for props
 interface DashboardStatsProps {
     courses: Course[];
+    stats: DashboardStatsType; // Add the stats from your dashboard hook
 }
 
-export function DashboardStats({ courses }: DashboardStatsProps) {
-    // Calculate the actual count of courses
-    const activeCourses = courses?.length || 0
+export function DashboardStats({ courses, stats }: DashboardStatsProps) {
+    // Use the actual stats from the dashboard hook
+     const activeCourses = courses?.length || 0
+    const dueThisWeek = stats.dueThisWeek;
+    // const avgGrade = stats.avgGrade > 0 ? `${stats.avgGrade}%` : "N/A";
 
-    const stats = [
+    const statsCards = [
         {
             icon: <Book className="w-6 h-6 text-blue-600" />,
             value: activeCourses,
@@ -44,15 +47,9 @@ export function DashboardStats({ courses }: DashboardStatsProps) {
         },
         {
             icon: <Clipboard className="w-6 h-6 text-orange-600" />,
-            value: 3,
+            value: dueThisWeek,
             label: "Due This Week",
             bgColor: "bg-orange-600/40"
-        },
-        {
-            icon: <CheckCircle className="w-6 h-6 text-green-600" />,
-            value: 12,
-            label: "Completed",
-            bgColor: "bg-green-600/40"
         },
         {
             icon: <TrendingUp className="w-6 h-6 text-purple-600" />,
@@ -63,8 +60,8 @@ export function DashboardStats({ courses }: DashboardStatsProps) {
     ]
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            {stats.map((stat, index) => (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            {statsCards.map((stat, index) => (
                 <StatCard key={index} {...stat} />
             ))}
         </div>
