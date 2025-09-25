@@ -1,20 +1,18 @@
 'use client';
 
 import { Button } from "@/components/ui/button";
-import { BookOpen, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 
 interface CoursesHeaderProps {
     ownedCoursesCount: number;
     enrolledCoursesCount: number;
     onCreateCourse: () => void;
-    onEnrollCourse: () => void;
 }
 
 export function CoursesHeader({
     ownedCoursesCount,
     enrolledCoursesCount,
     onCreateCourse,
-    onEnrollCourse
 }: CoursesHeaderProps) {
     return (
         <div className="flex items-center justify-between">
@@ -30,13 +28,6 @@ export function CoursesHeader({
                 </div>
             </div>
             <div className="flex gap-3">
-                <Button
-                    onClick={onEnrollCourse}
-                    variant="outline"
-                >
-                    <BookOpen className="h-4 w-4 mr-2" />
-                    Enroll in Course
-                </Button>
                 <Button
                     onClick={onCreateCourse}
                     className="bg-primary hover:bg-primary/90"

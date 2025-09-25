@@ -15,7 +15,6 @@ export function CoursesLayout() {
     const courses = maybeCourses || [];
     const [searchTerm, setSearchTerm] = useState('');
     const [showCreateModal, setShowCreateModal] = useState(false);
-    const [showEnrollModal, setShowEnrollModal] = useState(false);
     const [filterType, setFilterType] = useState<FilterType>('all');
 
     // Filter courses based on user relationship and search term
@@ -49,7 +48,6 @@ export function CoursesLayout() {
     ).length || 0;
 
     const handleCreateCourse = () => setShowCreateModal(true);
-    const handleEnrollCourse = () => setShowEnrollModal(true);
 
     if (isLoading) {
         return <Loader text="Loading courses..." />;
@@ -62,7 +60,6 @@ export function CoursesLayout() {
                     ownedCoursesCount={ownedCoursesCount}
                     enrolledCoursesCount={enrolledCoursesCount}
                     onCreateCourse={handleCreateCourse}
-                    onEnrollCourse={handleEnrollCourse}
                 />
 
                 <CoursesFilters
@@ -79,7 +76,6 @@ export function CoursesLayout() {
                     searchTerm={searchTerm}
                     filterType={filterType}
                     onCreateCourse={handleCreateCourse}
-                    onEnrollCourse={handleEnrollCourse}
                 />
             </div>
         </AppLayout>

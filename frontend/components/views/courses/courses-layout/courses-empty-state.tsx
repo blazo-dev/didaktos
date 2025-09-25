@@ -9,14 +9,12 @@ interface CoursesEmptyStateProps {
     searchTerm: string;
     filterType: FilterType;
     onCreateCourse: () => void;
-    onEnrollCourse: () => void;
 }
 
 export function CoursesEmptyState({
     searchTerm,
     filterType,
     onCreateCourse,
-    onEnrollCourse
 }: CoursesEmptyStateProps) {
     const getTitle = () => {
         if (searchTerm) return 'No courses found';
@@ -46,7 +44,6 @@ export function CoursesEmptyState({
 
     const showActions = !searchTerm;
     const showCreateButton = filterType === 'all' || filterType === 'owned';
-    const showEnrollButton = filterType === 'all' || filterType === 'enrolled';
 
     return (
         <Card className="p-12 text-center">
@@ -60,12 +57,6 @@ export function CoursesEmptyState({
                         <Button onClick={onCreateCourse}>
                             <Plus className="h-4 w-4 mr-2" />
                             Create Course
-                        </Button>
-                    )}
-                    {showEnrollButton && (
-                        <Button variant="outline" onClick={onEnrollCourse}>
-                            <BookOpen className="h-4 w-4 mr-2" />
-                            Enroll in Course
                         </Button>
                     )}
                 </div>

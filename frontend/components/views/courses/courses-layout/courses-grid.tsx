@@ -10,7 +10,6 @@ interface CoursesGridProps {
     searchTerm: string;
     filterType: FilterType;
     onCreateCourse: () => void;
-    onEnrollCourse: () => void;
 }
 
 export function CoursesGrid({
@@ -18,7 +17,6 @@ export function CoursesGrid({
     searchTerm,
     filterType,
     onCreateCourse,
-    onEnrollCourse
 }: CoursesGridProps) {
     if (courses.length === 0) {
         return (
@@ -26,7 +24,6 @@ export function CoursesGrid({
                 searchTerm={searchTerm}
                 filterType={filterType}
                 onCreateCourse={onCreateCourse}
-                onEnrollCourse={onEnrollCourse}
             />
         );
     }
