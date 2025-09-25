@@ -23,7 +23,7 @@ export function CoursesFilters({
     enrolledCoursesCount
 }: CoursesFiltersProps) {
     return (
-        <div className="flex items-center justify-between gap-4">
+        <div className="grid md:grid-cols-[1fr_auto] items-center justify-between gap-4">
             {/* Filter Tabs */}
             <div className="flex items-center gap-2">
                 <Filter className="h-4 w-4 text-muted-foreground" />
