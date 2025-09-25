@@ -44,6 +44,7 @@ namespace didaktos.backend.Services
                     Id = Guid.NewGuid(),
                     Content = request.Content,
                     StudentId = studentId,
+                    AssignmentId = request.AssignmentId,
                     Grade = null,
                 };
 
@@ -87,7 +88,7 @@ namespace didaktos.backend.Services
                 return new HttpResponseDto<object>
                 {
                     Success = true,
-                    Message = "Enrollments retrieved successfully",
+                    Message = "Submissions retrieved successfully",
                     Data = enrollments,
                 };
             }
@@ -96,7 +97,7 @@ namespace didaktos.backend.Services
                 return new HttpResponseDto<object>
                 {
                     Success = false,
-                    Message = "Retrieval of enrollments failed",
+                    Message = "Retrieval of submissions failed",
                     Errors = new { exception = ex.Message },
                 };
             }
@@ -116,25 +117,25 @@ namespace didaktos.backend.Services
                     return new HttpResponseDto<object>
                     {
                         Success = false,
-                        Message = "Access denied. Only course instructors can close the course",
+                        Message = "Access denied. Only course instructors can grade the submission",
                     };
                 }
 
-                var updatedEnrollmentInfo = await _submissionRepository.UpdateSubmissionGradeAsync(
+                var updatedSubmissionInfo = await _submissionRepository.UpdateSubmissionGradeAsync(
                     request.Grade,
                     request.Id
                 );
 
-                var moduleDto = new EnrollmentCloseResponseDto
+                var moduleDto = new SubmissionGradeResponseDto
                 {
-                    CourseId = updatedEnrollmentInfo.CourseId,
-                    Status = updatedEnrollmentInfo.Status,
+                    Id = updatedSubmissionInfo.Id,
+                    Grade = updatedSubmissionInfo.Grade,
                 };
 
                 return new HttpResponseDto<object>
                 {
                     Success = true,
-                    Message = "Enrollments closed Successfully",
+                    Message = "Submission graded Successfully",
                     Data = moduleDto,
                 };
             }
@@ -143,7 +144,7 @@ namespace didaktos.backend.Services
                 return new HttpResponseDto<object>
                 {
                     Success = false,
-                    Message = "Failed to close enrollments",
+                    Message = "Failed to grade submission",
                     Errors = new { exception = ex.Message },
                 };
             }

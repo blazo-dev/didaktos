@@ -54,7 +54,7 @@ namespace didaktos.backend.Controllers
 
         [HttpGet("enrollments")]
         [Authorize]
-        public async Task<IActionResult> GetAllCourseSubmissions([FromBody] Guid CourseId)
+        public async Task<IActionResult> GetAllCourseSubmissions(Guid CourseId)
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))

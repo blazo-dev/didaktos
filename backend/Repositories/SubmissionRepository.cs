@@ -21,26 +21,28 @@ public class SubmissionRepository : ISubmissionRepository
         const string sql =
             @"
                 INSERT INTO submissions (id, content, grade, student_id, assignment_id, submitted_at, created_at, updated_at)
-                VALUES (@id, @content, @grade, @student_id, @assignment_id, @submitted_at, @created_At, @updated_At)";
+                VALUES (@id, @content, @grade, @student_id, @assignment_id, @submitted_at, @created_At, @updated_At)
+                RETURNING id";
         using var command = new NpgsqlCommand(sql, connection);
         command.Parameters.AddWithValue("@id", submission.Id);
         command.Parameters.AddWithValue("@content", submission.Content);
-        command.Parameters.AddWithValue("@grade", DBNull.Value);
         command.Parameters.AddWithValue("@student_id", submission.StudentId);
         command.Parameters.AddWithValue("@assignment_id", submission.AssignmentId);
         command.Parameters.AddWithValue("@submitted_at", submission.SubmittedAt);
         command.Parameters.AddWithValue("@created_at", submission.CreatedAt);
         command.Parameters.AddWithValue("@updated_at", submission.UpdatedAt);
+        command.Parameters.AddWithValue("@grade", DBNull.Value);
+
         using var reader = await command.ExecuteReaderAsync();
         if (await reader.ReadAsync())
         {
             return new HttpResponseDto<object>
             {
                 Success = true,
-                Message = "Submission copmleted successfully",
+                Message = "Submission completed successfully",
             };
         }
-        throw new InvalidOperationException("Failed to Enroll");
+        throw new InvalidOperationException("Failed to Submit");
     }
 
     public async Task<List<SubmissionReadResponseDto>> SelectAllCourseSubmissionsAsync(
@@ -70,7 +72,7 @@ public class SubmissionRepository : ISubmissionRepository
                 {
                     Id = (Guid)reader["id"],
                     Content = (string)reader["content"],
-                    Grade = (int?)reader["grade"],
+                    Grade = reader["grade"] == DBNull.Value ? null : (int?)reader["grade"],
                     AssignmentId = (Guid)reader["assignment_id"],
                     StudentId = (Guid)reader["student_id"],
                     SubmittedAt = (DateTime)reader["submitted_at"],
@@ -82,7 +84,7 @@ public class SubmissionRepository : ISubmissionRepository
         return submissions;
     }
 
-    public async Task<EnrollmentCloseResponseDto> UpdateSubmissionGradeAsync(
+    public async Task<SubmissionGradeResponseDto> UpdateSubmissionGradeAsync(
         int? grade,
         Guid submissionId
     )
@@ -98,20 +100,20 @@ public class SubmissionRepository : ISubmissionRepository
                 RETURNING id, grade";
 
         using var command = new NpgsqlCommand(sql, connection);
-        command.Parameters.AddWithValue("@grade", grade);
+        command.Parameters.AddWithValue("@grade", grade ?? (object)DBNull.Value);
         command.Parameters.AddWithValue("@id", submissionId);
         command.Parameters.AddWithValue("@updatedAt", DateTime.UtcNow);
 
         using var reader = await command.ExecuteReaderAsync();
         if (await reader.ReadAsync())
         {
-            return new EnrollmentCloseResponseDto
+            return new SubmissionGradeResponseDto
             {
-                Status = (string)reader["status"],
-                CourseId = (Guid)reader["course_id"],
+                Grade = reader["grade"] == DBNull.Value ? null : (int?)reader["grade"],
+                Id = (Guid)reader["id"],
             };
         }
 
-        throw new InvalidOperationException("Failed to close enrollment");
+        throw new InvalidOperationException("Failed to update submission grade");
     }
 }

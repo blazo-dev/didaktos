@@ -7,6 +7,6 @@ namespace didaktos.backend.Interfaces
     {
         Task<HttpResponseDto<Object>> InsertSubmissionAsync(Submission submission);
         Task<List<SubmissionReadResponseDto>> SelectAllCourseSubmissionsAsync(Guid courseId);
-        Task<EnrollmentCloseResponseDto> UpdateSubmissionGradeAsync(int? grade, Guid submissionId);
+        Task<SubmissionGradeResponseDto> UpdateSubmissionGradeAsync(int? grade, Guid submissionId);
     }
 }
