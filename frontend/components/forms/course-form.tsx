@@ -1,22 +1,22 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { useCreateCourse } from '@/hooks/courses/use-create-course';
 import { useUpdateCourse } from '@/hooks/courses/use-update-course';
+import { CourseFormData, courseSchema } from '@/lib/schemas/course';
 import { useAuthStore } from '@/stores/auth-store';
 import { useToastStore } from '@/stores/toast-store';
 import { Course } from '@/types/course';
-import { useEffect, useState } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 
 interface CourseFormProps {
     course?: Course;
     onSuccess?: (course: Course) => void;
     onCancel?: () => void;
-}
-
-interface CourseFormData {
-    title: string;
-    description: string;
 }
 
 export function CourseForm({ course, onSuccess, onCancel }: CourseFormProps) {
@@ -25,43 +25,24 @@ export function CourseForm({ course, onSuccess, onCancel }: CourseFormProps) {
     const createCourseMutation = useCreateCourse();
     const updateCourseMutation = useUpdateCourse();
 
+    // React Hook Form setup
+    const { register, handleSubmit, formState: { errors }, reset } = useForm<CourseFormData>({
+        resolver: zodResolver(courseSchema),
+        defaultValues: {
+            title: course?.title || '',
+            description: course?.description || '',
+        },
+    });
+
     // Handle success with useEffect
     useEffect(() => {
         if (createCourseMutation.isSuccess || updateCourseMutation.isSuccess) {
-            setFormData({ title: '', description: '' });
+            reset();
             onSuccess?.(course as Course);
         }
-    }, [createCourseMutation.isSuccess, updateCourseMutation.isSuccess, course, onSuccess]);
+    }, [createCourseMutation.isSuccess, updateCourseMutation.isSuccess, course, onSuccess, reset]);
 
-    const [formData, setFormData] = useState<CourseFormData>({
-        title: course?.title || '',
-        description: course?.description || '',
-    });
-
-    const [errors, setErrors] = useState<Partial<CourseFormData>>({});
-
-    const validateForm = (): boolean => {
-        const newErrors: Partial<CourseFormData> = {};
-
-        if (!formData.title.trim()) {
-            newErrors.title = 'Course title is required';
-        }
-
-        if (!formData.description.trim()) {
-            newErrors.description = 'Course description is required';
-        }
-
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-
-        if (!validateForm()) {
-            return;
-        }
-
+    const onSubmit = (data: CourseFormData) => {
         if (!user) {
             addToast({
                 message: 'You must be logged in to create a course',
@@ -74,12 +55,12 @@ export function CourseForm({ course, onSuccess, onCancel }: CourseFormProps) {
             // Update existing course
             updateCourseMutation.mutate({
                 id: course.id,
-                data: formData,
+                data: data,
             });
         } else {
             // Create new course
             const newCourseData = {
-                ...formData,
+                ...data,
                 instructor: {
                     id: user.id,
                     name: user.name || '',
@@ -91,66 +72,33 @@ export function CourseForm({ course, onSuccess, onCancel }: CourseFormProps) {
 
             createCourseMutation.mutate(newCourseData);
         }
-
-        // Reset form
-        setFormData({ title: '', description: '' });
-    };
-
-    const handleInputChange = (field: keyof CourseFormData, value: string) => {
-        setFormData(prev => ({ ...prev, [field]: value }));
-        // Clear error when user starts typing
-        if (errors[field]) {
-            setErrors(prev => ({ ...prev, [field]: undefined }));
-        }
     };
 
     const isLoading = createCourseMutation.isPending || updateCourseMutation.isPending;
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-6 p-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 p-4">
             {/* Course Title */}
-            <div>
-                <label htmlFor="title" className="block text-sm font-medium text-foreground mb-2">
-                    Course Title *
-                </label>
-                <input
-                    id="title"
-                    type="text"
-                    value={formData.title}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        handleInputChange('title', e.target.value)
-                    }
-                    placeholder="Enter course title"
-                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition-colors ${errors.title ? 'border-destructive' : 'border-border'
-                        }`}
-                    disabled={isLoading}
-                />
-                {errors.title && (
-                    <p className="text-destructive text-sm mt-1">{errors.title}</p>
-                )}
-            </div>
+            <Input
+                id="course-title"
+                label="Course Title"
+                placeholder="Enter course title"
+                type="text"
+                required
+                register={register("title")}
+                error={errors.title?.message}
+            />
 
             {/* Course Description */}
-            <div>
-                <label htmlFor="description" className="block text-sm font-medium text-foreground mb-2">
-                    Course Description *
-                </label>
-                <textarea
-                    id="description"
-                    value={formData.description}
-                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-                        handleInputChange('description', e.target.value)
-                    }
-                    placeholder="Enter course description"
-                    rows={4}
-                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition-colors ${errors.description ? 'border-destructive' : 'border-border'
-                        }`}
-                    disabled={isLoading}
-                />
-                {errors.description && (
-                    <p className="text-destructive text-sm mt-1">{errors.description}</p>
-                )}
-            </div>
+            <Textarea
+                id="course-description"
+                label="Course Description"
+                placeholder="Enter course description"
+                rows={4}
+                required
+                register={register("description")}
+                error={errors.description?.message}
+            />
 
             {/* Form Actions */}
             <div className="flex items-center justify-end space-x-4 pt-4 border-t border-border">
@@ -163,9 +111,7 @@ export function CourseForm({ course, onSuccess, onCancel }: CourseFormProps) {
                     Cancel
                 </Button>
                 <Button
-                    type="submit"
                     disabled={isLoading}
-                    className="min-w-[100px]"
                 >
                     {isLoading ? (
                         <div className="flex items-center space-x-2">
