@@ -72,12 +72,16 @@ namespace didaktos.backend.Services
         {
             try
             {
-                if (!await _courseRepository.IsUserInstructorOfCourseAsync(userId, courseId))
+                if (
+                    !await _courseRepository.IsUserInstructorOfCourseAsync(userId, courseId)
+                    && !await _courseRepository.IsUserEnrolledInCourseAsync(userId, courseId)
+                )
                 {
                     return new HttpResponseDto<object>
                     {
                         Success = false,
-                        Message = "Access denied. Only course instructors can see submissions",
+                        Message =
+                            "Access denied. Only course instructors and enrolled students can see submissions",
                     };
                 }
 

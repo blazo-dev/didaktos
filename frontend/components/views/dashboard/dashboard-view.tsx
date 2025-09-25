@@ -14,6 +14,7 @@ export function DashboardView() {
     const courses = maybeCourses || [];
     const { user } = useAuthStore();
     
+    // Use the dashboard hook to get processed data
     const dashboardData = useDashboardData(courses);
 
     if (isLoading) {
@@ -31,11 +32,12 @@ export function DashboardView() {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2 space-y-8">
+                    {/* Pass the upcoming assignments from the dashboard hook */}
                     <UpcomingAssignments assignments={dashboardData.upcomingAssignments} />
                 </div>
 
                 <div className="space-y-8">
-                    <RecentGrades />
+                    <RecentGrades grades={dashboardData.recentGrades} />
                 </div>
             </div>
             <StudyAssistant />
