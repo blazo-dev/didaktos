@@ -5,13 +5,13 @@ namespace didaktos.backend.Interfaces
 {
     public interface ICourseService
     {
-        Task<HttpResponseDto<object>> GetCoursesAsync();
-        Task<HttpResponseDto<object>> CreateCourseAsync(
+        Task<HttpResponseDto<List<CourseReadResponseDto>>> GetCoursesAsync();
+        Task<HttpResponseDto<CourseResponseDto>> CreateCourseAsync(
             CourseRequestDto request,
             Guid instructorId
         );
 
-        Task<HttpResponseDto<object>> EditCourseAsync(CourseEditDto course, Guid userId);
+        Task<HttpResponseDto<CourseEditDto>> EditCourseAsync(CourseEditDto course, Guid userId);
         Task<HttpResponseDto<object>> DeleteCourseAsync(Guid courseId, Guid userId);
     }
 }
