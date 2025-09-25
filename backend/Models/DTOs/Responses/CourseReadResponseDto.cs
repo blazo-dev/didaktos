@@ -16,5 +16,8 @@ namespace didaktos.backend.Models.DTOs
 
         [Required]
         public UserDto Instructor { get; set; } = new UserDto();
+
+        public List<Guid> Enrollments { get; set; } = new List<Guid>();
+        public List<ModuleDto> Modules { get; set; } = new List<ModuleDto>();
     }
 }

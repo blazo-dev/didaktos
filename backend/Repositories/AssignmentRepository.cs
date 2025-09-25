@@ -73,7 +73,6 @@ namespace didaktos.backend.Repositories
             command.Parameters.AddWithValue("@createdAt", assignment.CreatedAt);
             command.Parameters.AddWithValue("@updatedAt", assignment.UpdatedAt);
 
-            // Better null handling for due_date
             command.Parameters.AddWithValue(
                 "@dueDate",
                 (object?)assignment.DueDate ?? DBNull.Value
