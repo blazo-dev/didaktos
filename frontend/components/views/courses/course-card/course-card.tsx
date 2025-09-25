@@ -9,8 +9,9 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
-import { useCourseById } from '@/hooks/courses/use-course-by-id';
 import { useDeleteCourse } from '@/hooks/courses/use-delete-course';
+import { useAuthStore } from '@/stores/auth-store';
+import { Course } from '@/types/course';
 import {
     BookOpen,
     Edit,
@@ -24,17 +25,18 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 interface CourseCardProps {
-    courseId: string;
+    course: Course;
 }
 
-export function CourseCard({ courseId }: CourseCardProps) {
+export function CourseCard({ course }: CourseCardProps) {
     const router = useRouter();
     const [showMenu, setShowMenu] = useState(false);
     const deleteCourse = useDeleteCourse();
-    const { course, isOwner, isEnrolled } = useCourseById(courseId);
+    const { user } = useAuthStore();
 
-    if (!course) return null;
 
+    const isOwner = course.instructor.id === user!.id;
+    const isEnrolled = course.enrollments.includes(user!.id);
 
     const handleViewCourse = () => {
         router.push(`/courses/${course.id}`);
@@ -71,7 +73,7 @@ export function CourseCard({ courseId }: CourseCardProps) {
                         </span>
                     )}
                 </div>
-                <div className="relative">
+                {isOwner && (<div className="relative">
                     <Button
                         variant="ghost"
                         size="sm"
@@ -101,7 +103,7 @@ export function CourseCard({ courseId }: CourseCardProps) {
                             </Button>
                         </div>
                     )}
-                </div>
+                </div>)}
             </CardHeader>
 
             <CardContent className="space-y-4">
