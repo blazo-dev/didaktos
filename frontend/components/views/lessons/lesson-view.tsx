@@ -66,7 +66,7 @@ export function LessonView({ courseId }: LessonViewProps) {
     }
 
     return (
-        <div className='w-full space-y-4 px-4 sm:px-6 lg:px-8 py-8'>
+        <div className='w-full space-y-4 px-4 sm:px-6 lg:px-8 py-8 relative'>
 
             {/* Lesson Header */}
             <LessonHeader
