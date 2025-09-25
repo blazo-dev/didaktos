@@ -96,6 +96,7 @@ builder.Services.AddScoped<IAssignmentRepository, AssignmentRepository>();
 builder.Services.AddScoped<ISubmissionRepository, SubmissionRepository>();
 
 builder.Services.AddScoped<JwtTokenGenerator>();
+builder.Services.AddHttpClient();
 
 // Add CORS for Next.js frontend
 builder.Services.AddCors(options =>

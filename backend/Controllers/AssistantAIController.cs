@@ -26,7 +26,7 @@ namespace didaktos.backend.Controllers
         [HttpPost]
         public async Task<IActionResult> GenerateContent([FromBody] GeminiPrompt prompt)
         {
-            var fullRequest = "";
+            string fullRequest;
             if (prompt.Choice == "Question")
             {
                 fullRequest =
