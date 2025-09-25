@@ -7,11 +7,10 @@ export interface Course {
         name: string;
         email: string;
     };
-    students: Student[];
+    enrollments: string[];
     modules: Module[];
     createdAt: string;
     updatedAt: string;
-    status: "active" | "draft" | "completed" | "archived";
 }
 
 export interface Module {

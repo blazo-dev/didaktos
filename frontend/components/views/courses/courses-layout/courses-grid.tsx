@@ -36,7 +36,7 @@ export function CoursesGrid({
             {courses.map((course) => (
                 <CourseCard
                     key={course.id}
-                    course={course}
+                    courseId={course.id}
                 />
             ))}
         </div>

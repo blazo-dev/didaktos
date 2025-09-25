@@ -35,14 +35,6 @@ export function CourseInfoCard({
                             Enrolled Student
                         </span>
                     )}
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${course.status === 'active'
-                        ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                        : course.status === 'completed'
-                            ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
-                            : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200'
-                        }`}>
-                        {course.status.charAt(0).toUpperCase() + course.status.slice(1)}
-                    </span>
                 </div>
 
                 <div>
@@ -55,7 +47,7 @@ export function CourseInfoCard({
                 <div className="flex items-center space-x-6 text-sm text-muted-foreground">
                     <div className="flex items-center">
                         <Users className="h-4 w-4 mr-1" />
-                        {course.students.length} enrolled
+                        {course.enrollments.length} enrolled
                     </div>
                     <div className="flex items-center">
                         <BookOpen className="h-4 w-4 mr-1" />
