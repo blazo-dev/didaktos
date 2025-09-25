@@ -1,7 +1,7 @@
 "use client"
 
 import { Course } from "@/types/course"
-import { DashboardStats as DashboardStatsType } from "@/hooks/dashboard/use-dashboard-data" // Import the stats type
+import { DashboardStats as DashboardStatsType } from "@/hooks/dashboard/use-dashboard-data"
 import { Book, CheckCircle, Clipboard, TrendingUp } from "lucide-react"
 
 interface StatCardProps {
@@ -29,14 +29,14 @@ function StatCard({ icon, value, label, bgColor }: StatCardProps) {
 
 interface DashboardStatsProps {
     courses: Course[];
-    stats: DashboardStatsType; // Add the stats from your dashboard hook
+    stats: DashboardStatsType;
 }
 
 export function DashboardStats({ courses, stats }: DashboardStatsProps) {
     // Use the actual stats from the dashboard hook
-     const activeCourses = courses?.length || 0
+    const activeCourses = courses?.length || 0
     const dueThisWeek = stats.dueThisWeek;
-    // const avgGrade = stats.avgGrade > 0 ? `${stats.avgGrade}%` : "N/A";
+    const avgGrade = stats.avgGrade > 0 ? `${stats.avgGrade}%` : "N/A";
 
     const statsCards = [
         {
@@ -53,8 +53,8 @@ export function DashboardStats({ courses, stats }: DashboardStatsProps) {
         },
         {
             icon: <TrendingUp className="w-6 h-6 text-purple-600" />,
-            value: "87%",
-            label: "Avg Grade",
+            value: avgGrade,
+            label: "Total Avg Grade",
             bgColor: "bg-purple-600/40"
         }
     ]

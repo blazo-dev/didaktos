@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace didaktos.backend.Models
 {
-    public class Submission
+    public class SubmissionReadResponseDto
     {
         [Required]
         [Key]
@@ -18,7 +18,7 @@ namespace didaktos.backend.Models
         [Required]
         public Guid StudentId { get; set; }
         public DateTime SubmittedAt { get; set; } = DateTime.UtcNow;
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+
+        public string Name { get; set; } = string.Empty;
     }
 }
