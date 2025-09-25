@@ -18,7 +18,7 @@ namespace didaktos.backend.Services
             _courseRepository = courseRepository;
         }
 
-        public async Task<HttpResponseDto<object>> CreateEnrollmentAsync(
+        public async Task<HttpResponseDto<EnrollmentAddResponseDto>> CreateEnrollmentAsync(
             EnrollmentAddRequestDto request,
             Guid studentId
         )
@@ -42,7 +42,7 @@ namespace didaktos.backend.Services
                     )
                 )
                 {
-                    return new HttpResponseDto<object>
+                    return new HttpResponseDto<EnrollmentAddResponseDto>
                     {
                         Success = false,
                         Message = "User cannot be enrolled in their own course",
@@ -55,7 +55,7 @@ namespace didaktos.backend.Services
                 );
                 if (existingModule)
                 {
-                    return new HttpResponseDto<object>
+                    return new HttpResponseDto<EnrollmentAddResponseDto>
                     {
                         Success = false,
                         Message = "You are already enrolled in this course",
@@ -66,7 +66,7 @@ namespace didaktos.backend.Services
                     enrollment
                 );
 
-                return new HttpResponseDto<object>
+                return new HttpResponseDto<EnrollmentAddResponseDto>
                 {
                     Success = true,
                     Message = "Enrollment successful",
@@ -81,7 +81,7 @@ namespace didaktos.backend.Services
             }
             catch (Exception ex)
             {
-                return new HttpResponseDto<object>
+                return new HttpResponseDto<EnrollmentAddResponseDto>
                 {
                     Success = false,
                     Message = "Enrollment failed",
@@ -90,13 +90,15 @@ namespace didaktos.backend.Services
             }
         }
 
-        public async Task<HttpResponseDto<object>> GetEnrollmentsAsync(Guid userId)
+        public async Task<HttpResponseDto<List<EnrollmentReadResponseDto>>> GetEnrollmentsAsync(
+            Guid userId
+        )
         {
             try
             {
                 var enrollments = await _enrollmentRepository.SelectEnrollmentByIdAsync(userId);
 
-                return new HttpResponseDto<object>
+                return new HttpResponseDto<List<EnrollmentReadResponseDto>>
                 {
                     Success = true,
                     Message = "Enrollments retrieved successfully",
@@ -105,7 +107,7 @@ namespace didaktos.backend.Services
             }
             catch (Exception ex)
             {
-                return new HttpResponseDto<object>
+                return new HttpResponseDto<List<EnrollmentReadResponseDto>>
                 {
                     Success = false,
                     Message = "Retrieval of enrollments failed",
@@ -114,13 +116,16 @@ namespace didaktos.backend.Services
             }
         }
 
-        public async Task<HttpResponseDto<object>> CloseEnrollmentsAsync(Guid courseId, Guid userId)
+        public async Task<HttpResponseDto<EnrollmentCloseResponseDto>> CloseEnrollmentsAsync(
+            Guid courseId,
+            Guid userId
+        )
         {
             try
             {
                 if (!await _courseRepository.IsUserInstructorOfCourseAsync(userId, courseId))
                 {
-                    return new HttpResponseDto<object>
+                    return new HttpResponseDto<EnrollmentCloseResponseDto>
                     {
                         Success = false,
                         Message = "Access denied. Only course instructors can close the course",
@@ -137,7 +142,7 @@ namespace didaktos.backend.Services
                     Status = updatedEnrollmentInfo.Status,
                 };
 
-                return new HttpResponseDto<object>
+                return new HttpResponseDto<EnrollmentCloseResponseDto>
                 {
                     Success = true,
                     Message = "Enrollments closed Successfully",
@@ -146,7 +151,7 @@ namespace didaktos.backend.Services
             }
             catch (Exception ex)
             {
-                return new HttpResponseDto<object>
+                return new HttpResponseDto<EnrollmentCloseResponseDto>
                 {
                     Success = false,
                     Message = "Failed to close enrollments",
