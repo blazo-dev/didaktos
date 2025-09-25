@@ -1,5 +1,5 @@
 import ProtectedPage from "@/components/layout/protected-page";
-import { CourseDetailView } from "@/components/views/courses/course-detail-view";
+import { CourseDetailView } from "@/components/views/courses/course-detail-view/course-detail-view";
 
 interface CoursePageProps {
     params: Promise<{

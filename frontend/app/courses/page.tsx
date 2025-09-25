@@ -1,5 +1,5 @@
 import ProtectedPage from "@/components/layout/protected-page";
-import { CoursesLayout } from "@/components/views/courses/courses-layout";
+import { CoursesLayout } from "@/components/views/courses/courses-layout/courses-layout";
 
 export default function CoursesPage() {
 
