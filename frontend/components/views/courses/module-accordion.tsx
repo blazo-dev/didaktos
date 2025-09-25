@@ -1,11 +1,12 @@
 'use client';
 
+import { useLessonsStore } from '@/stores/lessons-store';
+import { Lesson, Module } from '@/types/course';
 import {
     BookOpen,
     Calendar,
     ChevronDown,
     ChevronRight,
-    Clock,
     Edit,
     FileText,
     Play,
@@ -15,7 +16,6 @@ import {
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useDeleteModule } from '../../../hooks/modules/use-delete-module';
-import { Module } from '../../../types/course';
 import { Button } from '../../ui/button';
 import { Card } from '../../ui/card';
 
@@ -26,10 +26,11 @@ interface ModuleAccordionProps {
     isEnrolled: boolean;
 }
 
-export function ModuleAccordion({ modules, courseId, canEdit, isEnrolled }: ModuleAccordionProps) {
+export function ModuleAccordion({ modules, courseId, canEdit }: ModuleAccordionProps) {
     const [expandedModules, setExpandedModules] = useState<Set<string>>(new Set());
     const router = useRouter();
     const deleteModule = useDeleteModule(courseId);
+    const { setCurrentLesson } = useLessonsStore();
 
     const toggleModule = (moduleId: string) => {
         const newExpanded = new Set(expandedModules);
@@ -45,6 +46,11 @@ export function ModuleAccordion({ modules, courseId, canEdit, isEnrolled }: Modu
         if (confirm(`Are you sure you want to delete the module "${moduleName}"? This action cannot be undone.`)) {
             await deleteModule.mutateAsync(moduleId);
         }
+    };
+
+    const handleOpenLesson = (module: Module, lesson: Lesson) => {
+        setCurrentLesson(lesson);
+        router.push(`/courses/${courseId}/modules/${module.id}/lessons/${lesson.id}`);
     };
 
     return (
@@ -127,26 +133,16 @@ export function ModuleAccordion({ modules, courseId, canEdit, isEnrolled }: Modu
 
                                             <div className="space-y-2">
                                                 {module.lessons
-                                                    .sort((a, b) => a.order - b.order)
                                                     .map((lesson) => (
                                                         <div
                                                             key={lesson.id}
                                                             className="flex items-center justify-between p-3 bg-surface rounded-lg border border-border cursor-pointer hover:bg-muted/50 transition-colors"
-                                                            onClick={() => router.push(`/courses/${courseId}/modules/${module.id}/lessons/${lesson.id}`)}
+                                                            onClick={() => handleOpenLesson(module, lesson)}
                                                         >
                                                             <div className="flex items-center space-x-3">
                                                                 <Play className="h-4 w-4 text-primary" />
                                                                 <div>
                                                                     <p className="font-medium">{lesson.title}</p>
-                                                                    <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                                                                        <span className="capitalize">{lesson.type}</span>
-                                                                        {lesson.duration && (
-                                                                            <span className="flex items-center">
-                                                                                <Clock className="h-3 w-3 mr-1" />
-                                                                                {lesson.duration} min
-                                                                            </span>
-                                                                        )}
-                                                                    </div>
                                                                 </div>
                                                             </div>
                                                             <ChevronRight className="h-4 w-4 text-muted-foreground" />
