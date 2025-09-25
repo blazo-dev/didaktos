@@ -1,13 +1,16 @@
 'use client';
 
-import { useLessonsStore } from '@/stores/lessons-store';
+import { useCoursesStore } from '@/stores/courses-store';
+import { useModalStore } from '@/stores/modal-store';
 import { Lesson, Module } from '@/types/course';
 import {
+    Book,
     BookOpen,
     Calendar,
     ChevronDown,
     ChevronRight,
     Edit,
+    File,
     FileText,
     Play,
     Plus,
@@ -28,9 +31,10 @@ interface ModuleAccordionProps {
 
 export function ModuleAccordion({ modules, courseId, canEdit }: ModuleAccordionProps) {
     const [expandedModules, setExpandedModules] = useState<Set<string>>(new Set());
+    const { openModal } = useModalStore();
     const router = useRouter();
     const deleteModule = useDeleteModule(courseId);
-    const { setCurrentLesson } = useLessonsStore();
+    const { setCurrentLesson, setCurrentModule } = useCoursesStore();
 
     const toggleModule = (moduleId: string) => {
         const newExpanded = new Set(expandedModules);
@@ -50,7 +54,20 @@ export function ModuleAccordion({ modules, courseId, canEdit }: ModuleAccordionP
 
     const handleOpenLesson = (module: Module, lesson: Lesson) => {
         setCurrentLesson(lesson);
+        setCurrentModule(module);
         router.push(`/courses/${courseId}/modules/${module.id}/lessons/${lesson.id}`);
+    };
+
+    const handleCreateLesson = (module: Module) => {
+        setCurrentModule(module);
+
+        openModal({
+            id: 'create-lesson',
+            title: 'Create New Lesson',
+            size: 'md',
+            closable: true,
+            backdrop: true,
+        });
     };
 
     return (
@@ -123,7 +140,7 @@ export function ModuleAccordion({ modules, courseId, canEdit }: ModuleAccordionP
                                                     <Button
                                                         size="sm"
                                                         variant="outline"
-                                                        onClick={() => router.push(`/courses/${courseId}/modules/${module.id}/lessons/create`)}
+                                                        onClick={() => handleCreateLesson(module)}
                                                     >
                                                         <Plus className="h-4 w-4 mr-1" />
                                                         Add Lesson
@@ -140,7 +157,7 @@ export function ModuleAccordion({ modules, courseId, canEdit }: ModuleAccordionP
                                                             onClick={() => handleOpenLesson(module, lesson)}
                                                         >
                                                             <div className="flex items-center space-x-3">
-                                                                <Play className="h-4 w-4 text-primary" />
+                                                                <File className="h-4 w-4 text-primary" />
                                                                 <div>
                                                                     <p className="font-medium">{lesson.title}</p>
                                                                 </div>

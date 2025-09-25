@@ -1,47 +1,67 @@
 'use client';
 
-import Loader from '@/components/layout/loader';
+import { LessonModal } from '@/components/modals/lesson-modal';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { useDeleteLesson } from '@/hooks/lessons/use-delete-lesson';
 import { useAuthStore } from '@/stores/auth-store';
 import { useCoursesStore } from '@/stores/courses-store';
-import { useLessonsStore } from '@/stores/lessons-store';
+import { useModalStore } from '@/stores/modal-store';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import LessonHeader from './lesson-header';
 
 interface LessonViewProps {
     courseId: string;
-    lessonId: string;
 }
 
 
-export function LessonView({ courseId, lessonId }: LessonViewProps) {
-    const [isLoading, setIsLoading] = useState(false);
-    const [showSettings, setShowSettings] = useState(false);
-    const { currentCourse } = useCoursesStore();
-    const { currentLesson } = useLessonsStore();
+export function LessonView({ courseId }: LessonViewProps) {
+    const { currentCourse, currentLesson } = useCoursesStore();
+    const deleteLesson = useDeleteLesson();
+    const router = useRouter();
+
+    const { openModal } = useModalStore();
     const { user } = useAuthStore();
 
     const isOwner = currentCourse?.instructor.id === user?.id;
 
-
-    if (isLoading) {
-        return <Loader text="Loading lesson..." />;
-    }
-
     if (!currentLesson) {
         return (
-            <div className="flex items-center justify-center min-h-[400px]">
-                <div className="text-center">
-                    <h2 className="text-2xl font-semibold text-gray-900 mb-2">Lesson Not Found</h2>
-                    <p className="text-gray-600 mb-4">The lesson you're looking for doesn't exist.</p>
-                    <Button>
-                        <Link href={`/courses/`}>Back to Courses</Link>
-                    </Button>
-                </div>
+            <div className="p-6 text-center">
+                <h2 className="text-2xl font-bold mb-2">Lesson not found</h2>
+                <p className="text-muted-foreground mb-4">
+                    The lesson you're looking for doesn't exist or you don't have access to it.
+                </p>
+                <Button asChild>
+                    <Link href="/courses">Back to Courses</Link>
+                </Button>
             </div>
         );
+    }
+
+    const handleLessonEdit = () => {
+        openModal({
+            id: 'edit-lesson',
+            title: 'Edit Lesson',
+            closable: true,
+            backdrop: true,
+            size: 'md',
+        })
+
+    }
+
+    const handleLessonDelete = async () => {
+
+        if (
+            confirm(
+                'Are you sure you want to delete this lesson? This action cannot be undone.',
+            )
+        ) {
+            await deleteLesson.mutateAsync(currentLesson!.id);
+            router.push(`/courses/${courseId}`);
+        }
+
     }
 
     return (
@@ -51,7 +71,8 @@ export function LessonView({ courseId, lessonId }: LessonViewProps) {
             <LessonHeader
                 courseId={courseId}
                 isOwner={isOwner}
-                onLessonSettings={() => setShowSettings(true)}
+                onLessonEdit={handleLessonEdit}
+                onLessonDelete={handleLessonDelete}
             />
 
             {/* Lesson Content */}
@@ -67,6 +88,10 @@ export function LessonView({ courseId, lessonId }: LessonViewProps) {
                     />
                 </div>
             </Card>
+            <LessonModal
+                modalId="edit-lesson"
+                lesson={currentLesson!}
+            />
         </div>
     );
 }

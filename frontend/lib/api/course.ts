@@ -117,76 +117,7 @@ export const coursesApi = {
         );
     },
 
-    // Lesson CRUD operations
-    async createLesson(
-        courseId: string,
-        moduleId: string,
-        lessonData: Omit<Lesson, "id" | "moduleId">
-    ): Promise<Lesson> {
-        const response = await apiFetch<HttpResponse<Lesson>>(
-            `/courses/${courseId}/modules/${moduleId}/lessons`,
-            {
-                method: "POST",
-                headers: {
-                    ...getAuthHeaders(),
-                },
-                body: JSON.stringify(lessonData),
-            }
-        );
-        return response.data;
-    },
-
-    async getLesson(
-        courseId: string,
-        moduleId: string,
-        lessonId: string
-    ): Promise<Lesson> {
-        const response = await apiFetch<HttpResponse<Lesson>>(
-            `/courses/${courseId}/modules/${moduleId}/lessons/${lessonId}`,
-            {
-                method: "GET",
-                headers: {
-                    ...getAuthHeaders(),
-                },
-            }
-        );
-        return response.data;
-    },
-
-    async updateLesson(
-        courseId: string,
-        moduleId: string,
-        lessonId: string,
-        lessonData: Partial<Lesson>
-    ): Promise<Lesson> {
-        const response = await apiFetch<HttpResponse<Lesson>>(
-            `/courses/${courseId}/modules/${moduleId}/lessons/${lessonId}`,
-            {
-                method: "PUT",
-                headers: {
-                    ...getAuthHeaders(),
-                },
-                body: JSON.stringify(lessonData),
-            }
-        );
-        return response.data;
-    },
-
-    async deleteLesson(
-        courseId: string,
-        moduleId: string,
-        lessonId: string
-    ): Promise<void> {
-        await apiFetch<HttpResponse<void>>(
-            `/courses/${courseId}/modules/${moduleId}/lessons/${lessonId}`,
-            {
-                method: "DELETE",
-                headers: {
-                    ...getAuthHeaders(),
-                },
-            }
-        );
-    },
+    
 
     // Assignment CRUD operations
     async createAssignment(

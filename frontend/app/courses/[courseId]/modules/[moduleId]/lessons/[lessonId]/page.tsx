@@ -17,7 +17,6 @@ export default async function LessonPage({ params }: LessonPageProps) {
             <AppLayout showSidebar showHeader>
                 <LessonView
                     courseId={courseId}
-                    lessonId={lessonId}
                 />
             </AppLayout>
         </ProtectedPage>

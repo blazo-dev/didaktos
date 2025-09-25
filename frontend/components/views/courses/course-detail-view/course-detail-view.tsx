@@ -1,6 +1,8 @@
 'use client';
 
+import { LessonModal } from '@/components/modals/lesson-modal';
 import { useCourseById } from '@/hooks/courses/use-course-by-id';
+import { useCoursesStore } from '@/stores/courses-store';
 import { useState } from 'react';
 import Loader from '../../../layout/loader';
 import { CourseDetailHeader } from './course-detail-header';
@@ -16,6 +18,7 @@ interface CourseDetailViewProps {
 export function CourseDetailView({ courseId }: CourseDetailViewProps) {
     const { course, isOwner, isEnrolled, isLoading } = useCourseById(courseId);
     const [showCreateModule, setShowCreateModule] = useState(false);
+    const { currentLesson } = useCoursesStore();
 
 
     // User can view course if they are the owner or enrolled
@@ -56,6 +59,10 @@ export function CourseDetailView({ courseId }: CourseDetailViewProps) {
                 isOwner={isOwner}
                 isEnrolled={isEnrolled}
                 onCreateModule={() => setShowCreateModule(true)}
+            />
+            {/* Lesson Modals */}
+            <LessonModal
+                modalId="create-lesson"
             />
         </div>
     );

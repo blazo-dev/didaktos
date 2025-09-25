@@ -12,12 +12,12 @@ import { useState } from "react";
 import { CoursesFilters, FilterType } from "./courses-filters";
 import { CoursesGrid } from "./courses-grid";
 import { CoursesHeader } from "./courses-header";
+import { LessonModal } from "@/components/modals/lesson-modal";
 
 export function CoursesLayout() {
     const { user } = useAuthStore();
     const { openModal } = useModalStore();
-    const { addToast } = useToastStore();
-    const { currentCourse: course } = useCoursesStore();
+    const { currentCourse } = useCoursesStore();
     const { data: maybeCourses, isLoading } = useCourses();
     const courses = maybeCourses || [];
     const [searchTerm, setSearchTerm] = useState('');
@@ -93,13 +93,13 @@ export function CoursesLayout() {
                 />
             </div>
 
-            {/* Course Creation Modal */}
+            {/* Course Modals */}
             <CourseModal
                 modalId="create-course"
             />
             <CourseModal
                 modalId="edit-course"
-                course={course!}
+                course={currentCourse!}
             />
         </AppLayout>
     );
