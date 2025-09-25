@@ -64,7 +64,7 @@ export function RecentGrades({ grades }: RecentGradesProps) {
 
                     return (
                         <div
-                            key={grade.id}
+                            key={`grade-${grade.id}`}
                             className={`p-4 ${!isLast ? 'border-b border-surface-border' : ''}`}
                         >
                             <div className="flex justify-between items-center">
