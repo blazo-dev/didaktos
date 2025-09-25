@@ -21,7 +21,7 @@ namespace didaktos.backend.Controllers
 
         [Authorize]
         [HttpGet]
-        public async Task<IActionResult> GetCourses()
+        public async Task<ActionResult<HttpResponseDto<CourseReadResponseDto>>> GetCourses()
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
@@ -53,7 +53,9 @@ namespace didaktos.backend.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> CreateCourses([FromBody] CourseRequestDto request)
+        public async Task<ActionResult<HttpResponseDto<CourseResponseDto>>> CreateCourses(
+            [FromBody] CourseRequestDto request
+        )
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
@@ -85,7 +87,9 @@ namespace didaktos.backend.Controllers
 
         [HttpPut("{courseId}")]
         [Authorize]
-        public async Task<IActionResult> EditCourse(Guid courseId, [FromBody] CourseEditDto request)
+        public async Task<ActionResult<HttpResponseDto<CourseEditDto>>> EditCourse(
+            [FromBody] CourseEditDto request
+        )
         {
             if (!ModelState.IsValid)
             {
@@ -149,7 +153,7 @@ namespace didaktos.backend.Controllers
 
         [HttpGet("enrollments")]
         [Authorize]
-        public async Task<IActionResult> GetEnrollments()
+        public async Task<ActionResult<HttpResponseDto<EnrollmentAddResponseDto>>> GetEnrollments()
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
@@ -169,7 +173,7 @@ namespace didaktos.backend.Controllers
 
         [HttpPost("enrollments")]
         [Authorize]
-        public async Task<IActionResult> CreateEnrollment(
+        public async Task<ActionResult<HttpResponseDto<EnrollmentAddResponseDto>>> CreateEnrollment(
             [FromBody] EnrollmentAddRequestDto request
         )
         {
@@ -201,9 +205,11 @@ namespace didaktos.backend.Controllers
             return BadRequest(result);
         }
 
-        [HttpPut("enrollments")]
+        [HttpPut("{courseId}/enrollments")]
         [Authorize]
-        public async Task<IActionResult> CloseEnrollments([FromBody] Guid CourseId)
+        public async Task<
+            ActionResult<HttpResponseDto<EnrollmentCloseResponseDto>>
+        > CloseEnrollments(Guid courseId)
         {
             if (!ModelState.IsValid)
             {
@@ -229,7 +235,7 @@ namespace didaktos.backend.Controllers
                 );
             }
 
-            var result = await _enrollmentService.CloseEnrollmentsAsync(CourseId, userId);
+            var result = await _enrollmentService.CloseEnrollmentsAsync(courseId, userId);
 
             if (result.Success)
             {

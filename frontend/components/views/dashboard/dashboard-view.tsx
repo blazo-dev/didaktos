@@ -1,19 +1,18 @@
 "use client"
 
+import Loader from "@/components/layout/loader";
 import { useCourses } from "@/hooks/courses/use-courses";
 import { useDashboardData } from "@/hooks/dashboard/use-dashboard-data";
-import { DashboardStats } from "./dashboard-stats"
-import { RecentGrades } from "./recent-grades"
-import { StudyAssistant } from "../assistant/study-assistant"
-import { UpcomingAssignments } from "./upcoming-assignments"
-import Loader from "@/components/layout/loader";
 import { useAuthStore } from "@/stores/auth-store";
+import { DashboardStats } from "./dashboard-stats";
+import { RecentGrades } from "./recent-grades";
+import { UpcomingAssignments } from "./upcoming-assignments";
 
 export function DashboardView() {
     const { data: maybeCourses, isLoading } = useCourses();
     const courses = maybeCourses || [];
     const { user } = useAuthStore();
-    
+
     // Use the dashboard hook to get processed data
     const dashboardData = useDashboardData(courses);
 
@@ -40,7 +39,6 @@ export function DashboardView() {
                     <RecentGrades grades={dashboardData.recentGrades} />
                 </div>
             </div>
-            <StudyAssistant />
         </section>
     )
 }

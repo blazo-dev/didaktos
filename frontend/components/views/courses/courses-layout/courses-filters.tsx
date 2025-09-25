@@ -23,7 +23,7 @@ export function CoursesFilters({
     enrolledCoursesCount
 }: CoursesFiltersProps) {
     return (
-        <div className="flex items-center justify-between gap-4">
+        <div className="grid md:grid-cols-[1fr_auto] items-center justify-between gap-4">
             {/* Filter Tabs */}
             <div className="flex items-center gap-2">
                 <Filter className="h-4 w-4 text-muted-foreground" />
@@ -31,21 +31,21 @@ export function CoursesFilters({
                     <Button
                         variant="ghost"
                         onClick={() => onFilterChange('all')}
-                        className={`${filterType === 'all' ? 'text-foreground shadow-sm' : ''}`}
+                        className={`${filterType === 'all' ? 'text-secondary' : ''}`}
                     >
                         All Courses
                     </Button>
                     <Button
                         variant="ghost"
                         onClick={() => onFilterChange('owned')}
-                        className={`${filterType === 'owned' ? 'text-foreground shadow-sm' : ''}`}
+                        className={`${filterType === 'owned' ? 'text-secondary' : ''}`}
                     >
                         My Courses ({ownedCoursesCount})
                     </Button>
                     <Button
                         variant="ghost"
                         onClick={() => onFilterChange('enrolled')}
-                        className={`${filterType === 'enrolled' ? 'text-foreground shadow-sm' : ''}`}
+                        className={`${filterType === 'enrolled' ? 'text-secondary' : ''}`}
                     >
                         Enrolled ({enrolledCoursesCount})
                     </Button>

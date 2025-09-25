@@ -1,17 +1,18 @@
 import { Button } from "@/components/ui/button"
+import { useSidebar } from "@/hooks/common/use-sidebar"
 import { useAuthStore } from "@/stores/auth-store"
 import { MenuIcon } from "lucide-react"
 import Link from "next/link"
 import { ThemeToggle } from "./theme-toggle"
 
 interface HeaderProps {
-  toggleSidebar: () => void
-  showSidebar: boolean
+  showSidebar?: boolean
   isLanding?: boolean
 }
 
-export function Header({ toggleSidebar, showSidebar = false, isLanding = false }: HeaderProps) {
+export function Header({ showSidebar = false, isLanding = false }: HeaderProps) {
   const { user } = useAuthStore();
+  const { toggle, isMobile } = useSidebar();
 
   return (
     <header className="sticky top-0 g-container gap-6 border-b border-border bg-surface z-50">
@@ -25,9 +26,9 @@ export function Header({ toggleSidebar, showSidebar = false, isLanding = false }
 
         <div className="flex items-center gap-2">
           <ThemeToggle />
-          {showSidebar && (
-            <div className="flex items-center gap-4 lg:hidden">
-              <Button variant="ghost" size="icon" onClick={toggleSidebar}>
+          {showSidebar && isMobile && (
+            <div className="flex items-center gap-4">
+              <Button variant="ghost" size="icon" onClick={toggle}>
                 <MenuIcon />
               </Button>
             </div>

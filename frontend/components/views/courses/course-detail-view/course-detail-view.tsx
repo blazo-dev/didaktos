@@ -1,7 +1,9 @@
 'use client';
 
+import { LessonModal } from '@/components/modals/lesson-modal';
 import { useCourseById } from '@/hooks/courses/use-course-by-id';
-import { useModalStore } from '@/stores/modal-store';
+import { useCoursesStore } from '@/stores/courses-store';
+import { useState } from 'react';
 import Loader from '../../../layout/loader';
 import { CourseDetailHeader } from './course-detail-header';
 import { CourseInfoCard } from './course-info-card';
@@ -17,7 +19,8 @@ interface CourseDetailViewProps {
 
 export function CourseDetailView({ courseId }: CourseDetailViewProps) {
     const { course, isOwner, isEnrolled, isLoading } = useCourseById(courseId);
-    const { openModal } = useModalStore();
+    const [showCreateModule, setShowCreateModule] = useState(false);
+    const { currentLesson } = useCoursesStore();
 
     const createModuleModalId = `create-module-${courseId}`;
 
@@ -70,26 +73,12 @@ export function CourseDetailView({ courseId }: CourseDetailViewProps) {
                 courseId={course.id}
                 isOwner={isOwner}
                 isEnrolled={isEnrolled}
-                onCreateModule={handleCreateModule}
+                onCreateModule={() => setShowCreateModule(true)}
             />
-
-            {/* Create Module Modal */}
-            <ModuleModal
-                modalId={createModuleModalId}
-                courseId={courseId}
-                onSuccess={handleModuleSuccess}
+            {/* Lesson Modals */}
+            <LessonModal
+                modalId="create-lesson"
             />
-
-            {/* Edit Module Modals - one for each existing module */}
-            {course.modules.map((module) => (
-                <ModuleModal
-                    key={`edit-modal-${module.id}`}
-                    modalId={`edit-module-${module.id}`}
-                    courseId={courseId}
-                    module={module}
-                    onSuccess={handleModuleSuccess}
-                />
-            ))}
         </div>
     );
 }
