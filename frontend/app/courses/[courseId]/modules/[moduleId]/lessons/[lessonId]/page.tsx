@@ -18,7 +18,6 @@ export default async function LessonPage({ params }: LessonPageProps) {
                 <LessonView
                     courseId={courseId}
                     lessonId={lessonId}
-                    useFakeData={true}
                 />
             </AppLayout>
         </ProtectedPage>
