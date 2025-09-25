@@ -94,7 +94,7 @@ export function UpcomingAssignments({ assignments }: UpcomingAssignmentsProps) {
 
                     return (
                         <div
-                            key={assignment.id}
+                            key={`assignment-${assignment.id}`}
                             className={`p-6 ${!isLast ? 'border-b border-surface-border' : ''}`}
                         >
                             <div className="flex items-center justify-between">

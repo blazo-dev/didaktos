@@ -161,13 +161,17 @@ export function useDashboardData(courses: Course[]): DashboardData {
             .map((submission) => {
                 const assignmentInfo = assignmentMap.get(submission.assignmentId);
                 return {
-                    id: submission.id,
+                    id: submission.id, // Use submission ID, not assignment ID
                     title: assignmentInfo?.title || 'Unknown Assignment',
                     courseTitle: assignmentInfo?.courseTitle || 'Unknown Course',
                     grade: submission.grade!.toString(),
                     submittedAt: submission.submittedAt,
                 };
             })
+            // Remove potential duplicates by submission ID
+            .filter((submission, index, array) => 
+                array.findIndex(s => s.id === submission.id) === index
+            )
             // Sort by submission date (most recent first) and take the first 5
             .sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime())
             .slice(0, 5)
