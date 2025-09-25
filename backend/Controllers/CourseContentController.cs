@@ -32,10 +32,12 @@ namespace didaktos.backend.Controllers
         /// <summary>
         /// Get all modules for a specific course
         /// </summary>
-        /// <param name="id">Course ID</param>
+        /// <param name="courseId">Course ID</param>
         /// <returns>List of modules for the course</returns>
-        [HttpGet("courses/{id}/modules")]
-        public async Task<ActionResult<HttpResponseDto<List<ModuleDto>>>> GetCourseModules(Guid id)
+        [HttpGet("courses/{courseId}/modules")]
+        public async Task<ActionResult<HttpResponseDto<List<ModuleDto>>>> GetCourseModules(
+            Guid courseId
+        )
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
@@ -49,7 +51,7 @@ namespace didaktos.backend.Controllers
                 );
             }
 
-            var result = await _moduleService.GetCourseModulesAsync(id, userId);
+            var result = await _moduleService.GetCourseModulesAsync(courseId, userId);
 
             if (result.Success)
             {
@@ -62,12 +64,12 @@ namespace didaktos.backend.Controllers
         /// <summary>
         /// Add a module to a course
         /// </summary>
-        /// <param name="id">Course ID</param>
+        /// <param name="courseId">Course ID</param>
         /// <param name="request">Module creation request</param>
         /// <returns>Created module</returns>
-        [HttpPost("courses/{id}/modules")]
+        [HttpPost("courses/{courseId}/modules")]
         public async Task<ActionResult<HttpResponseDto<ModuleDto>>> CreateCourseModule(
-            Guid id,
+            Guid courseId,
             [FromBody] CreateModuleRequestDto request
         )
         {
@@ -95,7 +97,7 @@ namespace didaktos.backend.Controllers
                 );
             }
 
-            var result = await _moduleService.CreateModuleAsync(id, request, userId);
+            var result = await _moduleService.CreateModuleAsync(courseId, request, userId);
 
             if (result.Success)
             {

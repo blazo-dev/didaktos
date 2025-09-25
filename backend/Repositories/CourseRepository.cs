@@ -310,5 +310,18 @@ namespace didaktos.backend.Repositories
             var count = await command.ExecuteScalarAsync();
             return Convert.ToInt32(count) > 0;
         }
+
+        public async Task<bool> DeleteCourseAsync(Guid courseId)
+        {
+            using var connection = new NpgsqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            const string sql = "DELETE FROM courses WHERE id = @courseId";
+            using var command = new NpgsqlCommand(sql, connection);
+            command.Parameters.AddWithValue("@courseId", courseId);
+
+            var rowsAffected = await command.ExecuteNonQueryAsync();
+            return rowsAffected > 0;
+        }
     }
 }

@@ -120,6 +120,32 @@ namespace didaktos.backend.Controllers
             return BadRequest(result);
         }
 
+        [HttpDelete("{courseId}")]
+        [Authorize]
+        public async Task<ActionResult<HttpResponseDto<object>>> DeleteCourse(Guid courseId)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized(
+                    new HttpResponseDto<object>
+                    {
+                        Success = false,
+                        Message = "Invalid or missing authentication token",
+                    }
+                );
+            }
+
+            var result = await _courseService.DeleteCourseAsync(courseId, userId);
+
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+
+            return BadRequest(result);
+        }
+
         [HttpPost("enrollments")]
         [Authorize]
         public async Task<IActionResult> CreateEnrollment(

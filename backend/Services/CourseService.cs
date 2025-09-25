@@ -123,5 +123,58 @@ namespace didaktos.backend.Services
                 };
             }
         }
+
+        public async Task<HttpResponseDto<object>> DeleteCourseAsync(Guid courseId, Guid userId)
+        {
+            try
+            {
+                // Check if course exists
+                var existingCourse = await _courseRepository.GetCourseByIdAsync(courseId);
+                if (existingCourse == null)
+                {
+                    return new HttpResponseDto<object>
+                    {
+                        Success = false,
+                        Message = "Course not found",
+                    };
+                }
+
+                // Check permissions
+                if (!await _courseRepository.IsUserInstructorOfCourseAsync(userId, courseId))
+                {
+                    return new HttpResponseDto<object>
+                    {
+                        Success = false,
+                        Message = "Access denied. Only course instructors can delete courses",
+                    };
+                }
+
+                var deleted = await _courseRepository.DeleteCourseAsync(courseId);
+
+                if (!deleted)
+                {
+                    return new HttpResponseDto<object>
+                    {
+                        Success = false,
+                        Message = "Failed to delete course",
+                    };
+                }
+
+                return new HttpResponseDto<object>
+                {
+                    Success = true,
+                    Message = "Course deleted successfully",
+                };
+            }
+            catch (Exception ex)
+            {
+                return new HttpResponseDto<object>
+                {
+                    Success = false,
+                    Message = "Failed to delete course",
+                    Errors = new { exception = ex.Message },
+                };
+            }
+        }
     }
 }
