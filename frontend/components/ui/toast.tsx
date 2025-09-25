@@ -10,7 +10,7 @@ interface ToastProps {
     onClose: () => void;
 }
 
-export function Toast({ message, type = "info", duration = 4000, onClose }: ToastProps) {
+export function Toast({ message, type = "info", duration = 2000, onClose }: ToastProps) {
     const [isExiting, setIsExiting] = useState(false);
 
     useEffect(() => {
