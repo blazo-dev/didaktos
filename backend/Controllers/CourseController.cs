@@ -146,6 +146,26 @@ namespace didaktos.backend.Controllers
             return BadRequest(result);
         }
 
+        [HttpGet("enrollments")]
+        [Authorize]
+        public async Task<IActionResult> GetEnrollments()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized();
+            }
+
+            var result = await _enrollmentService.GetEnrollmentsAsync(userId);
+
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+
+            return BadRequest(result);
+        }
+
         [HttpPost("enrollments")]
         [Authorize]
         public async Task<IActionResult> CreateEnrollment(
@@ -171,26 +191,6 @@ namespace didaktos.backend.Controllers
             }
 
             var result = await _enrollmentService.CreateEnrollmentAsync(request, userId);
-
-            if (result.Success)
-            {
-                return Ok(result);
-            }
-
-            return BadRequest(result);
-        }
-
-        [HttpGet("enrollments")]
-        [Authorize]
-        public async Task<IActionResult> GetEnrollments()
-        {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
-            {
-                return Unauthorized();
-            }
-
-            var result = await _enrollmentService.GetEnrollmentsAsync(userId);
 
             if (result.Success)
             {
