@@ -39,10 +39,7 @@ namespace didaktos.backend.Repositories
             command.Parameters.AddWithValue("@instructor_id", course.InstructorId);
             command.Parameters.AddWithValue("@createdAt", DateTime.UtcNow);
             command.Parameters.AddWithValue("@updatedAt", DateTime.UtcNow);
-            command.Parameters.AddWithValue(
-                "@description",
-                (object?)course.Description ?? DBNull.Value
-            );
+            command.Parameters.AddWithValue("@description", course.Description);
 
             using var reader = await command.ExecuteReaderAsync();
             if (await reader.ReadAsync())
@@ -51,7 +48,7 @@ namespace didaktos.backend.Repositories
                 {
                     Id = (Guid)reader["id"],
                     Title = (string)reader["title"],
-                    Description = reader["description"] as string,
+                    Description = (string)reader["description"],
                     InstructorId = (Guid)reader["instructor_id"],
                 };
             }
@@ -111,7 +108,7 @@ namespace didaktos.backend.Repositories
                 {
                     Id = courseId,
                     Title = (string)reader["title"],
-                    Description = reader["description"] as string,
+                    Description = (string)reader["description"],
                     Instructor = new UserDto
                     {
                         Id = (Guid)reader["instructor_id"],
@@ -227,7 +224,7 @@ namespace didaktos.backend.Repositories
                 {
                     Id = (Guid)reader["id"],
                     Title = (string)reader["title"],
-                    Description = reader["description"] as string,
+                    Description = (string)reader["description"],
                     InstructorId = (Guid)reader["instructor_id"],
                 };
             }
@@ -263,7 +260,7 @@ namespace didaktos.backend.Repositories
                 {
                     Title = (string)reader["title"],
                     Id = (Guid)reader["id"],
-                    Description = (string?)reader["description"],
+                    Description = (string)reader["description"],
                 };
             }
 
