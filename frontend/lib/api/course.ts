@@ -80,6 +80,7 @@ export const coursesApi = {
                 method: "POST",
                 headers: {
                     ...getAuthHeaders(),
+                    "Content-Type": "application/json",
                 },
                 body: JSON.stringify(moduleData),
             }
@@ -98,6 +99,7 @@ export const coursesApi = {
                 method: "PUT",
                 headers: {
                     ...getAuthHeaders(),
+                    "Content-Type": "application/json",
                 },
                 body: JSON.stringify(moduleData),
             }

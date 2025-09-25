@@ -11,7 +11,7 @@ export const useCreateModule = (courseId: string) => {
         mutationFn: (moduleData: Omit<Module, "id" | "courseId">) =>
             coursesApi.createModule(courseId, moduleData),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["courses", courseId] });
+            queryClient.invalidateQueries({ queryKey: ["courses"] });
             addToast({
                 type: "success",
                 message: "Module created successfully!",

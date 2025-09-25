@@ -17,11 +17,8 @@ export interface Module {
     id: string;
     courseId: string;
     title: string;
-    description: string;
-    order: number;
     lessons: Lesson[];
     assignments: Assignment[];
-    isPublished: boolean;
 }
 
 export interface Lesson {

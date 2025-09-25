@@ -1,12 +1,13 @@
 'use client';
 
 import { useCourseById } from '@/hooks/courses/use-course-by-id';
-import { useState } from 'react';
+import { useModalStore } from '@/stores/modal-store';
 import Loader from '../../../layout/loader';
 import { CourseDetailHeader } from './course-detail-header';
 import { CourseInfoCard } from './course-info-card';
 import { CourseModulesSection } from './course-modules-section';
 import { CourseNotFound } from './course-not-found';
+import { ModuleModal } from "@/components/modals/module-modal";
 
 interface CourseDetailViewProps {
     courseId: string;
@@ -15,8 +16,9 @@ interface CourseDetailViewProps {
 
 export function CourseDetailView({ courseId }: CourseDetailViewProps) {
     const { course, isOwner, isEnrolled, isLoading } = useCourseById(courseId);
-    const [showCreateModule, setShowCreateModule] = useState(false);
+    const { openModal } = useModalStore();
 
+    const createModuleModalId = `create-module-${courseId}`;
 
     // User can view course if they are the owner or enrolled
     const canView = isOwner || isEnrolled;
@@ -36,12 +38,24 @@ export function CourseDetailView({ courseId }: CourseDetailViewProps) {
     const totalLessons = course.modules.reduce((acc, module) => acc + module.lessons.length, 0);
     const totalAssignments = course.modules.reduce((acc, module) => acc + module.assignments.length, 0);
 
+    const handleCreateModule = () => {
+        openModal({
+            id: createModuleModalId,
+            title: "Create Module",
+        });
+    };
+
+    const handleModuleSuccess = () => {
+        // Modal will be closed by ModuleModal component
+        // Any additional success handling can go here
+    };
+
     return (
         <div className='w-full space-y-4 px-4 sm:px-6 lg:px-8 py-8'>
             <CourseDetailHeader
                 courseId={courseId}
                 isOwner={isOwner}
-                onCreateModule={() => setShowCreateModule(true)}
+                onCreateModule={handleCreateModule}
             />
             <CourseInfoCard
                 course={course}
@@ -55,7 +69,14 @@ export function CourseDetailView({ courseId }: CourseDetailViewProps) {
                 courseId={course.id}
                 isOwner={isOwner}
                 isEnrolled={isEnrolled}
-                onCreateModule={() => setShowCreateModule(true)}
+                onCreateModule={handleCreateModule}
+            />
+
+            {/* Create Module Modal */}
+            <ModuleModal
+                modalId={createModuleModalId}
+                courseId={courseId}
+                onSuccess={handleModuleSuccess}
             />
         </div>
     );

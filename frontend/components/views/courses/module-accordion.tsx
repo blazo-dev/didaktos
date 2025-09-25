@@ -50,7 +50,6 @@ export function ModuleAccordion({ modules, courseId, canEdit, isEnrolled }: Modu
     return (
         <div className="space-y-4">
             {modules
-                .sort((a, b) => a.order - b.order)
                 .map((module) => {
                     const isExpanded = expandedModules.has(module.id);
 
@@ -101,9 +100,6 @@ export function ModuleAccordion({ modules, courseId, canEdit, isEnrolled }: Modu
                             {/* Module Content */}
                             {isExpanded && (
                                 <div className="border-t border-border bg-muted/30 p-4 space-y-4">
-                                    {module.description && (
-                                        <p className="text-muted-foreground">{module.description}</p>
-                                    )}
 
                                     {/* Lessons Section */}
                                     {module.lessons.length > 0 && (
@@ -127,7 +123,6 @@ export function ModuleAccordion({ modules, courseId, canEdit, isEnrolled }: Modu
 
                                             <div className="space-y-2">
                                                 {module.lessons
-                                                    .sort((a, b) => a.order - b.order)
                                                     .map((lesson) => (
                                                         <div
                                                             key={lesson.id}
@@ -138,7 +133,7 @@ export function ModuleAccordion({ modules, courseId, canEdit, isEnrolled }: Modu
                                                                 <Play className="h-4 w-4 text-primary" />
                                                                 <div>
                                                                     <p className="font-medium">{lesson.title}</p>
-                                                                    <div className="flex items-center space-x-4 text-sm text-muted-foreground">
+                                                                    {/* <div className="flex items-center space-x-4 text-sm text-muted-foreground">
                                                                         <span className="capitalize">{lesson.type}</span>
                                                                         {lesson.duration && (
                                                                             <span className="flex items-center">
@@ -146,7 +141,7 @@ export function ModuleAccordion({ modules, courseId, canEdit, isEnrolled }: Modu
                                                                                 {lesson.duration} min
                                                                             </span>
                                                                         )}
-                                                                    </div>
+                                                                    </div> */}
                                                                 </div>
                                                             </div>
                                                             <ChevronRight className="h-4 w-4 text-muted-foreground" />
