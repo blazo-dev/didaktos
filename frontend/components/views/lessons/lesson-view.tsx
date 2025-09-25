@@ -10,6 +10,7 @@ import { useModalStore } from '@/stores/modal-store';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import LessonHeader from './lesson-header';
+import { StudyAssistant } from '../assistant/study-assistant';
 
 interface LessonViewProps {
     courseId: string;
@@ -92,6 +93,7 @@ export function LessonView({ courseId }: LessonViewProps) {
                 modalId="edit-lesson"
                 lesson={currentLesson!}
             />
+            <StudyAssistant />
         </div>
     );
 }
