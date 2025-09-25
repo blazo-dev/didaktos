@@ -65,7 +65,7 @@ namespace didaktos.backend.Repositories
             const string sql =
                 @"
                 -- Get courses with instructors
-                SELECT c.id, c.title, c.description, c.instructor_id, u.name, u.email  
+                SELECT c.id, c.title, c.description, c.instructor_id, c.created_at, c.updated_at, u.name, u.email  
                 FROM courses c
                 JOIN users u ON c.instructor_id = u.id
                 ORDER BY c.title;
@@ -109,6 +109,8 @@ namespace didaktos.backend.Repositories
                     Id = courseId,
                     Title = (string)reader["title"],
                     Description = (string)reader["description"],
+                    CreatedAt = (DateTime)reader["created_at"],
+                    UpdatedAt = (DateTime)reader["updated_at"],
                     Instructor = new UserDto
                     {
                         Id = (Guid)reader["instructor_id"],
