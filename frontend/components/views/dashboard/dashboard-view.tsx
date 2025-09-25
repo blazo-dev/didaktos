@@ -28,7 +28,7 @@ export function DashboardView() {
                 <p className="text-muted-foreground">Here's what's happening with your learning journey today.</p>
             </div>
 
-            <DashboardStats courses={courses} stats={dashboardData.stats} />
+            <DashboardStats courses={courses} stats={dashboardData.stats} userId={user?.id} />
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2 space-y-8">

@@ -30,19 +30,22 @@ function StatCard({ icon, value, label, bgColor }: StatCardProps) {
 interface DashboardStatsProps {
     courses: Course[];
     stats: DashboardStatsType;
+    userId?: string
 }
 
-export function DashboardStats({ courses, stats }: DashboardStatsProps) {
+export function DashboardStats({ courses, stats, userId }: DashboardStatsProps) {
     // Use the actual stats from the dashboard hook
-    const activeCourses = courses?.length || 0
+    const enrolledCourses = courses?.filter(course => 
+        course.enrollments.includes(userId!)
+    ).length || 0;
     const dueThisWeek = stats.dueThisWeek;
     const avgGrade = stats.avgGrade > 0 ? `${stats.avgGrade}%` : "N/A";
 
     const statsCards = [
         {
             icon: <Book className="w-6 h-6 text-blue-600" />,
-            value: activeCourses,
-            label: "Active Courses",
+            value: enrolledCourses,
+            label: "Enrolled Courses",
             bgColor: "bg-blue-600/40"
         },
         {
