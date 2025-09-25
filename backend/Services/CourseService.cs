@@ -82,13 +82,24 @@ namespace didaktos.backend.Services
         }
 
         public async Task<HttpResponseDto<object>> EditCourseAsync(
+            Guid courseId,
             CourseEditDto course,
             Guid userId
         )
         {
             try
             {
-                if (!await _courseRepository.IsUserInstructorOfCourseAsync(userId, course.Id))
+                var existingCourse = await _courseRepository.GetCourseByIdAsync(courseId);
+                if (existingCourse == null)
+                {
+                    return new HttpResponseDto<object>
+                    {
+                        Success = false,
+                        Message = "Course not found",
+                    };
+                }
+
+                if (!await _courseRepository.IsUserInstructorOfCourseAsync(userId, courseId))
                 {
                     return new HttpResponseDto<object>
                     {
@@ -97,13 +108,17 @@ namespace didaktos.backend.Services
                     };
                 }
 
-                var updatedcourseInfo = await _courseRepository.UpdateCourseAsync(course);
+                existingCourse.Title = course.Title;
+                existingCourse.Description = course.Description;
 
-                var courseEditDto = new CourseEditDto
+                var updatedcourseInfo = await _courseRepository.UpdateCourseAsync(existingCourse);
+
+                var courseEditDto = new CourseResponseDto
                 {
-                    Title = updatedcourseInfo.Title,
                     Id = updatedcourseInfo.Id,
+                    Title = updatedcourseInfo.Title,
                     Description = updatedcourseInfo.Description,
+                    InstructorId = updatedcourseInfo.InstructorId,
                 };
 
                 return new HttpResponseDto<object>

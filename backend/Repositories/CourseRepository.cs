@@ -234,7 +234,7 @@ namespace didaktos.backend.Repositories
             return null;
         }
 
-        public async Task<CourseEditDto> UpdateCourseAsync(CourseEditDto Course)
+        public async Task<CourseResponseDto> UpdateCourseAsync(Course course)
         {
             using var connection = new NpgsqlConnection(_connectionString);
             await connection.OpenAsync();
@@ -247,22 +247,23 @@ namespace didaktos.backend.Repositories
                 RETURNING title, id, description";
 
             using var command = new NpgsqlCommand(sql, connection);
-            command.Parameters.AddWithValue("@id", Course.Id);
-            command.Parameters.AddWithValue("@title", Course.Title);
+            command.Parameters.AddWithValue("@id", course.Id);
+            command.Parameters.AddWithValue("@title", course.Title);
             command.Parameters.AddWithValue("@updatedAt", DateTime.UtcNow);
             command.Parameters.AddWithValue(
                 "@description",
-                (object?)Course.Description ?? DBNull.Value
+                (object?)course.Description ?? DBNull.Value
             );
 
             using var reader = await command.ExecuteReaderAsync();
             if (await reader.ReadAsync())
             {
-                return new CourseEditDto
+                return new CourseResponseDto
                 {
                     Title = (string)reader["title"],
                     Id = (Guid)reader["id"],
                     Description = (string)reader["description"],
+                    InstructorId = course.InstructorId,
                 };
             }
 

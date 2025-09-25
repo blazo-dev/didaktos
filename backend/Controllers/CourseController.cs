@@ -83,9 +83,9 @@ namespace didaktos.backend.Controllers
             return BadRequest(result);
         }
 
-        [HttpPut]
+        [HttpPut("{courseId}")]
         [Authorize]
-        public async Task<IActionResult> EditCourse([FromBody] CourseEditDto request)
+        public async Task<IActionResult> EditCourse(Guid courseId, [FromBody] CourseEditDto request)
         {
             if (!ModelState.IsValid)
             {
@@ -111,7 +111,7 @@ namespace didaktos.backend.Controllers
                 );
             }
 
-            var result = await _courseService.EditCourseAsync(request, userId);
+            var result = await _courseService.EditCourseAsync(courseId, request, userId);
 
             if (result.Success)
             {
