@@ -4,16 +4,16 @@ import { CourseDetailView } from "@/components/views/courses/course-detail-view/
 
 interface CoursePageProps {
     params: Promise<{
-        id: string;
+        courseId: string;
     }>;
 }
 
 export default async function CoursePage({ params }: CoursePageProps) {
-    const { id } = await params;
+    const { courseId } = await params;
     return (
         <ProtectedPage>
             <AppLayout showSidebar showHeader>
-                <CourseDetailView courseId={id} useFakeData={true} />
+                <CourseDetailView courseId={courseId} useFakeData={true} />
             </AppLayout>
         </ProtectedPage>
     );

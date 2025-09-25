@@ -29,10 +29,6 @@ export interface Lesson {
     moduleId: string;
     title: string;
     content: string;
-    type: "text" | "video" | "document" | "interactive";
-    order: number;
-    duration?: number;
-    resources?: Resource[];
 }
 
 export interface Assignment {

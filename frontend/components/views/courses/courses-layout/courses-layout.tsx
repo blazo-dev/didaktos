@@ -2,8 +2,10 @@
 
 import { AppLayout } from "@/components/layout/app-layout";
 import Loader from "@/components/layout/loader";
+import { CourseModal } from "@/components/modals/course-modal";
 import { useCourses } from "@/hooks/courses/use-courses";
 import { useAuthStore } from "@/stores/auth-store";
+import { useModalStore } from "@/stores/modal-store";
 import { useState } from "react";
 import { CoursesFilters, FilterType } from "./courses-filters";
 import { CoursesGrid } from "./courses-grid";
@@ -11,10 +13,10 @@ import { CoursesHeader } from "./courses-header";
 
 export function CoursesLayout() {
     const { user } = useAuthStore();
+    const { openModal, closeModal } = useModalStore();
     const { data: maybeCourses, isLoading } = useCourses();
     const courses = maybeCourses || [];
     const [searchTerm, setSearchTerm] = useState('');
-    const [showCreateModal, setShowCreateModal] = useState(false);
     const [filterType, setFilterType] = useState<FilterType>('all');
 
     // Filter courses based on user relationship and search term
@@ -47,7 +49,15 @@ export function CoursesLayout() {
         course.enrollments.includes(user!.id)
     ).length || 0;
 
-    const handleCreateCourse = () => setShowCreateModal(true);
+    const handleCreateCourse = () => {
+        openModal({
+            id: 'create-course',
+            title: 'Create New Course',
+            size: 'md',
+            closable: true,
+            backdrop: true,
+        });
+    };
 
     if (isLoading) {
         return <Loader text="Loading courses..." />;
@@ -78,6 +88,15 @@ export function CoursesLayout() {
                     onCreateCourse={handleCreateCourse}
                 />
             </div>
+
+            {/* Course Creation Modal */}
+            <CourseModal
+                modalId="create-course"
+                onSuccess={() => {
+                    // Optionally refresh courses or show success message
+                    console.log('Course created successfully');
+                }}
+            />
         </AppLayout>
     );
 }

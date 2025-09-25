@@ -1,4 +1,3 @@
-import { useAuthStore } from "@/stores/auth-store";
 import { HttpResponse } from "@/types/http";
 import { Assignment, Course, Lesson, Module } from "../../types/course";
 import { apiFetch, getAuthHeaders } from "./api";
@@ -9,6 +8,7 @@ export const coursesApi = {
         const response = await apiFetch<HttpResponse<Course[]>>("/courses", {
             method: "GET",
             headers: {
+                "Content-Type": "application/json",
                 ...getAuthHeaders(),
             },
         });
@@ -22,6 +22,7 @@ export const coursesApi = {
             {
                 method: "GET",
                 headers: {
+                    "Content-Type": "application/json",
                     ...getAuthHeaders(),
                 },
             }
@@ -35,6 +36,7 @@ export const coursesApi = {
         const response = await apiFetch<HttpResponse<Course>>("/courses", {
             method: "POST",
             headers: {
+                "Content-Type": "application/json",
                 ...getAuthHeaders(),
             },
             body: JSON.stringify(courseData),
@@ -51,6 +53,7 @@ export const coursesApi = {
             {
                 method: "PUT",
                 headers: {
+                    "Content-Type": "application/json",
                     ...getAuthHeaders(),
                 },
                 body: JSON.stringify(courseData),
@@ -63,21 +66,9 @@ export const coursesApi = {
         await apiFetch<HttpResponse<void>>(`/courses/${id}`, {
             method: "DELETE",
             headers: {
+                "Content-Type": "application/json",
                 ...getAuthHeaders(),
             },
-        });
-    },
-
-    async enrollInCourse(
-        courseId: string,
-        enrollmentCode?: string
-    ): Promise<void> {
-        await apiFetch<HttpResponse<void>>(`/courses/${courseId}/enroll`, {
-            method: "POST",
-            headers: {
-                ...getAuthHeaders(),
-            },
-            body: JSON.stringify({ enrollmentCode }),
         });
     },
 
