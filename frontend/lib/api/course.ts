@@ -46,19 +46,16 @@ export const coursesApi = {
 
     async updateCourse(
         id: string,
-        courseData: Partial<Course>
+        { title, description }: Partial<Course>
     ): Promise<Course> {
-        const response = await apiFetch<HttpResponse<Course>>(
-            `/courses/${id}`,
-            {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    ...getAuthHeaders(),
-                },
-                body: JSON.stringify(courseData),
-            }
-        );
+        const response = await apiFetch<HttpResponse<Course>>(`/courses`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                ...getAuthHeaders(),
+            },
+            body: JSON.stringify({ id, title, description }),
+        });
         return response.data;
     },
 

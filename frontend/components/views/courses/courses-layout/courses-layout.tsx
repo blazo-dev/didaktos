@@ -5,7 +5,9 @@ import Loader from "@/components/layout/loader";
 import { CourseModal } from "@/components/modals/course-modal";
 import { useCourses } from "@/hooks/courses/use-courses";
 import { useAuthStore } from "@/stores/auth-store";
+import { useCoursesStore } from "@/stores/courses-store";
 import { useModalStore } from "@/stores/modal-store";
+import { useToastStore } from "@/stores/toast-store";
 import { useState } from "react";
 import { CoursesFilters, FilterType } from "./courses-filters";
 import { CoursesGrid } from "./courses-grid";
@@ -13,7 +15,9 @@ import { CoursesHeader } from "./courses-header";
 
 export function CoursesLayout() {
     const { user } = useAuthStore();
-    const { openModal, closeModal } = useModalStore();
+    const { openModal } = useModalStore();
+    const { addToast } = useToastStore();
+    const { currentCourse: course } = useCoursesStore();
     const { data: maybeCourses, isLoading } = useCourses();
     const courses = maybeCourses || [];
     const [searchTerm, setSearchTerm] = useState('');
@@ -92,10 +96,10 @@ export function CoursesLayout() {
             {/* Course Creation Modal */}
             <CourseModal
                 modalId="create-course"
-                onSuccess={() => {
-                    // Optionally refresh courses or show success message
-                    console.log('Course created successfully');
-                }}
+            />
+            <CourseModal
+                modalId="edit-course"
+                course={course!}
             />
         </AppLayout>
     );

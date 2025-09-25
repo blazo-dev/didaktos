@@ -5,8 +5,8 @@ namespace didaktos.backend.Interfaces
 {
     public interface ICourseService
     {
-        Task<HttpResponseDto<object>> GetCoursesAsync();
-        Task<HttpResponseDto<object>> CreateCourseAsync(
+        Task<HttpResponseDto<List<CourseReadResponseDto>>> GetCoursesAsync();
+        Task<HttpResponseDto<CourseResponseDto>> CreateCourseAsync(
             CourseRequestDto request,
             Guid instructorId
         );

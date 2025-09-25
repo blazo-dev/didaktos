@@ -13,7 +13,7 @@ namespace didaktos.backend.Services
             _courseRepository = courseRepository;
         }
 
-        public async Task<HttpResponseDto<object>> CreateCourseAsync(
+        public async Task<HttpResponseDto<CourseResponseDto>> CreateCourseAsync(
             CourseRequestDto request,
             Guid instructorId
         )
@@ -33,7 +33,7 @@ namespace didaktos.backend.Services
 
                 var createdCourse = await _courseRepository.InsertCourseAsync(course);
 
-                return new HttpResponseDto<object>
+                return new HttpResponseDto<CourseResponseDto>
                 {
                     Success = true,
                     Message = "Course created successfully",
@@ -48,7 +48,7 @@ namespace didaktos.backend.Services
             }
             catch (Exception ex)
             {
-                return new HttpResponseDto<object>
+                return new HttpResponseDto<CourseResponseDto>
                 {
                     Success = false,
                     Message = "Course creation failed",
@@ -57,13 +57,13 @@ namespace didaktos.backend.Services
             }
         }
 
-        public async Task<HttpResponseDto<object>> GetCoursesAsync()
+        public async Task<HttpResponseDto<List<CourseReadResponseDto>>> GetCoursesAsync()
         {
             try
             {
                 var Courses = await _courseRepository.SelectCoursesAsync();
 
-                return new HttpResponseDto<object>
+                return new HttpResponseDto<List<CourseReadResponseDto>>
                 {
                     Success = true,
                     Message = "Courses retrieved successfully",
@@ -72,7 +72,7 @@ namespace didaktos.backend.Services
             }
             catch (Exception ex)
             {
-                return new HttpResponseDto<object>
+                return new HttpResponseDto<List<CourseReadResponseDto>>
                 {
                     Success = false,
                     Message = "Retrieval of courses failed",

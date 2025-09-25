@@ -12,6 +12,7 @@ import {
 import { useDeleteCourse } from '@/hooks/courses/use-delete-course';
 import { useAuthStore } from '@/stores/auth-store';
 import { useCoursesStore } from '@/stores/courses-store';
+import { useModalStore } from '@/stores/modal-store';
 import { Course } from '@/types/course';
 import {
     BookOpen,
@@ -32,6 +33,7 @@ interface CourseCardProps {
 export function CourseCard({ course }: CourseCardProps) {
     const router = useRouter();
     const [showMenu, setShowMenu] = useState(false);
+    const { openModal } = useModalStore();
     const deleteCourse = useDeleteCourse();
     const { setCurrentCourse } = useCoursesStore();
     const { user } = useAuthStore();
@@ -46,7 +48,14 @@ export function CourseCard({ course }: CourseCardProps) {
     };
 
     const handleEditCourse = () => {
-        router.push(`/courses/${course.id}/edit`);
+        setCurrentCourse(course);
+        openModal({
+            id: 'edit-course',
+            title: 'Edit Course',
+            size: 'md',
+            closable: true,
+            backdrop: true,
+        });
     };
 
     const handleDeleteCourse = async () => {
