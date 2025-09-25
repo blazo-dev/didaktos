@@ -31,21 +31,21 @@ export function CoursesFilters({
                     <Button
                         variant="ghost"
                         onClick={() => onFilterChange('all')}
-                        className={`${filterType === 'all' ? 'text-foreground shadow-sm' : ''}`}
+                        className={`${filterType === 'all' ? 'text-secondary' : ''}`}
                     >
                         All Courses
                     </Button>
                     <Button
                         variant="ghost"
                         onClick={() => onFilterChange('owned')}
-                        className={`${filterType === 'owned' ? 'text-foreground shadow-sm' : ''}`}
+                        className={`${filterType === 'owned' ? 'text-secondary' : ''}`}
                     >
                         My Courses ({ownedCoursesCount})
                     </Button>
                     <Button
                         variant="ghost"
                         onClick={() => onFilterChange('enrolled')}
-                        className={`${filterType === 'enrolled' ? 'text-foreground shadow-sm' : ''}`}
+                        className={`${filterType === 'enrolled' ? 'text-secondary' : ''}`}
                     >
                         Enrolled ({enrolledCoursesCount})
                     </Button>
