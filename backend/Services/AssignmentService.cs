@@ -58,24 +58,21 @@ namespace didaktos.backend.Services
                     };
                 }
 
-                var assignments = await _assignmentRepository.GetModuleAssignmentsAsync(moduleId);
+                // Pass the userId and isInstructor parameters
+                var assignments =
+                    await _assignmentRepository.GetModuleAssignmentsWithSubmissionsAsync(
+                        moduleId,
+                        userId,
+                        isInstructor
+                    );
 
-                var assignmentDtos = assignments
-                    .Select(a => new AssignmentDto
-                    {
-                        Id = a.Id,
-                        Title = a.Title,
-                        Description = a.Description,
-                        DueDate = a.DueDate,
-                        ModuleId = a.ModuleId,
-                    })
-                    .ToList();
-
+                // Since the repository now returns AssignmentDto directly, you don't need to map again
+                // Just return the assignments directly
                 return new HttpResponseDto<object>
                 {
                     Success = true,
-                    Message = $"Retrieved {assignmentDtos.Count} assignments for module",
-                    Data = assignmentDtos,
+                    Message = $"Retrieved {assignments.Count} assignments for module",
+                    Data = assignments, // assignments is already List<AssignmentDto>
                     Errors = null,
                 };
             }

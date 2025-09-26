@@ -1,5 +1,6 @@
 using didaktos.backend.Interfaces;
 using didaktos.backend.Models;
+using didaktos.backend.Models.DTOs;
 using Npgsql;
 
 namespace didaktos.backend.Repositories
@@ -17,41 +18,96 @@ namespace didaktos.backend.Repositories
                 );
         }
 
-        public async Task<List<Assignment>> GetModuleAssignmentsAsync(Guid moduleId)
+        public async Task<List<AssignmentDto>> GetModuleAssignmentsWithSubmissionsAsync(
+            Guid moduleId,
+            Guid? userId = null,
+            bool isInstructor = false
+        )
         {
             using var connection = new NpgsqlConnection(_connectionString);
             await connection.OpenAsync();
 
-            const string sql =
+            string sql =
                 @"
-                SELECT id, title, description, module_id, created_at, updated_at, due_date
-                FROM assignments 
-                WHERE module_id = @moduleId
-                ORDER BY created_at ASC";
+                SELECT 
+                    a.id as assignment_id, 
+                    a.title, 
+                    a.description, 
+                    a.module_id, 
+                    a.created_at, 
+                    a.updated_at, 
+                    a.due_date,
+                    s.id as submission_id,
+                    s.student_id as submission_student_id,
+                    s.content as submission_content,
+                    s.submitted_at,
+                    s.grade,
+                    u.name as student_name
+                FROM assignments a
+                LEFT JOIN submissions s ON a.id = s.assignment_id
+                LEFT JOIN users u ON s.student_id = u.id";
+
+            // Add WHERE clause based on user role
+            if (isInstructor)
+            {
+                sql += " WHERE a.module_id = @moduleId";
+            }
+            else
+            {
+                sql +=
+                    " WHERE a.module_id = @moduleId AND (s.student_id = @studentId OR s.student_id IS NULL)";
+            }
+
+            sql += " ORDER BY a.created_at ASC, s.submitted_at ASC";
 
             using var command = new NpgsqlCommand(sql, connection);
             command.Parameters.AddWithValue("@moduleId", moduleId);
+            if (!isInstructor && userId.HasValue)
+            {
+                command.Parameters.AddWithValue("@studentId", userId.Value);
+            }
 
-            var assignments = new List<Assignment>();
+            var assignmentDict = new Dictionary<Guid, AssignmentDto>();
+
             using var reader = await command.ExecuteReaderAsync();
-
             while (await reader.ReadAsync())
             {
-                assignments.Add(
-                    new Assignment
+                var assignmentId = (Guid)reader["assignment_id"];
+
+                if (!assignmentDict.TryGetValue(assignmentId, out var assignment))
+                {
+                    assignment = new AssignmentDto
                     {
-                        Id = (Guid)reader["id"],
+                        Id = assignmentId,
                         Title = (string)reader["title"],
                         Description = (string)reader["description"],
                         ModuleId = (Guid)reader["module_id"],
+                        DueDate = reader["due_date"] as DateTime?,
                         CreatedAt = (DateTime)reader["created_at"],
                         UpdatedAt = (DateTime)reader["updated_at"],
-                        DueDate = reader["due_date"] as DateTime?,
-                    }
-                );
+                        Submissions = new List<SubmissionReadResponseDto>(),
+                    };
+                    assignmentDict[assignmentId] = assignment;
+                }
+
+                // Add submission if it exists
+                if (reader["submission_id"] != DBNull.Value)
+                {
+                    var submissionDto = new SubmissionReadResponseDto
+                    {
+                        Id = (Guid)reader["submission_id"],
+                        StudentId = (Guid)reader["submission_student_id"],
+                        AssignmentId = assignmentId,
+                        Content = reader["submission_content"]?.ToString() ?? string.Empty,
+                        SubmittedAt = (DateTime)reader["submitted_at"],
+                        Grade = reader["grade"] as int?,
+                        Name = reader["student_name"]?.ToString() ?? string.Empty,
+                    };
+                    assignment.Submissions.Add(submissionDto);
+                }
             }
 
-            return assignments;
+            return assignmentDict.Values.ToList();
         }
 
         public async Task<Assignment> CreateAssignmentAsync(Assignment assignment)
