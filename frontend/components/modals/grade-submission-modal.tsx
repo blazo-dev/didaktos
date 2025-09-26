@@ -6,13 +6,15 @@ import { GradeSubmissionForm } from '../forms/grade-submission-form';
 
 interface SubmissionModalProps {
     modalId: string;
+    onSuccess?: () => void;
 }
 
-export function GradeSubmissionModal({ modalId }: SubmissionModalProps) {
+export function GradeSubmissionModal({ modalId, onSuccess }: SubmissionModalProps) {
     const { closeModal } = useModalStore();
 
     const handleSuccess = () => {
         closeModal(modalId);
+        onSuccess?.();
     };
 
     const handleCancel = () => {

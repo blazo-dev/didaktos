@@ -12,9 +12,9 @@ export const useGradeSubmission = () => {
     return useMutation({
         mutationFn: ({ id, grade, courseId }: SubmissionGradeRequestDto) =>
             submissionsApi.gradeSubmission({ id, grade, courseId }),
-        onSuccess: (submissionData) => {
+        onSuccess: () => {
             queryClient.invalidateQueries({
-                queryKey: ["submissions", submissionData.courseId],
+                queryKey: ["submissions"],
             });
             queryClient.invalidateQueries({
                 queryKey: ["courses"],

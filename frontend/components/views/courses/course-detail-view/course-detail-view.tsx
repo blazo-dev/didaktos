@@ -2,8 +2,11 @@
 
 import Loader from '@/components/layout/loader';
 import { AssignmentModal } from '@/components/modals/assignment-modal';
+import { GradeSubmissionModal } from '@/components/modals/grade-submission-modal';
 import { LessonModal } from '@/components/modals/lesson-modal';
 import { ModuleModal } from '@/components/modals/module-modal';
+import { ViewAllSubmissionsModal } from '@/components/modals/view-all-submission-modal';
+import { ViewSubmissionModal } from '@/components/modals/view-submission-modal';
 import { useCourseById } from '@/hooks/courses/use-course-by-id';
 import { useGetAllSubmissionsByCourse } from '@/hooks/submissions/use-get-all-submission-by-course';
 import { useCoursesStore } from '@/stores/courses-store';
@@ -12,9 +15,6 @@ import { CourseDetailHeader } from './course-detail-header';
 import { CourseInfoCard } from './course-info-card';
 import { CourseModulesSection } from './course-modules-section';
 import { CourseNotFound } from './course-not-found';
-import { ViewAllSubmissionsModal } from '@/components/modals/view-all-submission-modal';
-import { ViewSubmissionModal } from '@/components/modals/view-submission-modal';
-import { GradeSubmissionModal } from '@/components/modals/grade-submission-modal';
 
 
 interface CourseDetailViewProps {
@@ -27,7 +27,6 @@ export function CourseDetailView({ courseId }: CourseDetailViewProps) {
     const { currentModule, setCurrentSubmissions } = useCoursesStore();
     const { data: submissions } = useGetAllSubmissionsByCourse(courseId);
     const { openModal } = useModalStore();
-
 
     // User can view course if they are the owner or enrolled
     const canView = isOwner || isEnrolled;
@@ -43,6 +42,8 @@ export function CourseDetailView({ courseId }: CourseDetailViewProps) {
     if (!canView) {
         return <CourseNotFound type="access-denied" />;
     }
+
+
 
     const totalLessons = course.modules.reduce((acc, module) => acc + module.lessons.length, 0);
     const totalAssignments = course.modules.reduce((acc, module) => acc + module.assignments.length, 0);
@@ -64,6 +65,7 @@ export function CourseDetailView({ courseId }: CourseDetailViewProps) {
             backdrop: true,
             size: 'xl',
         });
+
     }
 
 
@@ -118,6 +120,9 @@ export function CourseDetailView({ courseId }: CourseDetailViewProps) {
             />
             <GradeSubmissionModal
                 modalId="grade-submission"
+                onSuccess={() => {
+                    setCurrentSubmissions(submissions || []);
+                }}
             />
         </div>
     );

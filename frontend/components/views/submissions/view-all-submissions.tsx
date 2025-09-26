@@ -15,6 +15,8 @@ function ViewAllSubmissions() {
     // Check if user is the instructor
     const isInstructor = currentCourse?.instructor.id === user?.id
 
+    console.log({currentSubmissions});
+
     // If not instructor, show access denied
     if (!isInstructor) {
         return (
