@@ -7,7 +7,7 @@ namespace didaktos.backend.Interfaces
     {
         Task<Course?> GetCourseByIdAsync(Guid courseId);
 
-        Task<List<CourseReadResponseDto>> SelectCoursesAsync();
+        Task<List<CourseReadResponseDto>> SelectCoursesAsync(Guid userId);
         Task<CourseResponseDto> InsertCourseAsync(Course course);
         Task<CourseResponseDto> UpdateCourseAsync(Course course);
         Task<bool> CourseExistsAsync(Guid courseId);

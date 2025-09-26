@@ -45,7 +45,7 @@ public class SubmissionRepository : ISubmissionRepository
         throw new InvalidOperationException("Failed to Submit");
     }
 
-    public async Task<List<SubmissionReadResponseDto>> SelectAllCourseSubmissionsAsync(
+    public async Task<List<SubmissionReadResponseDto>> SelectAllCourseSubmissionsByAssignmentAsync(
         Guid courseId
     )
     {
@@ -53,11 +53,21 @@ public class SubmissionRepository : ISubmissionRepository
         await connection.OpenAsync();
         const string sql =
             @"
-                SELECT s.id, s.content, s.grade, s.assignment_id, s.student_id, s.submitted_at, u.name
+                SELECT 
+                s.id, 
+                s.content, 
+                s.grade, 
+                s.assignment_id, 
+                s.student_id, 
+                s.submitted_at, 
+                u.name AS student_name,
+                a.title AS assignment_title
                 FROM submissions s
                 JOIN users u ON s.student_id = u.id
                 JOIN enrollments e ON s.student_id = e.student_id
-                WHERE e.course_id = @courseId";
+                JOIN assignments a ON s.assignment_id = a.id
+                WHERE e.course_id = @courseId
+                ORDER BY s.assignment_id;";
 
         using var command = new NpgsqlCommand(sql, connection);
         command.Parameters.AddWithValue("@courseId", courseId);
@@ -76,7 +86,8 @@ public class SubmissionRepository : ISubmissionRepository
                     AssignmentId = (Guid)reader["assignment_id"],
                     StudentId = (Guid)reader["student_id"],
                     SubmittedAt = (DateTime)reader["submitted_at"],
-                    Name = (string)reader["name"],
+                    Name = (string)reader["student_name"],
+                    AssignmentTitle = (string)reader["assignment_title"],
                 }
             );
         }

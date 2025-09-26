@@ -41,7 +41,7 @@ namespace didaktos.backend.Controllers
                 );
             }
 
-            var result = await _courseService.GetCoursesAsync();
+            var result = await _courseService.GetCoursesAsync(userId);
 
             if (result.Success)
             {
