@@ -20,8 +20,7 @@ interface CourseDetailViewProps {
 
 export function CourseDetailView({ courseId }: CourseDetailViewProps) {
     const { course, isOwner, isEnrolled, isLoading } = useCourseById(courseId);
-    const [showCreateModule, setShowCreateModule] = useState(false);
-    const { currentLesson, currentModule } = useCoursesStore();
+    const { currentModule } = useCoursesStore();
     const { openModal } = useModalStore();
 
 
@@ -74,7 +73,7 @@ export function CourseDetailView({ courseId }: CourseDetailViewProps) {
                 courseId={course.id}
                 isOwner={isOwner}
                 isEnrolled={isEnrolled}
-                onCreateModule={handleCreateModule  }
+                onCreateModule={handleCreateModule}
             />
             {/* Lesson Modals */}
             <LessonModal
