@@ -94,6 +94,16 @@ export function AssignmentView({ courseId }: AssignmentViewProps) {
         });
     }
 
+    const handleViewSubmissions = () => {
+        openModal({
+            id: 'view-submissions',
+            title: 'All Submissions',
+            closable: true,
+            backdrop: true,
+            size: 'xl',
+        });
+    }
+
     return (
         <div className='w-full space-y-4 px-4 sm:px-6 lg:px-8 py-8 relative'>
 
@@ -105,6 +115,7 @@ export function AssignmentView({ courseId }: AssignmentViewProps) {
                 onAssignmentEdit={handleAssignmentEdit}
                 onAssignmentDelete={handleAssignmentDelete}
                 onAssignmentSubmit={handleOpenSubmission}
+                onAssignmentViewSubmissions={handleViewSubmissions}
             />
 
             {/* Assignment Content */}
