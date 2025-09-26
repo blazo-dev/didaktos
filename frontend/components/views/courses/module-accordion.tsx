@@ -45,8 +45,10 @@ export function ModuleAccordion({ modules, courseId, canEdit }: ModuleAccordionP
     };
 
     const handleEditModule = (module: Module) => {
+        setCurrentModule(module);
+
         openModal({
-            id: `edit-module-${module.id}`,
+            id: 'edit-module',
             title: "Edit Module",
         });
     };

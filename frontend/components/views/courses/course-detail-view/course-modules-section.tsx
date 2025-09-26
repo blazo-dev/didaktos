@@ -26,7 +26,7 @@ export function CourseModulesSection({
             <h2 className="text-2xl font-bold">Course Modules</h2>
 
             {modules.length === 0 ? (
-                <Card className="p-12 text-center">
+                <Card className="p-12 items-center text-center">
                     <BookOpen className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
                     <h3 className="text-xl font-semibold mb-2">No modules yet</h3>
                     <p className="text-muted-foreground mb-6">
@@ -36,7 +36,7 @@ export function CourseModulesSection({
                         }
                     </p>
                     {isOwner && (
-                        <Button onClick={onCreateModule}>
+                        <Button variant={"outline"} onClick={onCreateModule}>
                             <Plus className="h-4 w-4 mr-2" />
                             Create Module
                         </Button>

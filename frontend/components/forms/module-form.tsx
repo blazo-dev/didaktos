@@ -5,7 +5,6 @@ import { Input } from '@/components/ui/input';
 import { useCreateModule } from '@/hooks/modules/use-create-modules';
 import { useUpdateModule } from '@/hooks/modules/use-update-module';
 import { ModuleFormData, moduleSchema } from '@/lib/schemas/module';
-import { useToastStore } from '@/stores/toast-store';
 import { Module } from '@/types/course';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
@@ -19,7 +18,6 @@ interface ModuleFormProps {
 }
 
 export function ModuleForm({ courseId, module, onSuccess, onCancel }: ModuleFormProps) {
-    const { addToast } = useToastStore();
     const createModuleMutation = useCreateModule(courseId);
     const updateModuleMutation = useUpdateModule(courseId);
 

@@ -21,7 +21,7 @@ interface CourseDetailViewProps {
 export function CourseDetailView({ courseId }: CourseDetailViewProps) {
     const { course, isOwner, isEnrolled, isLoading } = useCourseById(courseId);
     const [showCreateModule, setShowCreateModule] = useState(false);
-    const { currentLesson } = useCoursesStore();
+    const { currentLesson, currentModule } = useCoursesStore();
     const { openModal } = useModalStore();
 
 
@@ -74,7 +74,7 @@ export function CourseDetailView({ courseId }: CourseDetailViewProps) {
                 courseId={course.id}
                 isOwner={isOwner}
                 isEnrolled={isEnrolled}
-                onCreateModule={() => setShowCreateModule(true)}
+                onCreateModule={handleCreateModule  }
             />
             {/* Lesson Modals */}
             <LessonModal
@@ -85,6 +85,12 @@ export function CourseDetailView({ courseId }: CourseDetailViewProps) {
                 modalId={"create-module"}
                 courseId={course.id}
                 onSuccess={handleModuleSuccess}
+            />
+            <ModuleModal
+                modalId={"edit-module"}
+                courseId={course.id}
+                onSuccess={handleModuleSuccess}
+                module={currentModule!}
             />
         </div>
     );

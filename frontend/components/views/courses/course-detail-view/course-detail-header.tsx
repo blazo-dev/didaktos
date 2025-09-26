@@ -28,7 +28,7 @@ export function CourseDetailHeader({ courseId, isOwner, onCreateModule }: Course
             </Button>
 
             {isOwner && (
-                <Button onClick={onCreateModule}>
+                <Button variant={"outline"} onClick={onCreateModule}>
                     <Plus className="h-4 w-4 mr-2" />
                     Create Module
                 </Button>
