@@ -1,16 +1,16 @@
 'use client';
 
+import { AssignmentModal } from '@/components/modals/assignment-modal';
+import { SubmissionModal } from '@/components/modals/submission-modal';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { useDeleteAssignment } from '@/hooks/assignments/use-delete-assignment';
 import { useAuthStore } from '@/stores/auth-store';
 import { useCoursesStore } from '@/stores/courses-store';
 import { useModalStore } from '@/stores/modal-store';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { StudyAssistant } from '../assistant/study-assistant';
 import AssignmentHeader from './assignment-header';
-import { useDeleteAssignment } from '@/hooks/assignments/use-delete-assignment';
-import { AssignmentModal } from '@/components/modals/assignment-modal';
 
 interface AssignmentViewProps {
     courseId: string;
@@ -66,6 +66,16 @@ export function AssignmentView({ courseId }: AssignmentViewProps) {
 
     }
 
+    const handleOpenSubmission = () => {
+        openModal({
+            id: 'create-submission',
+            title: 'Create Submission',
+            closable: true,
+            backdrop: true,
+            size: 'xl',
+        });
+    }
+
     return (
         <div className='w-full space-y-4 px-4 sm:px-6 lg:px-8 py-8 relative'>
 
@@ -75,6 +85,7 @@ export function AssignmentView({ courseId }: AssignmentViewProps) {
                 isOwner={isOwner}
                 onAssignmentEdit={handleAssignmentEdit}
                 onAssignmentDelete={handleAssignmentDelete}
+                onAssignmentSubmit={handleOpenSubmission}
             />
 
             {/* Assignment Content */}
@@ -95,7 +106,9 @@ export function AssignmentView({ courseId }: AssignmentViewProps) {
                 modalId="edit-assignment"
                 assignment={currentAssignment}
             />
-            <StudyAssistant />
+            <SubmissionModal
+                modalId="create-submission"
+            />
         </div>
     );
 }
