@@ -91,7 +91,7 @@ namespace didaktos.backend.Repositories
                 ORDER BY c.title, m.title, a.title;
 
                 -- Get submissions for assignments that are only for the user
-                SELECT s.id, s.content, s.grade, s.assignment_id, s.student_id, s.submitted_at, u.name
+                SELECT s.id, s.content, s.grade, s.assignment_id, s.student_id, s.submitted_at, u.name, a.title AS assignment_title
                 FROM submissions s
                 JOIN assignments a ON s.assignment_id = a.id
                 JOIN modules m ON a.module_id = m.id
@@ -224,6 +224,7 @@ namespace didaktos.backend.Repositories
                             StudentId = (Guid)reader["student_id"],
                             SubmittedAt = (DateTime)reader["submitted_at"],
                             Name = (string)reader["name"],
+                            AssignmentTitle = (string)reader["assignment_title"],
                         }
                     );
                 }
