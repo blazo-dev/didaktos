@@ -20,5 +20,7 @@ namespace didaktos.backend.Models
         public DateTime SubmittedAt { get; set; } = DateTime.UtcNow;
 
         public string Name { get; set; } = string.Empty;
+
+        public string AssignmentTitle { get; set; } = string.Empty;
     }
 }

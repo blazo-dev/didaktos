@@ -9,7 +9,10 @@ namespace didaktos.backend.Interfaces
             SubmissionAddRequestDto request,
             Guid studentId
         );
-        Task<HttpResponseDto<object>> GetAllCourseSubmissionsAsync(Guid userId, Guid courseId);
+        Task<HttpResponseDto<List<SubmissionReadResponseDto>>> GetAllCourseSubmissionsAsync(
+            Guid userId,
+            Guid courseId
+        );
         Task<HttpResponseDto<object>> SetSubmissionGradeAsync(
             Guid userId,
             SubmissionGradeRequestDto request
