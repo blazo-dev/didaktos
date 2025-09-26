@@ -94,7 +94,7 @@ export function CourseCard({ course }: CourseCardProps) {
                         <MoreVertical className="h-4 w-4" />
                     </Button>
                     {showMenu && (
-                        <div className="grid absolute right-0 mt-2 border rounded-lg shadow-lg bg-surface z-10 overflow-hidden">
+                        <div className="flex flex-col absolute right-0 mt-2 border rounded-lg shadow-lg bg-surface z-10 overflow-hidden">
                             <Button
                                 variant="ghost"
                                 size="sm"
