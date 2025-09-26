@@ -15,6 +15,8 @@ interface CoursesState {
 
     currentSubmission: Submission | null;
     setCurrentSubmission: (submission: Submission | null) => void;
+    currentSubmissions: Submission[] | null;
+    setCurrentSubmissions: (submissions: Submission[] | null) => void;
 
     currentAssignment: Assignment | null;
     setCurrentAssignment: (assignment: Assignment | null) => void;
@@ -37,4 +39,7 @@ export const useCoursesStore = create<CoursesState>((set) => ({
 
     currentSubmission: null,
     setCurrentSubmission: (currentSubmission) => set({ currentSubmission }),
+
+    currentSubmissions: null,
+    setCurrentSubmissions: (currentSubmissions) => set({ currentSubmissions }),
 }));

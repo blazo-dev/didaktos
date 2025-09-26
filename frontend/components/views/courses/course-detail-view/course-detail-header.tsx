@@ -3,7 +3,6 @@
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Plus } from 'lucide-react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 
 interface CourseDetailHeaderProps {
     courseId: string;
@@ -12,7 +11,6 @@ interface CourseDetailHeaderProps {
 }
 
 export function CourseDetailHeader({ courseId, isOwner, onCreateModule }: CourseDetailHeaderProps) {
-    const router = useRouter();
 
     return (
         <div className="flex items-center justify-between">

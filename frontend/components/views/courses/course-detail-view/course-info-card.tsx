@@ -44,7 +44,7 @@ export function CourseInfoCard({
                     </p>
                 </div>
 
-                <div className="flex items-center space-x-6 text-sm text-muted-foreground">
+                <div className="flex space-x-4 flex-wrap text-sm text-muted-foreground">
                     <div className="flex items-center">
                         <Users className="h-4 w-4 mr-1" />
                         {course.enrollments.length} enrolled

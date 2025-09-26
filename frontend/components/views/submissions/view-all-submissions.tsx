@@ -7,7 +7,7 @@ import { Award, Calendar, Edit, Eye, FileText, User } from "lucide-react"
 
 function ViewAllSubmissions() {
     // Note: currentSubmissions will be implemented in useCoursesStore
-    const { currentSubmissions, currentAssignment, currentCourse, setCurrentSubmission } = useCoursesStore() as any
+    const { currentSubmissions, currentAssignment, currentCourse, setCurrentSubmission } = useCoursesStore()
     const { user } = useAuthStore()
 
     // Check if user is the instructor

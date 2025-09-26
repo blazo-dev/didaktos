@@ -4,7 +4,7 @@ import { useAuthStore } from "@/stores/auth-store"
 import { useCoursesStore } from "@/stores/courses-store"
 import { Award, FileText } from "lucide-react"
 
-function ViewSubmissions() {
+function ViewSubmission() {
     const { currentSubmission, currentAssignment, currentCourse } = useCoursesStore()
     const { user } = useAuthStore()
 
@@ -147,4 +147,4 @@ function ViewSubmissions() {
     )
 }
 
-export default ViewSubmissions
+export default ViewSubmission

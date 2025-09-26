@@ -2,6 +2,7 @@
 
 import { AssignmentModal } from '@/components/modals/assignment-modal';
 import { SubmissionModal } from '@/components/modals/submission-modal';
+import { ViewAllSubmissionsModal } from '@/components/modals/view-all-submission-modal';
 import { ViewSubmissionModal } from '@/components/modals/view-submission-modal';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -19,7 +20,7 @@ interface AssignmentViewProps {
 
 
 export function AssignmentView({ courseId }: AssignmentViewProps) {
-    const { currentCourse, currentAssignment, setCurrentSubmission } = useCoursesStore();
+    const { currentCourse, currentAssignment, setCurrentSubmission, setCurrentSubmissions } = useCoursesStore();
 
     if (!currentAssignment || !currentCourse) {
         return (
@@ -68,8 +69,6 @@ export function AssignmentView({ courseId }: AssignmentViewProps) {
 
     }
 
-    console.log(currentAssignment);
-
     const handleOpenSubmission = () => {
         if (existingSubmission) {
             setCurrentSubmission(existingSubmission);
@@ -95,8 +94,10 @@ export function AssignmentView({ courseId }: AssignmentViewProps) {
     }
 
     const handleViewSubmissions = () => {
+        setCurrentSubmissions(currentAssignment.submissions);
+
         openModal({
-            id: 'view-submissions',
+            id: 'view-all-submissions',
             title: 'All Submissions',
             closable: true,
             backdrop: true,
@@ -141,6 +142,9 @@ export function AssignmentView({ courseId }: AssignmentViewProps) {
             />
             <ViewSubmissionModal
                 modalId="view-submission"
+            />
+            <ViewAllSubmissionsModal
+                modalId="view-all-submissions"
             />
         </div>
     );
