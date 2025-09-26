@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { useAuthStore } from "@/stores/auth-store"
 import { useCoursesStore } from "@/stores/courses-store"
@@ -21,6 +20,8 @@ function ViewSubmission() {
             </div>
         )
     }
+
+    const isInstructor = currentCourse?.instructor.id === user?.id;
 
     const formatDate = (dateString?: string) => {
         if (!dateString) return "Not available"
@@ -111,16 +112,19 @@ function ViewSubmission() {
                             <p className="text-sm font-medium text-foreground">Course Title</p>
                             <p className="text-muted-foreground">{currentCourse.title}</p>
                         </div>
-                        <div>
-                            <p className="text-sm font-medium text-foreground">Course ID</p>
-                            <p className="text-muted-foreground">{currentSubmission.courseId}</p>
-                        </div>
-                        <div>
+                        {!isInstructor ? (<div>
                             <p className="text-sm font-medium text-foreground">Instructor</p>
                             <p className="text-muted-foreground">
                                 {currentCourse.instructor.name} ({currentCourse.instructor.email})
                             </p>
-                        </div>
+                        </div>) : (
+                            <div>
+                                <p className="text-sm font-medium text-foreground">Student</p>
+                                <p className="text-muted-foreground">
+                                    {currentSubmission.name}
+                                </p>
+                            </div>
+                        )}
                     </div>
                 </Card>
             )}
@@ -134,15 +138,6 @@ function ViewSubmission() {
                     </div>
                 </div>
             </Card>
-
-            {/* Action Buttons */}
-            <div className="flex justify-end space-x-4 pt-4 border-t border-border">
-                {currentCourse!.instructor.id === user?.id && (
-                    <Button>
-                        Grade Submission
-                    </Button>
-                )}
-            </div>
         </div>
     )
 }

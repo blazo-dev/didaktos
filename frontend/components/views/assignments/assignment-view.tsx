@@ -2,7 +2,6 @@
 
 import { AssignmentModal } from '@/components/modals/assignment-modal';
 import { SubmissionModal } from '@/components/modals/submission-modal';
-import { ViewAllSubmissionsModal } from '@/components/modals/view-all-submission-modal';
 import { ViewSubmissionModal } from '@/components/modals/view-submission-modal';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -74,7 +73,7 @@ export function AssignmentView({ courseId }: AssignmentViewProps) {
             setCurrentSubmission(existingSubmission);
 
             openModal({
-                id: 'view-submission',
+                id: 'view-submission-student',
                 title: 'View Submission',
                 closable: true,
                 backdrop: true,
@@ -93,17 +92,6 @@ export function AssignmentView({ courseId }: AssignmentViewProps) {
         });
     }
 
-    const handleViewSubmissions = () => {
-        setCurrentSubmissions(currentAssignment.submissions);
-
-        openModal({
-            id: 'view-all-submissions',
-            title: 'All Submissions',
-            closable: true,
-            backdrop: true,
-            size: 'xl',
-        });
-    }
 
     return (
         <div className='w-full space-y-4 px-4 sm:px-6 lg:px-8 py-8 relative'>
@@ -116,7 +104,6 @@ export function AssignmentView({ courseId }: AssignmentViewProps) {
                 onAssignmentEdit={handleAssignmentEdit}
                 onAssignmentDelete={handleAssignmentDelete}
                 onAssignmentSubmit={handleOpenSubmission}
-                onAssignmentViewSubmissions={handleViewSubmissions}
             />
 
             {/* Assignment Content */}
@@ -141,10 +128,7 @@ export function AssignmentView({ courseId }: AssignmentViewProps) {
                 modalId="create-submission"
             />
             <ViewSubmissionModal
-                modalId="view-submission"
-            />
-            <ViewAllSubmissionsModal
-                modalId="view-all-submissions"
+                modalId="view-submission-student"
             />
         </div>
     );

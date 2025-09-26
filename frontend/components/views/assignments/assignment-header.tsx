@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ArrowLeftIcon, Edit2Icon, EyeIcon, SendIcon, Trash2Icon } from "lucide-react";
+import { ArrowLeftIcon, Edit2Icon, SendIcon, Trash2Icon } from "lucide-react";
 import Link from "next/link";
 
 interface AssignmentHeaderProps {
@@ -9,12 +9,11 @@ interface AssignmentHeaderProps {
     onAssignmentEdit: () => void;
     onAssignmentDelete: () => void;
     onAssignmentSubmit: () => void;
-    onAssignmentViewSubmissions: () => void;
 }
 
-function AssignmentHeader({ courseId, isOwner, isAlreadySubmitted, onAssignmentEdit, onAssignmentDelete, onAssignmentSubmit, onAssignmentViewSubmissions }: AssignmentHeaderProps) {
+function AssignmentHeader({ courseId, isOwner, isAlreadySubmitted, onAssignmentEdit, onAssignmentDelete, onAssignmentSubmit }: AssignmentHeaderProps) {
     return (
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between flex-wrap">
             <Button
                 variant="ghost"
                 asChild
@@ -28,13 +27,6 @@ function AssignmentHeader({ courseId, isOwner, isAlreadySubmitted, onAssignmentE
             <div className="flex items-center gap-2">
                 {isOwner ? (
                     <>
-                        <Button
-                            onClick={() => onAssignmentViewSubmissions()}
-                            variant="outline"
-                        >
-                            <EyeIcon className="h-4 w-4" />
-                            View Submissions
-                        </Button>
                         <Button
                             onClick={() => onAssignmentEdit()}
                             variant="outline"

@@ -52,4 +52,5 @@ export interface Submission {
     content: string;
     submittedAt?: string;
     grade?: number;
+    name?: string;
 }

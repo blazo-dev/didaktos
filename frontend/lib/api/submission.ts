@@ -9,9 +9,9 @@ export interface SubmissionAddRequestDto {
 }
 
 export interface SubmissionGradeRequestDto {
-    submissionId: string;
+    id: string;
     grade: number;
-    feedback?: string;
+    courseId: string;
 }
 
 export const submissionsApi = {
@@ -40,10 +40,14 @@ export const submissionsApi = {
             {
                 method: "GET",
                 headers: {
+                    "Content-Type": "application/json",
                     ...getAuthHeaders(),
                 },
             }
         );
+
+        console.log(response.data);
+
         return response.data ?? [];
     },
 
@@ -56,6 +60,7 @@ export const submissionsApi = {
             {
                 method: "PUT",
                 headers: {
+                    "Content-Type": "application/json",
                     ...getAuthHeaders(),
                 },
                 body: JSON.stringify(gradeData),
