@@ -46,7 +46,6 @@ export const submissionsApi = {
             }
         );
 
-        console.log(response.data);
 
         return response.data ?? [];
     },
