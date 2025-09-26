@@ -11,6 +11,7 @@ import { CourseDetailHeader } from './course-detail-header';
 import { CourseInfoCard } from './course-info-card';
 import { CourseModulesSection } from './course-modules-section';
 import { CourseNotFound } from './course-not-found';
+import { AssignmentModal } from '@/components/modals/assignment-modal';
 
 
 interface CourseDetailViewProps {
@@ -79,6 +80,12 @@ export function CourseDetailView({ courseId }: CourseDetailViewProps) {
             <LessonModal
                 modalId="create-lesson"
             />
+
+            {/* Assignment Modals */}
+            <AssignmentModal
+                modalId="create-assignment"
+            />
+
             {/* Modules Modal */}
             <ModuleModal
                 modalId={"create-module"}

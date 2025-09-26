@@ -1,5 +1,5 @@
 import { HttpResponse } from "@/types/http";
-import { Assignment, Course, Lesson, Module } from "../../types/course";
+import { Course, Module } from "../../types/course";
 import { apiFetch, getAuthHeaders } from "./api";
 
 export const coursesApi = {
@@ -48,14 +48,17 @@ export const coursesApi = {
         id: string,
         { title, description }: Partial<Course>
     ): Promise<Course> {
-        const response = await apiFetch<HttpResponse<Course>>(`/courses/${id}`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-                ...getAuthHeaders(),
-            },
-            body: JSON.stringify({ id, title, description }),
-        });
+        const response = await apiFetch<HttpResponse<Course>>(
+            `/courses/${id}`,
+            {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    ...getAuthHeaders(),
+                },
+                body: JSON.stringify({ id, title, description }),
+            }
+        );
         return response.data;
     },
 
@@ -108,87 +111,11 @@ export const coursesApi = {
     },
 
     async deleteModule(moduleId: string): Promise<void> {
-        await apiFetch<HttpResponse<void>>(
-            `/modules/${moduleId}`,
-            {
-                method: "DELETE",
-                headers: {
-                    ...getAuthHeaders(),
-                },
-            }
-        );
-    },
-
-    
-
-    // Assignment CRUD operations
-    async createAssignment(
-        courseId: string,
-        moduleId: string,
-        assignmentData: Omit<Assignment, "id" | "moduleId">
-    ): Promise<Assignment> {
-        const response = await apiFetch<HttpResponse<Assignment>>(
-            `/courses/${courseId}/modules/${moduleId}/assignments`,
-            {
-                method: "POST",
-                headers: {
-                    ...getAuthHeaders(),
-                },
-                body: JSON.stringify(assignmentData),
-            }
-        );
-        return response.data;
-    },
-
-    async getAssignment(
-        courseId: string,
-        moduleId: string,
-        assignmentId: string
-    ): Promise<Assignment> {
-        const response = await apiFetch<HttpResponse<Assignment>>(
-            `/courses/${courseId}/modules/${moduleId}/assignments/${assignmentId}`,
-            {
-                method: "GET",
-                headers: {
-                    ...getAuthHeaders(),
-                },
-            }
-        );
-        return response.data;
-    },
-
-    async updateAssignment(
-        courseId: string,
-        moduleId: string,
-        assignmentId: string,
-        assignmentData: Partial<Assignment>
-    ): Promise<Assignment> {
-        const response = await apiFetch<HttpResponse<Assignment>>(
-            `/courses/${courseId}/modules/${moduleId}/assignments/${assignmentId}`,
-            {
-                method: "PUT",
-                headers: {
-                    ...getAuthHeaders(),
-                },
-                body: JSON.stringify(assignmentData),
-            }
-        );
-        return response.data;
-    },
-
-    async deleteAssignment(
-        courseId: string,
-        moduleId: string,
-        assignmentId: string
-    ): Promise<void> {
-        await apiFetch<HttpResponse<void>>(
-            `/courses/${courseId}/modules/${moduleId}/assignments/${assignmentId}`,
-            {
-                method: "DELETE",
-                headers: {
-                    ...getAuthHeaders(),
-                },
-            }
-        );
+        await apiFetch<HttpResponse<void>>(`/modules/${moduleId}`, {
+            method: "DELETE",
+            headers: {
+                ...getAuthHeaders(),
+            },
+        });
     },
 };

@@ -34,8 +34,6 @@ export interface Assignment {
     title: string;
     description: string;
     dueDate: string;
-    maxPoints: number;
-    type: "quiz" | "essay" | "project" | "discussion";
     submissions?: Submission[];
 }
 
@@ -44,13 +42,6 @@ export interface Student {
     name: string;
     email: string;
     enrolledAt: string;
-}
-
-export interface Resource {
-    id: string;
-    name: string;
-    url: string;
-    type: "pdf" | "video" | "link" | "image";
 }
 
 export interface Submission {

@@ -2,7 +2,7 @@
 
 import { useCoursesStore } from '@/stores/courses-store';
 import { useModalStore } from '@/stores/modal-store';
-import { Lesson, Module } from '@/types/course';
+import { Assignment, Lesson, Module } from '@/types/course';
 import {
     BookOpen,
     Calendar,
@@ -32,7 +32,7 @@ export function ModuleAccordion({ modules, courseId, canEdit }: ModuleAccordionP
     const { openModal } = useModalStore();
     const router = useRouter();
     const deleteModule = useDeleteModule(courseId);
-    const { setCurrentLesson, setCurrentModule } = useCoursesStore();
+    const { setCurrentLesson, setCurrentModule, setCurrentAssignment } = useCoursesStore();
 
     const toggleModule = (moduleId: string) => {
         const newExpanded = new Set(expandedModules);
@@ -76,12 +76,30 @@ export function ModuleAccordion({ modules, courseId, canEdit }: ModuleAccordionP
         router.push(`/courses/${courseId}/modules/${module.id}/lessons/${lesson.id}`);
     };
 
+    const handleOpenAssignment = (module: Module, assignment: Assignment) => {
+        setCurrentAssignment(assignment);
+        setCurrentModule(module);
+        router.push(`/courses/${courseId}/modules/${module.id}/assignments/${assignment.id}`);
+    };
+
     const handleCreateLesson = (module: Module) => {
         setCurrentModule(module);
 
         openModal({
             id: 'create-lesson',
             title: 'Create New Lesson',
+            size: 'xl',
+            closable: true,
+            backdrop: true,
+        });
+    };
+
+    const handleCreateAssignment = (module: Module) => {
+        setCurrentModule(module);
+
+        openModal({
+            id: 'create-assignment',
+            title: 'Create New Assignment',
             size: 'xl',
             closable: true,
             backdrop: true,
@@ -197,9 +215,7 @@ export function ModuleAccordion({ modules, courseId, canEdit }: ModuleAccordionP
                                             <Button
                                                 size="sm"
                                                 variant="outline"
-                                                onClick={() =>
-                                                    router.push(`/courses/${courseId}/modules/${module.id}/assignments/create`)
-                                                }
+                                                onClick={() => handleCreateAssignment(module)}
                                             >
                                                 <Plus className="h-4 w-4 mr-1" />
                                                 Add Assignment
@@ -213,23 +229,17 @@ export function ModuleAccordion({ modules, courseId, canEdit }: ModuleAccordionP
                                                 <div
                                                     key={assignment.id}
                                                     className="flex items-center justify-between p-3 bg-surface rounded-lg border border-border cursor-pointer hover:bg-muted/50 transition-colors"
-                                                    onClick={() =>
-                                                        router.push(
-                                                            `/courses/${courseId}/modules/${module.id}/assignments/${assignment.id}`
-                                                        )
-                                                    }
+                                                    onClick={() => handleOpenAssignment(module, assignment)}
                                                 >
                                                     <div className="flex items-center space-x-3">
                                                         <FileText className="h-4 w-4 text-accent-secondary" />
                                                         <div>
                                                             <p className="font-medium">{assignment.title}</p>
                                                             <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                                                                <span className="capitalize">{assignment.type}</span>
                                                                 <span className="flex items-center">
                                                                     <Calendar className="h-3 w-3 mr-1" />
                                                                     Due {new Date(assignment.dueDate).toLocaleDateString()}
                                                                 </span>
-                                                                <span>{assignment.maxPoints} pts</span>
                                                             </div>
                                                         </div>
                                                     </div>
