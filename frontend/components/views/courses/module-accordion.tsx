@@ -4,7 +4,6 @@ import { useCoursesStore } from '@/stores/courses-store';
 import { useModalStore } from '@/stores/modal-store';
 import { Lesson, Module } from '@/types/course';
 import {
-    Book,
     BookOpen,
     Calendar,
     ChevronDown,
@@ -12,7 +11,6 @@ import {
     Edit,
     File,
     FileText,
-    Play,
     Plus,
     Trash2
 } from 'lucide-react';
@@ -47,11 +45,11 @@ export function ModuleAccordion({ modules, courseId, canEdit }: ModuleAccordionP
     };
 
     const handleEditModule = (module: Module) => {
-    openModal({
-        id: `edit-module-${module.id}`,
-        title: "Edit Module",
-    });
-};
+        openModal({
+            id: `edit-module-${module.id}`,
+            title: "Edit Module",
+        });
+    };
 
     const handleDeleteModule = async (moduleId: string, moduleName: string) => {
         const isConfirmed = window.confirm(
@@ -67,9 +65,7 @@ export function ModuleAccordion({ modules, courseId, canEdit }: ModuleAccordionP
             return;
         }
 
-        try {
-            await deleteModule.mutateAsync(moduleId);
-        }
+        await deleteModule.mutateAsync(moduleId);
     };
 
     const handleOpenLesson = (module: Module, lesson: Lesson) => {
@@ -84,11 +80,12 @@ export function ModuleAccordion({ modules, courseId, canEdit }: ModuleAccordionP
         openModal({
             id: 'create-lesson',
             title: 'Create New Lesson',
-            size: 'md',
+            size: 'xl',
             closable: true,
             backdrop: true,
         });
     };
+
 
     return (
         <div className="space-y-4">
@@ -143,74 +140,82 @@ export function ModuleAccordion({ modules, courseId, canEdit }: ModuleAccordionP
                         {isExpanded && (
                             <div className="border-t border-border bg-muted/30 p-4 space-y-4">
 
-                                    {/* Lessons Section */}
-                                    {module.lessons.length > 0 && (
-                                        <div>
-                                            <div className="flex items-center justify-between mb-3">
-                                                <h4 className="font-medium flex items-center">
-                                                    <BookOpen className="h-4 w-4 mr-2" />
-                                                    Lessons ({module.lessons.length})
-                                                </h4>
-                                                {canEdit && (
-                                                    <Button
-                                                        size="sm"
-                                                        variant="outline"
-                                                        onClick={() => handleCreateLesson(module)}
-                                                    >
-                                                        <Plus className="h-4 w-4 mr-1" />
-                                                        Add Lesson
-                                                    </Button>
-                                                )}
-                                            </div>
+                                {/* Lessons Section */}
+                                <div>
+                                    <div className="flex items-center justify-between mb-3">
+                                        <h4 className="font-medium flex items-center">
+                                            <BookOpen className="h-4 w-4 mr-2" />
+                                            Lessons ({module.lessons.length})
+                                        </h4>
+                                        {canEdit && (
+                                            <Button
+                                                size="sm"
+                                                variant="outline"
+                                                onClick={() => handleCreateLesson(module)}
+                                            >
+                                                <Plus className="h-4 w-4 mr-1" />
+                                                Add Lesson
+                                            </Button>
+                                        )}
+                                    </div>
 
-                                            <div className="space-y-2">
-                                                {module.lessons
-                                                    .map((lesson) => (
-                                                        <div
-                                                            key={lesson.id}
-                                                            className="flex items-center justify-between p-3 bg-surface rounded-lg border border-border cursor-pointer hover:bg-muted/50 transition-colors"
-                                                            onClick={() => handleOpenLesson(module, lesson)}
-                                                        >
-                                                            <div className="flex items-center space-x-3">
-                                                                <File className="h-4 w-4 text-primary" />
-                                                                <div>
-                                                                    <p className="font-medium">{lesson.title}</p>
-                                                                </div>
-                                                            </div>
-                                                            <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                                                        </div>
-                                                    ))
-                                                }
-                                            </div>
+                                    {module.lessons.length > 0 ? (
+                                        <div className="space-y-2">
+                                            {module.lessons.map((lesson) => (
+                                                <div
+                                                    key={lesson.id}
+                                                    className="flex items-center justify-between p-3 bg-surface rounded-lg border border-border cursor-pointer hover:bg-muted/50 transition-colors"
+                                                    onClick={() => handleOpenLesson(module, lesson)}
+                                                >
+                                                    <div className="flex items-center space-x-3">
+                                                        <File className="h-4 w-4 text-primary" />
+                                                        <p className="font-medium">{lesson.title}</p>
+                                                    </div>
+                                                    <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <div className="text-center py-6 text-muted-foreground border border-dashed rounded-lg bg-background">
+                                            <BookOpen className="h-6 w-6 mx-auto mb-2 opacity-70" />
+                                            <p>No lessons in this module yet</p>
                                         </div>
                                     )}
+                                </div>
+
 
                                 {/* Assignments Section */}
-                                {module.assignments.length > 0 && (
-                                    <div>
-                                        <div className="flex items-center justify-between mb-3">
-                                            <h4 className="font-medium flex items-center">
-                                                <FileText className="h-4 w-4 mr-2" />
-                                                Assignments ({module.assignments.length})
-                                            </h4>
-                                            {canEdit && (
-                                                <Button
-                                                    size="sm"
-                                                    variant="outline"
-                                                    onClick={() => router.push(`/courses/${courseId}/modules/${module.id}/assignments/create`)}
-                                                >
-                                                    <Plus className="h-4 w-4 mr-1" />
-                                                    Add Assignment
-                                                </Button>
-                                            )}
-                                        </div>
+                                <div>
+                                    <div className="flex items-center justify-between mb-3">
+                                        <h4 className="font-medium flex items-center">
+                                            <FileText className="h-4 w-4 mr-2" />
+                                            Assignments ({module.assignments.length})
+                                        </h4>
+                                        {canEdit && (
+                                            <Button
+                                                size="sm"
+                                                variant="outline"
+                                                onClick={() =>
+                                                    router.push(`/courses/${courseId}/modules/${module.id}/assignments/create`)
+                                                }
+                                            >
+                                                <Plus className="h-4 w-4 mr-1" />
+                                                Add Assignment
+                                            </Button>
+                                        )}
+                                    </div>
 
+                                    {module.assignments.length > 0 ? (
                                         <div className="space-y-2">
                                             {module.assignments.map((assignment) => (
                                                 <div
                                                     key={assignment.id}
                                                     className="flex items-center justify-between p-3 bg-surface rounded-lg border border-border cursor-pointer hover:bg-muted/50 transition-colors"
-                                                    onClick={() => router.push(`/courses/${courseId}/modules/${module.id}/assignments/${assignment.id}`)}
+                                                    onClick={() =>
+                                                        router.push(
+                                                            `/courses/${courseId}/modules/${module.id}/assignments/${assignment.id}`
+                                                        )
+                                                    }
                                                 >
                                                     <div className="flex items-center space-x-3">
                                                         <FileText className="h-4 w-4 text-accent-secondary" />
@@ -230,33 +235,13 @@ export function ModuleAccordion({ modules, courseId, canEdit }: ModuleAccordionP
                                                 </div>
                                             ))}
                                         </div>
-                                    </div>
-                                )}
-
-                                {/* Empty State */}
-                                {module.lessons.length === 0 && module.assignments.length === 0 && (
-                                    <div className="text-center py-8">
-                                        <BookOpen className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
-                                        <p className="text-muted-foreground">No content in this module yet</p>
-                                        {canEdit && (
-                                            <div className="flex justify-center space-x-2 mt-4">
-                                                <Button
-                                                    size="sm"
-                                                    onClick={() => router.push(`/courses/${courseId}/modules/${module.id}/lessons/create`)}
-                                                >
-                                                    Add Lesson
-                                                </Button>
-                                                <Button
-                                                    size="sm"
-                                                    variant="outline"
-                                                    onClick={() => router.push(`/courses/${courseId}/modules/${module.id}/assignments/create`)}
-                                                >
-                                                    Add Assignment
-                                                </Button>
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
+                                    ) : (
+                                        <div className="text-center py-6 text-muted-foreground border border-dashed rounded-lg bg-background">
+                                            <FileText className="h-6 w-6 mx-auto mb-2 opacity-70" />
+                                            <p>No assignments in this module yet</p>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         )}
                     </Card>

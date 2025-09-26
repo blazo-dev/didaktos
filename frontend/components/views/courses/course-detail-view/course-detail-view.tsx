@@ -1,15 +1,16 @@
 'use client';
 
 import { LessonModal } from '@/components/modals/lesson-modal';
+import { ModuleModal } from '@/components/modals/module-modal';
 import { useCourseById } from '@/hooks/courses/use-course-by-id';
 import { useCoursesStore } from '@/stores/courses-store';
+import { useModalStore } from '@/stores/modal-store';
 import { useState } from 'react';
 import Loader from '../../../layout/loader';
 import { CourseDetailHeader } from './course-detail-header';
 import { CourseInfoCard } from './course-info-card';
 import { CourseModulesSection } from './course-modules-section';
 import { CourseNotFound } from './course-not-found';
-import { ModuleModal } from "@/components/modals/module-modal";
 
 
 interface CourseDetailViewProps {
@@ -21,8 +22,8 @@ export function CourseDetailView({ courseId }: CourseDetailViewProps) {
     const { course, isOwner, isEnrolled, isLoading } = useCourseById(courseId);
     const [showCreateModule, setShowCreateModule] = useState(false);
     const { currentLesson } = useCoursesStore();
+    const { openModal } = useModalStore();
 
-    const createModuleModalId = `create-module-${courseId}`;
 
     // User can view course if they are the owner or enrolled
     const canView = isOwner || isEnrolled;
@@ -44,7 +45,7 @@ export function CourseDetailView({ courseId }: CourseDetailViewProps) {
 
     const handleCreateModule = () => {
         openModal({
-            id: createModuleModalId,
+            id: "create-module",
             title: "Create Module",
         });
     };
@@ -78,6 +79,12 @@ export function CourseDetailView({ courseId }: CourseDetailViewProps) {
             {/* Lesson Modals */}
             <LessonModal
                 modalId="create-lesson"
+            />
+            {/* Modules Modal */}
+            <ModuleModal
+                modalId={"create-module"}
+                courseId={course.id}
+                onSuccess={handleModuleSuccess}
             />
         </div>
     );

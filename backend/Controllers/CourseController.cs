@@ -88,6 +88,7 @@ namespace didaktos.backend.Controllers
         [HttpPut("{courseId}")]
         [Authorize]
         public async Task<ActionResult<HttpResponseDto<CourseEditDto>>> EditCourse(
+            Guid courseId,
             [FromBody] CourseEditDto request
         )
         {
