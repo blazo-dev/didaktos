@@ -57,12 +57,11 @@ namespace didaktos.backend.Services
             }
         }
 
-        public async Task<HttpResponseDto<List<CourseReadResponseDto>>> GetCoursesAsync()
+        public async Task<HttpResponseDto<List<CourseReadResponseDto>>> GetCoursesAsync(Guid userId)
         {
             try
             {
-                var Courses = await _courseRepository.SelectCoursesAsync();
-
+                var Courses = await _courseRepository.SelectCoursesAsync(userId);
                 return new HttpResponseDto<List<CourseReadResponseDto>>
                 {
                     Success = true,
