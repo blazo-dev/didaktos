@@ -86,7 +86,7 @@ public class SubmissionRepository : ISubmissionRepository
                     AssignmentId = (Guid)reader["assignment_id"],
                     StudentId = (Guid)reader["student_id"],
                     SubmittedAt = (DateTime)reader["submitted_at"],
-                    Name = (string)reader["name"], // student name
+                    Name = (string)reader["student_name"],
                     AssignmentTitle = (string)reader["assignment_title"],
                 }
             );
