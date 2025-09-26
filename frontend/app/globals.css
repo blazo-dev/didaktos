@@ -21,6 +21,7 @@
   --color-surface: var(--surface);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
+  --color-accent-secondary: var(--accent-secondary);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -29,6 +30,7 @@
   --animate-enter: slideInRight 0.3s ease-out forwards;
   --animate-exit: slideOutRight 0.3s ease-in forwards;
   --animate-progress: progressBar 1s linear forwards;
+  --animate-slide-in: slideIn 0.3s ease-out forwards;
 
 
 }
@@ -41,6 +43,7 @@
 
   --surface: #FFFFFF;
   --surface-foreground: #243746;
+  --surface-border: #E5E7EB;
 
   --primary: #243746;
   --primary-foreground: #F9FAFB;
@@ -53,6 +56,7 @@
 
   --accent: #3A4C5C;
   --accent-foreground: #F9FAFB;
+  --accent-secondary: #EB4E3D;
 
   --destructive: #EB4E3D;
   --destructive-foreground: #F9FAFB;
@@ -66,8 +70,9 @@
 
   --surface: #1F2937;
   --surface-foreground: #F9FAFB;
+  --surface-border: #374151;
 
-  --primary: #3A4C5C;
+  --primary: #6EACDA;
   --primary-foreground: #F9FAFB;
 
   --secondary: #EB4E3D;
@@ -76,8 +81,9 @@
   --muted: #111827;
   --muted-foreground: #9CA3AF;
 
-  --accent: #243746;
+  --accent: #6EACDA;
   --accent-foreground: #F9FAFB;
+  --accent-secondary: #EB4E3D;
 
   --destructive: #EB4E3D;
   --destructive-foreground: #F9FAFB;
@@ -89,11 +95,15 @@
 
 @layer base {
   * {
-    @apply border-border outline-muted/50 transition-colors;
+    @apply border-border outline-muted/50 transition-colors duration-300;
   }
 
   body {
     @apply bg-background text-foreground;
+  }
+
+  .slide-in-from-bottom-4 {
+    transform: translateY(1rem);
   }
 }
 
@@ -128,6 +138,18 @@
   to {
     transform: translateX(100%);
     opacity: 0;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(1rem);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
   }
 }
 

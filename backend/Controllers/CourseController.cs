@@ -21,7 +21,7 @@ namespace didaktos.backend.Controllers
 
         [Authorize]
         [HttpGet]
-        public async Task<IActionResult> GetCourses()
+        public async Task<ActionResult<HttpResponseDto<CourseReadResponseDto>>> GetCourses()
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
@@ -53,7 +53,9 @@ namespace didaktos.backend.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> CreateCourses([FromBody] CourseRequestDto request)
+        public async Task<ActionResult<HttpResponseDto<CourseResponseDto>>> CreateCourses(
+            [FromBody] CourseRequestDto request
+        )
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
@@ -83,9 +85,12 @@ namespace didaktos.backend.Controllers
             return BadRequest(result);
         }
 
-        [HttpPut]
+        [HttpPut("{courseId}")]
         [Authorize]
-        public async Task<IActionResult> EditCourse([FromBody] CourseEditDto request)
+        public async Task<ActionResult<HttpResponseDto<CourseEditDto>>> EditCourse(
+            Guid courseId,
+            [FromBody] CourseEditDto request
+        )
         {
             if (!ModelState.IsValid)
             {
@@ -111,7 +116,53 @@ namespace didaktos.backend.Controllers
                 );
             }
 
-            var result = await _courseService.EditCourseAsync(request, userId);
+            var result = await _courseService.EditCourseAsync(courseId, request, userId);
+
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+
+            return BadRequest(result);
+        }
+
+        [HttpDelete("{courseId}")]
+        [Authorize]
+        public async Task<ActionResult<HttpResponseDto<object>>> DeleteCourse(Guid courseId)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized(
+                    new HttpResponseDto<object>
+                    {
+                        Success = false,
+                        Message = "Invalid or missing authentication token",
+                    }
+                );
+            }
+
+            var result = await _courseService.DeleteCourseAsync(courseId, userId);
+
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+
+            return BadRequest(result);
+        }
+
+        [HttpGet("enrollments")]
+        [Authorize]
+        public async Task<ActionResult<HttpResponseDto<EnrollmentAddResponseDto>>> GetEnrollments()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized();
+            }
+
+            var result = await _enrollmentService.GetEnrollmentsAsync(userId);
 
             if (result.Success)
             {
@@ -123,7 +174,7 @@ namespace didaktos.backend.Controllers
 
         [HttpPost("enrollments")]
         [Authorize]
-        public async Task<IActionResult> CreateEnrollment(
+        public async Task<ActionResult<HttpResponseDto<EnrollmentAddResponseDto>>> CreateEnrollment(
             [FromBody] EnrollmentAddRequestDto request
         )
         {
@@ -155,29 +206,11 @@ namespace didaktos.backend.Controllers
             return BadRequest(result);
         }
 
-        [HttpGet("enrollments")]
+        [HttpPut("{courseId}/enrollments")]
         [Authorize]
-        public async Task<IActionResult> GetEnrollments()
-        {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
-            {
-                return Unauthorized();
-            }
-
-            var result = await _enrollmentService.GetEnrollmentsAsync(userId);
-
-            if (result.Success)
-            {
-                return Ok(result);
-            }
-
-            return BadRequest(result);
-        }
-
-        [HttpPut("enrollments")]
-        [Authorize]
-        public async Task<IActionResult> CloseEnrollments([FromBody] Guid CourseId)
+        public async Task<
+            ActionResult<HttpResponseDto<EnrollmentCloseResponseDto>>
+        > CloseEnrollments(Guid courseId)
         {
             if (!ModelState.IsValid)
             {
@@ -203,7 +236,7 @@ namespace didaktos.backend.Controllers
                 );
             }
 
-            var result = await _enrollmentService.CloseEnrollmentsAsync(CourseId, userId);
+            var result = await _enrollmentService.CloseEnrollmentsAsync(courseId, userId);
 
             if (result.Success)
             {

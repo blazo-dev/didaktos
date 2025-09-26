@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
+using didaktos.backend.Models.DTOs;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -26,7 +27,7 @@ namespace didaktos.backend.Controllers
         [HttpPost]
         public async Task<IActionResult> GenerateContent([FromBody] GeminiPrompt prompt)
         {
-            var fullRequest = "";
+            string fullRequest;
             if (prompt.Choice == "Question")
             {
                 fullRequest =
@@ -71,7 +72,23 @@ namespace didaktos.backend.Controllers
             if (!response.IsSuccessStatusCode)
                 return StatusCode((int)response.StatusCode, responseBody);
 
-            return Ok(JsonDocument.Parse(responseBody));
+            using var doc = JsonDocument.Parse(responseBody);
+
+            string? text = doc
+                .RootElement.GetProperty("candidates")[0]
+                .GetProperty("content")
+                .GetProperty("parts")[0]
+                .GetProperty("text")
+                .GetString();
+
+            var responseDto = new HttpResponseDto<object>
+            {
+                Success = true,
+                Message = "Content generated successfully",
+
+                Data = text,
+            };
+            return Ok(responseDto);
         }
     }
 

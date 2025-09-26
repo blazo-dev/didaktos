@@ -39,10 +39,7 @@ namespace didaktos.backend.Repositories
             command.Parameters.AddWithValue("@instructor_id", course.InstructorId);
             command.Parameters.AddWithValue("@createdAt", DateTime.UtcNow);
             command.Parameters.AddWithValue("@updatedAt", DateTime.UtcNow);
-            command.Parameters.AddWithValue(
-                "@description",
-                (object?)course.Description ?? DBNull.Value
-            );
+            command.Parameters.AddWithValue("@description", course.Description);
 
             using var reader = await command.ExecuteReaderAsync();
             if (await reader.ReadAsync())
@@ -51,7 +48,7 @@ namespace didaktos.backend.Repositories
                 {
                     Id = (Guid)reader["id"],
                     Title = (string)reader["title"],
-                    Description = reader["description"] as string,
+                    Description = (string)reader["description"],
                     InstructorId = (Guid)reader["instructor_id"],
                 };
             }
@@ -68,7 +65,7 @@ namespace didaktos.backend.Repositories
             const string sql =
                 @"
                 -- Get courses with instructors
-                SELECT c.id, c.title, c.description, c.instructor_id, u.name, u.email  
+                SELECT c.id, c.title, c.description, c.instructor_id, c.created_at, c.updated_at, u.name, u.email  
                 FROM courses c
                 JOIN users u ON c.instructor_id = u.id
                 ORDER BY c.title;
@@ -111,7 +108,9 @@ namespace didaktos.backend.Repositories
                 {
                     Id = courseId,
                     Title = (string)reader["title"],
-                    Description = reader["description"] as string,
+                    Description = (string)reader["description"],
+                    CreatedAt = (DateTime)reader["created_at"],
+                    UpdatedAt = (DateTime)reader["updated_at"],
                     Instructor = new UserDto
                     {
                         Id = (Guid)reader["instructor_id"],
@@ -227,7 +226,7 @@ namespace didaktos.backend.Repositories
                 {
                     Id = (Guid)reader["id"],
                     Title = (string)reader["title"],
-                    Description = reader["description"] as string,
+                    Description = (string)reader["description"],
                     InstructorId = (Guid)reader["instructor_id"],
                 };
             }
@@ -235,7 +234,7 @@ namespace didaktos.backend.Repositories
             return null;
         }
 
-        public async Task<CourseEditDto> UpdateCourseAsync(CourseEditDto Course)
+        public async Task<CourseResponseDto> UpdateCourseAsync(Course course)
         {
             using var connection = new NpgsqlConnection(_connectionString);
             await connection.OpenAsync();
@@ -248,22 +247,23 @@ namespace didaktos.backend.Repositories
                 RETURNING title, id, description";
 
             using var command = new NpgsqlCommand(sql, connection);
-            command.Parameters.AddWithValue("@id", Course.Id);
-            command.Parameters.AddWithValue("@title", Course.Title);
+            command.Parameters.AddWithValue("@id", course.Id);
+            command.Parameters.AddWithValue("@title", course.Title);
             command.Parameters.AddWithValue("@updatedAt", DateTime.UtcNow);
             command.Parameters.AddWithValue(
                 "@description",
-                (object?)Course.Description ?? DBNull.Value
+                (object?)course.Description ?? DBNull.Value
             );
 
             using var reader = await command.ExecuteReaderAsync();
             if (await reader.ReadAsync())
             {
-                return new CourseEditDto
+                return new CourseResponseDto
                 {
                     Title = (string)reader["title"],
                     Id = (Guid)reader["id"],
-                    Description = (string?)reader["description"],
+                    Description = (string)reader["description"],
+                    InstructorId = course.InstructorId,
                 };
             }
 
@@ -312,6 +312,19 @@ namespace didaktos.backend.Repositories
 
             var count = await command.ExecuteScalarAsync();
             return Convert.ToInt32(count) > 0;
+        }
+
+        public async Task<bool> DeleteCourseAsync(Guid courseId)
+        {
+            using var connection = new NpgsqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            const string sql = "DELETE FROM courses WHERE id = @courseId";
+            using var command = new NpgsqlCommand(sql, connection);
+            command.Parameters.AddWithValue("@courseId", courseId);
+
+            var rowsAffected = await command.ExecuteNonQueryAsync();
+            return rowsAffected > 0;
         }
     }
 }
