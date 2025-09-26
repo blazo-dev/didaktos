@@ -48,7 +48,7 @@ export const coursesApi = {
         id: string,
         { title, description }: Partial<Course>
     ): Promise<Course> {
-        const response = await apiFetch<HttpResponse<Course>>(`/courses`, {
+        const response = await apiFetch<HttpResponse<Course>>(`/courses/${id}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
