@@ -65,10 +65,9 @@ namespace didaktos.backend.Services
             }
         }
 
-        public async Task<HttpResponseDto<object>> GetAllCourseSubmissionsAsync(
-            Guid userId,
-            Guid courseId
-        )
+        public async Task<
+            HttpResponseDto<List<SubmissionReadResponseDto>>
+        > GetAllCourseSubmissionsAsync(Guid userId, Guid courseId)
         {
             try
             {
@@ -77,7 +76,7 @@ namespace didaktos.backend.Services
                     && !await _courseRepository.IsUserEnrolledInCourseAsync(userId, courseId)
                 )
                 {
-                    return new HttpResponseDto<object>
+                    return new HttpResponseDto<List<SubmissionReadResponseDto>>
                     {
                         Success = false,
                         Message =
@@ -85,20 +84,21 @@ namespace didaktos.backend.Services
                     };
                 }
 
-                var enrollments = await _submissionRepository.SelectAllCourseSubmissionsAsync(
-                    courseId
-                );
+                var submissions =
+                    await _submissionRepository.SelectAllCourseSubmissionsByAssignmentAsync(
+                        courseId
+                    );
 
-                return new HttpResponseDto<object>
+                return new HttpResponseDto<List<SubmissionReadResponseDto>>
                 {
                     Success = true,
                     Message = "Submissions retrieved successfully",
-                    Data = enrollments,
+                    Data = submissions,
                 };
             }
             catch (Exception ex)
             {
-                return new HttpResponseDto<object>
+                return new HttpResponseDto<List<SubmissionReadResponseDto>>
                 {
                     Success = false,
                     Message = "Retrieval of submissions failed",
