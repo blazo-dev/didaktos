@@ -5,12 +5,13 @@ import Link from "next/link";
 interface AssignmentHeaderProps {
     courseId: string;
     isOwner?: boolean;
+    isAlreadySubmitted?: boolean;
     onAssignmentEdit: () => void;
     onAssignmentDelete: () => void;
     onAssignmentSubmit: () => void;
 }
 
-function AssignmentHeader({ courseId, isOwner, onAssignmentEdit, onAssignmentDelete, onAssignmentSubmit }: AssignmentHeaderProps) {
+function AssignmentHeader({ courseId, isOwner, isAlreadySubmitted, onAssignmentEdit, onAssignmentDelete, onAssignmentSubmit }: AssignmentHeaderProps) {
     return (
         <div className="flex items-center justify-between">
             <Button
@@ -46,8 +47,12 @@ function AssignmentHeader({ courseId, isOwner, onAssignmentEdit, onAssignmentDel
                         onClick={() => onAssignmentSubmit()}
                         variant="outline"
                     >
-                        <SendIcon className="h-4 w-4" />
-                        Submit
+                        {isAlreadySubmitted ? 'View Submission' : (
+                            <>
+                                <SendIcon className="h-4 w-4" />
+                                Submit
+                            </>
+                        )}
                     </Button>
                 )}
             </div>

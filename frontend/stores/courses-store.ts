@@ -1,4 +1,4 @@
-import { Assignment, Course, Lesson, Module } from "@/types/course";
+import { Assignment, Course, Lesson, Module, Submission } from "@/types/course";
 import { create } from "zustand";
 
 interface CoursesState {
@@ -12,6 +12,9 @@ interface CoursesState {
 
     currentModule: Module | null;
     setCurrentModule: (module: Module | null) => void;
+
+    currentSubmission: Submission | null;
+    setCurrentSubmission: (submission: Submission | null) => void;
 
     currentAssignment: Assignment | null;
     setCurrentAssignment: (assignment: Assignment | null) => void;
@@ -31,4 +34,7 @@ export const useCoursesStore = create<CoursesState>((set) => ({
 
     currentAssignment: null,
     setCurrentAssignment: (currentAssignment) => set({ currentAssignment }),
+
+    currentSubmission: null,
+    setCurrentSubmission: (currentSubmission) => set({ currentSubmission }),
 }));

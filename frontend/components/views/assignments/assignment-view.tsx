@@ -2,6 +2,7 @@
 
 import { AssignmentModal } from '@/components/modals/assignment-modal';
 import { SubmissionModal } from '@/components/modals/submission-modal';
+import { ViewSubmissionModal } from '@/components/modals/view-submission-modal';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useDeleteAssignment } from '@/hooks/assignments/use-delete-assignment';
@@ -18,7 +19,7 @@ interface AssignmentViewProps {
 
 
 export function AssignmentView({ courseId }: AssignmentViewProps) {
-    const { currentCourse, currentAssignment } = useCoursesStore();
+    const { currentCourse, currentAssignment, setCurrentSubmission } = useCoursesStore();
 
     if (!currentAssignment || !currentCourse) {
         return (
@@ -34,6 +35,7 @@ export function AssignmentView({ courseId }: AssignmentViewProps) {
         );
     }
 
+    const existingSubmission = currentAssignment.submissions[0];
     const deleteAssignment = useDeleteAssignment(currentAssignment.moduleId);
     const router = useRouter();
 
@@ -66,7 +68,23 @@ export function AssignmentView({ courseId }: AssignmentViewProps) {
 
     }
 
+    console.log(currentAssignment);
+
     const handleOpenSubmission = () => {
+        if (existingSubmission) {
+            setCurrentSubmission(existingSubmission);
+
+            openModal({
+                id: 'view-submission',
+                title: 'View Submission',
+                closable: true,
+                backdrop: true,
+                size: 'xl',
+            });
+            return;
+        }
+
+
         openModal({
             id: 'create-submission',
             title: 'Create Submission',
@@ -83,6 +101,7 @@ export function AssignmentView({ courseId }: AssignmentViewProps) {
             <AssignmentHeader
                 courseId={courseId}
                 isOwner={isOwner}
+                isAlreadySubmitted={Boolean(existingSubmission)}
                 onAssignmentEdit={handleAssignmentEdit}
                 onAssignmentDelete={handleAssignmentDelete}
                 onAssignmentSubmit={handleOpenSubmission}
@@ -108,6 +127,9 @@ export function AssignmentView({ courseId }: AssignmentViewProps) {
             />
             <SubmissionModal
                 modalId="create-submission"
+            />
+            <ViewSubmissionModal
+                modalId="view-submission"
             />
         </div>
     );

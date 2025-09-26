@@ -34,7 +34,7 @@ export interface Assignment {
     title: string;
     description: string;
     dueDate: string;
-    submissions?: Submission[];
+    submissions: Submission[];
 }
 
 export interface Student {
