@@ -93,10 +93,11 @@ export function LessonForm({ lesson, onSuccess, onCancel }: LessonFormProps) {
                 id="lesson-content"
                 label="Lesson Content"
                 placeholder="Enter lesson content"
-                rows={4}
+                rows={10}
                 required
                 register={register("content")}
                 error={errors.content?.message}
+                className="resize-y"
             />
 
             {/* Form Actions */}
