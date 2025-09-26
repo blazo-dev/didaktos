@@ -18,7 +18,7 @@ export const useDeleteLesson = () => {
         onError: () => {
             addToast({
                 type: "error",
-                message: "Failed to delete course. Please try again.",
+                message: "Failed to delete lesson. Please try again.",
             });
         },
     });
