@@ -7,12 +7,10 @@ import { useCourses } from "@/hooks/courses/use-courses";
 import { useAuthStore } from "@/stores/auth-store";
 import { useCoursesStore } from "@/stores/courses-store";
 import { useModalStore } from "@/stores/modal-store";
-import { useToastStore } from "@/stores/toast-store";
 import { useState } from "react";
 import { CoursesFilters, FilterType } from "./courses-filters";
 import { CoursesGrid } from "./courses-grid";
 import { CoursesHeader } from "./courses-header";
-import { LessonModal } from "@/components/modals/lesson-modal";
 
 export function CoursesLayout() {
     const { user } = useAuthStore();

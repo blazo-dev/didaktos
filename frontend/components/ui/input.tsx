@@ -4,7 +4,7 @@ interface InputProps {
     id: string;
     label: string;
     placeholder: string;
-    type?: "text" | "email" | "tel" | "url";
+    type?: "text" | "email" | "tel" | "url" | "number" | "date";
     required?: boolean;
     className?: string;
     register?: UseFormRegisterReturn; // React Hook Form integration
