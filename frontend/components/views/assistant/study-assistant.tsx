@@ -1,8 +1,11 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
+import { useAssistant } from "@/hooks/common/use-assistant"
+import { useCoursesStore } from "@/stores/courses-store"
 import { MessageSquare, Send, X } from "lucide-react"
 import { useState } from "react"
+
 
 interface Message {
     id: string
@@ -13,55 +16,9 @@ interface Message {
 
 export function StudyAssistant() {
     const [isOpen, setIsOpen] = useState(false)
-    const [message, setMessage] = useState("")
-    const [messages, setMessages] = useState<Message[]>([
-        {
-            id: "1",
-            text: "Hi! I'm your study assistant. I can help you plan your study schedule, understand assignments, and stay organized. What would you like help with?",
-            isUser: false,
-            timestamp: new Date()
-        }
-    ])
+    const {askWithChoice,messages} = useAssistant()
+    const {currentLesson} = useCoursesStore()
 
-    const sendMessage = () => {
-        if (!message.trim()) return
-
-        const newMessage: Message = {
-            id: Date.now().toString(),
-            text: message,
-            isUser: true,
-            timestamp: new Date()
-        }
-
-        setMessages(prev => [...prev, newMessage])
-        setMessage("")
-
-        // Simulate bot response
-        setTimeout(() => {
-            const responses = [
-                "I can help you create a study schedule for your upcoming assignments!",
-                "Would you like me to break down your Data Structures project into manageable tasks?",
-                "I notice you have 3 assignments due this week. Let's prioritize them!",
-                "Great question! Let me help you understand that concept better.",
-                "I can help you prepare for your upcoming exams. What subject would you like to focus on?"
-            ]
-
-            const botResponse: Message = {
-                id: (Date.now() + 1).toString(),
-                text: responses[Math.floor(Math.random() * responses.length)],
-                isUser: false,
-                timestamp: new Date()
-            }
-
-            setMessages(prev => [...prev, botResponse])
-        }, 1000)
-    }
-
-    const handleKeyPress = (e: React.KeyboardEvent) => {
-        if (e.key === 'Enter') {
-            sendMessage()
-        }
-    }
 
     return (
         <>
@@ -101,15 +58,15 @@ export function StudyAssistant() {
                             {messages.map((msg) => (
                                 <div
                                     key={msg.id}
-                                    className={`flex ${msg.isUser ? 'justify-end' : 'justify-start'}`}
+                                    className={`flex ${msg.role == "user" ? 'justify-end' : 'justify-start'}`}
                                 >
                                     <div
-                                        className={`rounded-lg p-3 max-w-xs ${msg.isUser
+                                        className={`rounded-lg p-3 max-w-xs ${msg.role == "user"
                                             ? 'bg-primary text-surface'
                                             : 'bg-muted text-primary'
                                             }`}
                                     >
-                                        <p className="text-sm">{msg.text}</p>
+                                        <p className="text-sm">{msg.content}</p>
                                     </div>
                                 </div>
                             ))}
@@ -118,16 +75,14 @@ export function StudyAssistant() {
                         {/* Input */}
                         <div className="p-4 border-t border-surface-border">
                             <div className="flex space-x-2">
-                                <input
-                                    type="text"
-                                    value={message}
-                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMessage(e.target.value)}
-                                    onKeyPress={handleKeyPress}
-                                    placeholder="Ask me anything..."
-                                    className="flex-1 px-3 py-2 border border-surface-border rounded-md bg-background text-primary focus:outline-none focus:ring-2 focus:ring-accent-secondary"
-                                />
-                                <Button onClick={sendMessage} className="bg-accent-secondary hover:bg-red-600">
-                                    <Send className="w-4 h-4" />
+                                <Button onClick={() => askWithChoice(currentLesson!.content,"Question")} className="bg-accent-secondary hover:bg-red-600">
+                                    Create Questions for lesson
+                                </Button>
+                                <Button onClick={() => askWithChoice(currentLesson!.content,"Summary")} className="bg-accent-secondary hover:bg-red-600">
+                                    Create Summary for lesson
+                                </Button>
+                                <Button onClick={() => askWithChoice(currentLesson!.content,"Schedule")} className="bg-accent-secondary hover:bg-red-600">
+                                    Create learning Schedule for lesson
                                 </Button>
                             </div>
                         </div>
