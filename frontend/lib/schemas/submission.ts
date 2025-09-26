@@ -1,0 +1,20 @@
+import z from "zod";
+
+export const submissionSchema = z.object({
+    content: z
+        .string()
+        .min(10, {
+            message: "Submission content must be at least 10 characters",
+        })
+        .trim(),
+});
+
+export type SubmissionFormData = z.infer<typeof submissionSchema>;
+
+export const gradeSubmissionSchema = z.object({
+    grade: z.number().min(0, { message: "Grade must be at least 0" }).max(100, {
+        message: "Grade must be at most 100",
+    }),
+});
+
+export type GradeSubmissionFormData = z.infer<typeof gradeSubmissionSchema>;

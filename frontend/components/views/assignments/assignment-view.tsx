@@ -1,16 +1,17 @@
 'use client';
 
+import { AssignmentModal } from '@/components/modals/assignment-modal';
+import { SubmissionModal } from '@/components/modals/submission-modal';
+import { ViewSubmissionModal } from '@/components/modals/view-submission-modal';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { useDeleteAssignment } from '@/hooks/assignments/use-delete-assignment';
 import { useAuthStore } from '@/stores/auth-store';
 import { useCoursesStore } from '@/stores/courses-store';
 import { useModalStore } from '@/stores/modal-store';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { StudyAssistant } from '../assistant/study-assistant';
 import AssignmentHeader from './assignment-header';
-import { useDeleteAssignment } from '@/hooks/assignments/use-delete-assignment';
-import { AssignmentModal } from '@/components/modals/assignment-modal';
 
 interface AssignmentViewProps {
     courseId: string;
@@ -18,7 +19,7 @@ interface AssignmentViewProps {
 
 
 export function AssignmentView({ courseId }: AssignmentViewProps) {
-    const { currentCourse, currentAssignment } = useCoursesStore();
+    const { currentCourse, currentAssignment, setCurrentSubmission, setCurrentSubmissions } = useCoursesStore();
 
     if (!currentAssignment || !currentCourse) {
         return (
@@ -34,6 +35,7 @@ export function AssignmentView({ courseId }: AssignmentViewProps) {
         );
     }
 
+    const existingSubmission = currentAssignment.submissions[0];
     const deleteAssignment = useDeleteAssignment(currentAssignment.moduleId);
     const router = useRouter();
 
@@ -66,6 +68,31 @@ export function AssignmentView({ courseId }: AssignmentViewProps) {
 
     }
 
+    const handleOpenSubmission = () => {
+        if (existingSubmission) {
+            setCurrentSubmission(existingSubmission);
+
+            openModal({
+                id: 'view-submission-student',
+                title: 'View Submission',
+                closable: true,
+                backdrop: true,
+                size: 'xl',
+            });
+            return;
+        }
+
+
+        openModal({
+            id: 'create-submission',
+            title: 'Create Submission',
+            closable: true,
+            backdrop: true,
+            size: 'xl',
+        });
+    }
+
+
     return (
         <div className='w-full space-y-4 px-4 sm:px-6 lg:px-8 py-8 relative'>
 
@@ -73,8 +100,10 @@ export function AssignmentView({ courseId }: AssignmentViewProps) {
             <AssignmentHeader
                 courseId={courseId}
                 isOwner={isOwner}
+                isAlreadySubmitted={Boolean(existingSubmission)}
                 onAssignmentEdit={handleAssignmentEdit}
                 onAssignmentDelete={handleAssignmentDelete}
+                onAssignmentSubmit={handleOpenSubmission}
             />
 
             {/* Assignment Content */}
@@ -95,7 +124,12 @@ export function AssignmentView({ courseId }: AssignmentViewProps) {
                 modalId="edit-assignment"
                 assignment={currentAssignment}
             />
-            <StudyAssistant />
+            <SubmissionModal
+                modalId="create-submission"
+            />
+            <ViewSubmissionModal
+                modalId="view-submission-student"
+            />
         </div>
     );
 }

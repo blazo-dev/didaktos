@@ -1,5 +1,5 @@
-import { HttpResponse } from "@/types/http";
 import { Submission } from "@/types/course";
+import { HttpResponse } from "@/types/http";
 import { apiFetch, getAuthHeaders } from "./api";
 
 // Request DTOs to match your backend
@@ -9,21 +9,27 @@ export interface SubmissionAddRequestDto {
 }
 
 export interface SubmissionGradeRequestDto {
-    submissionId: string;
+    id: string;
     grade: number;
-    feedback?: string;
+    courseId: string;
 }
 
 export const submissionsApi = {
     // Create a new submission
-    async createSubmission(submissionData: SubmissionAddRequestDto): Promise<Submission> {
-        const response = await apiFetch<HttpResponse<Submission>>("/evaluation/create", {
-            method: "POST",
-            headers: {
-                ...getAuthHeaders(),
-            },
-            body: JSON.stringify(submissionData),
-        });
+    async createSubmission(
+        submissionData: SubmissionAddRequestDto
+    ): Promise<Submission> {
+        const response = await apiFetch<HttpResponse<Submission>>(
+            "/evaluation/create",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    ...getAuthHeaders(),
+                },
+                body: JSON.stringify(submissionData),
+            }
+        );
         return response.data;
     },
 
@@ -34,24 +40,31 @@ export const submissionsApi = {
             {
                 method: "GET",
                 headers: {
+                    "Content-Type": "application/json",
                     ...getAuthHeaders(),
                 },
             }
         );
+
+
         return response.data ?? [];
     },
 
     // Grade a submission (instructor only)
-    async gradeSubmission(gradeData: SubmissionGradeRequestDto): Promise<Submission> {
-        const response = await apiFetch<HttpResponse<Submission>>("/evaluation/grade", {
-            method: "PUT",
-            headers: {
-                ...getAuthHeaders(),
-            },
-            body: JSON.stringify(gradeData),
-        });
+    async gradeSubmission(
+        gradeData: SubmissionGradeRequestDto
+    ): Promise<Submission> {
+        const response = await apiFetch<HttpResponse<Submission>>(
+            "/evaluation/grade",
+            {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    ...getAuthHeaders(),
+                },
+                body: JSON.stringify(gradeData),
+            }
+        );
         return response.data;
     },
-
-
 };

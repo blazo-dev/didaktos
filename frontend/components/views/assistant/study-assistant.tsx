@@ -20,7 +20,7 @@ export function StudyAssistant() {
     return (
         <>
             {/* Chatbot Toggle Button */}
-            <div className="absolute bottom-6 right-6 z-50">
+            <div className="fixed bottom-6 right-6 z-50">
                 <Button
                     onClick={() => setIsOpen(true)}
                     className="w-14 h-14 rounded-full bg-accent-secondary hover:bg-red-600 text-accent-foreground shadow-lg animate-pulse"
