@@ -52,5 +52,4 @@ export interface Submission {
     content: string;
     submittedAt?: string;
     grade?: number;
-    feedback?: string;
 }

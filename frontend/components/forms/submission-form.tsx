@@ -64,10 +64,7 @@ export function SubmissionForm({ assignment, courseId, onSuccess, onCancel }: Su
             reset();
             onSuccess(submissionData);
         } catch (error) {
-            addToast({
-                type: "error",
-                message: "Failed to submit assignment. Please try again.",
-            });
+            
         } finally {
             setIsSubmitting(false);
         }
