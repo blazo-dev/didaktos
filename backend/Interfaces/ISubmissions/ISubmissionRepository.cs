@@ -6,7 +6,9 @@ namespace didaktos.backend.Interfaces
     public interface ISubmissionRepository
     {
         Task<HttpResponseDto<Object>> InsertSubmissionAsync(Submission submission);
-        Task<List<SubmissionReadResponseDto>> SelectAllCourseSubmissionsAsync(Guid courseId);
+        Task<List<SubmissionReadResponseDto>> SelectAllCourseSubmissionsByAssignmentAsync(
+            Guid courseId
+        );
         Task<SubmissionGradeResponseDto> UpdateSubmissionGradeAsync(int? grade, Guid submissionId);
     }
 }
