@@ -1,7 +1,7 @@
 'use client';
 
 import { useCreateSubmission } from "@/hooks/submissions/use-create-submission";
-import { SubmissionFormData, gradeSubmissionSchema, submissionSchema } from "@/lib/schemas/submission";
+import { SubmissionFormData, submissionSchema } from "@/lib/schemas/submission";
 import { useAuthStore } from "@/stores/auth-store";
 import { useCoursesStore } from "@/stores/courses-store";
 import { useToastStore } from "@/stores/toast-store";
