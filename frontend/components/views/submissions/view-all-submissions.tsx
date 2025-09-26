@@ -6,7 +6,12 @@ import { useModalStore } from "@/stores/modal-store"
 import { Submission } from "@/types/course"
 import { Award, Calendar, Edit, Eye, FileText, User } from "lucide-react"
 
-function ViewAllSubmissions() {
+interface ViewAllSubmissionsProps {
+    // Future props can be added here if needed
+    submissions: Submission[];
+}
+
+function ViewAllSubmissions({ submissions }: ViewAllSubmissionsProps) {
     // Note: currentSubmissions will be implemented in useCoursesStore
     const { currentSubmissions, currentCourse, setCurrentSubmission } = useCoursesStore()
     const { openModal } = useModalStore()
@@ -15,7 +20,7 @@ function ViewAllSubmissions() {
     // Check if user is the instructor
     const isInstructor = currentCourse?.instructor.id === user?.id
 
-    console.log({currentSubmissions});
+    // console.log({ currentSubmissions });
 
     // If not instructor, show access denied
     if (!isInstructor) {
@@ -117,22 +122,22 @@ function ViewAllSubmissions() {
                     </div>
                     <div>
                         <span className="font-medium">Submitted:</span>
-                        <span className="ml-2 text-green-600">{currentSubmissions?.length || 0}</span>
+                        <span className="ml-2 text-green-600">{submissions?.length || 0}</span>
                     </div>
                     <div>
                         <span className="font-medium">Pending:</span>
                         <span className="ml-2 text-red-500">
-                            {(currentCourse?.enrollments.length || 0) - (currentSubmissions?.length || 0)}
+                            {(currentCourse?.enrollments.length || 0) - (submissions?.length || 0)}
                         </span>
                     </div>
                 </div>
             </Card>
 
             {/* Submissions List */}
-            {currentSubmissions && currentSubmissions.length > 0 ? (
+            {submissions && submissions.length > 0 ? (
                 <div className="space-y-4">
                     <h2 className="text-lg font-semibold text-foreground">Submissions</h2>
-                    {currentSubmissions.map((submission: Submission) => {
+                    {submissions.map((submission: Submission) => {
                         return (
                             <Card key={submission.id} className="p-4 hover:shadow-md transition-shadow">
                                 <div className="flex flex-col gap-6">

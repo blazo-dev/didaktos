@@ -114,6 +114,7 @@ export function CourseDetailView({ courseId }: CourseDetailViewProps) {
 
             <ViewAllSubmissionsModal
                 modalId="view-all-submissions"
+                submissions={submissions || []}
             />
             <ViewSubmissionModal
                 modalId="view-submission-instructor"
