@@ -56,7 +56,7 @@ namespace didaktos.backend.Repositories
             throw new InvalidOperationException("Failed to create course");
         }
 
-        public async Task<List<CourseReadResponseDto>> SelectCoursesAsync()
+        public async Task<List<CourseReadResponseDto>> SelectCoursesAsync(Guid userId)
         {
             using var connection = new NpgsqlConnection(_connectionString);
             await connection.OpenAsync();
@@ -90,6 +90,17 @@ namespace didaktos.backend.Repositories
                 JOIN courses c ON m.course_id = c.id
                 ORDER BY c.title, m.title, a.title;
 
+                -- Get submissions for assignments that are only for the user
+                SELECT s.id, s.content, s.grade, s.assignment_id, s.student_id, s.submitted_at, u.name
+                FROM submissions s
+                JOIN assignments a ON s.assignment_id = a.id
+                JOIN modules m ON a.module_id = m.id
+                JOIN courses c ON m.course_id = c.id
+                JOIN users u ON s.student_id = u.id
+                WHERE s.student_id = @userId 
+                AND EXISTS (SELECT 1 FROM enrollments e WHERE e.course_id = c.id AND e.student_id = @userId)
+                ORDER BY s.submitted_at DESC;
+
                 -- Get enrollments
                 SELECT e.course_id, e.student_id
                 FROM enrollments e
@@ -97,6 +108,7 @@ namespace didaktos.backend.Repositories
                 ORDER BY c.title;";
 
             using var command = new NpgsqlCommand(sql, connection);
+            command.Parameters.AddWithValue("@userId", userId);
             using var reader = await command.ExecuteReaderAsync();
 
             // Read courses
@@ -186,6 +198,34 @@ namespace didaktos.backend.Repositories
                                 DueDate = reader["due_date"] as DateTime?,
                             }
                         );
+                }
+            }
+
+            // Move to next result set (submissions)
+            await reader.NextResultAsync();
+            while (await reader.ReadAsync())
+            {
+                var assignmentId = (Guid)reader["assignment_id"];
+
+                if (modulesDict.Values.Any(m => m.Assignments.Any(a => a.Id == assignmentId)))
+                {
+                    var module = modulesDict.Values.First(m =>
+                        m.Assignments.Any(a => a.Id == assignmentId)
+                    );
+                    var assignment = module.Assignments.First(a => a.Id == assignmentId);
+
+                    assignment.Submissions.Add(
+                        new SubmissionReadResponseDto
+                        {
+                            Id = (Guid)reader["id"],
+                            Content = (string)reader["content"],
+                            Grade = reader["grade"] as int?,
+                            AssignmentId = assignmentId,
+                            StudentId = (Guid)reader["student_id"],
+                            SubmittedAt = (DateTime)reader["submitted_at"],
+                            Name = (string)reader["name"],
+                        }
+                    );
                 }
             }
 
