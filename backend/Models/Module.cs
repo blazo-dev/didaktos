@@ -8,7 +8,7 @@ namespace didaktos.backend.Models
         [Required]
         public Guid Id { get; set; }
 
-        [MinLength(8, ErrorMessage = "Title must be at least 8 characters")]
+        [MinLength(3, ErrorMessage = "Title must be at least 3 characters")]
         public string Title { get; set; } = string.Empty;
 
         [Required]
