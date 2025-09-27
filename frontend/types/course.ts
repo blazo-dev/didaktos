@@ -48,6 +48,7 @@ export interface Submission {
     id?: string;
     studentId: string;
     assignmentId: string;
+    assignmentTitle?: string;
     courseId: string;
     content: string;
     submittedAt?: string;

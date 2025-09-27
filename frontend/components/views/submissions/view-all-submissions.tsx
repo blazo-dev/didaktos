@@ -13,23 +13,21 @@ interface ViewAllSubmissionsProps {
 
 function ViewAllSubmissions({ submissions }: ViewAllSubmissionsProps) {
     // Note: currentSubmissions will be implemented in useCoursesStore
-    const { currentSubmissions, currentCourse, setCurrentSubmission } = useCoursesStore()
+    const { currentCourse, setCurrentSubmission } = useCoursesStore()
     const { openModal } = useModalStore()
     const { user } = useAuthStore()
 
     // Check if user is the instructor
     const isInstructor = currentCourse?.instructor.id === user?.id
 
-    // console.log({ currentSubmissions });
-
     // If not instructor, show access denied
     if (!isInstructor) {
         return (
             <div className="p-8 text-center">
-                <div className="bg-red-50 border border-red-200 rounded-lg p-8">
-                    <FileText className="w-12 h-12 mx-auto text-red-500 mb-4" />
-                    <h3 className="text-lg font-semibold text-red-800 mb-2">Access Denied</h3>
-                    <p className="text-red-600">
+                <div className="bg-background border border-destructive/50 rounded-lg p-8">
+                    <FileText className="w-12 h-12 mx-auto text-destructive mb-4" />
+                    <h3 className="text-lg font-semibold text-destructive mb-2">Access Denied</h3>
+                    <p className="text-muted-foreground">
                         Only the course instructor can view all submissions.
                     </p>
                 </div>
@@ -100,7 +98,7 @@ function ViewAllSubmissions({ submissions }: ViewAllSubmissionsProps) {
             title: 'Grade Submission',
             closable: true,
             backdrop: true,
-            size: 'xl',
+            size: 'sm',
         })
     }
 
@@ -167,7 +165,7 @@ function ViewAllSubmissions({ submissions }: ViewAllSubmissionsProps) {
                                             <div className="flex items-center space-x-2">
                                                 <FileText className="w-4 h-4 shrink-0 text-muted-foreground" />
                                                 <span className="text-muted-foreground truncate">
-                                                    Content: {submission.content ? `${submission.content.slice(0, 50)}...` : 'No content'}
+                                                    Assignment: {submission.assignmentTitle}
                                                 </span>
                                             </div>
                                         </div>

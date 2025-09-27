@@ -72,7 +72,7 @@ export default function Home() {
           </Card>
         </section>
 
-        <section className="grid gap-4 py-20 bg-primary text-primary-foreground text-center rounded-lg">
+        <section className="grid gap-4 py-20 bg-primary/50 text-primary-foreground text-center rounded-lg">
           <h2 className="text-3xl lg:text-4xl font-bold">Ready to Transform Your Learning Experience?</h2>
           <p className="text-lg">
             Join educators and students who are already using Didaktos to achieve better learning outcomes.

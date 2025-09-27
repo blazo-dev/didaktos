@@ -40,22 +40,24 @@ export function StudyAssistant() {
                                 <div className="w-8 h-8 bg-accent-secondary rounded-full flex items-center justify-center">
                                     <MessageSquare className="w-4 h-4 text-white" />
                                 </div>
-                                <span className="ml-3 font-medium text-primary">Study Assistant</span>
+                                <span className="ml-3 font-medium text-foreground">Study Assistant</span>
                             </div>
                             <div className="flex items-center gap-1">
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={clearMessages}
-                                >
-                                    <Trash className="w-5 h-5" />
-                                </Button>
+                                <Tooltip content="Clear chat history">
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={clearMessages}
+                                    >
+                                        <Trash />
+                                    </Button>
+                                </Tooltip>
                                 <Button
                                     variant="ghost"
                                     size="sm"
                                     onClick={() => setIsOpen(false)}
                                 >
-                                    <X className="w-5 h-5" />
+                                    <X />
                                 </Button>
                             </div>
                         </div>
