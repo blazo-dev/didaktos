@@ -1,6 +1,6 @@
-import { AuthResponse, SignUpRequest } from "@/types/auth";
+import { AuthResponse, SignUpRequest, User } from "@/types/auth";
 import { HttpResponse } from "@/types/http";
-import { apiPost } from "./api";
+import { apiGet, apiPost } from "./api";
 
 export const authApi = {
     async signIn(email: string, password: string): Promise<AuthResponse> {
@@ -29,6 +29,11 @@ export const authApi = {
                 confirmPassword,
             }
         );
+        return response.data;
+    },
+
+    async checkSession(): Promise<User> {
+        const response = await apiGet<HttpResponse<User>>(`/auth/me`);
         return response.data;
     },
 };

@@ -76,9 +76,3 @@ export const apiPut = <T>(
 
 export const apiDelete = <T>(endpoint: string, options?: ApiRequestOptions) =>
     apiFetch<T>(endpoint, { ...options, method: "DELETE" });
-
-// Helper function to get auth headers - kept for backward compatibility
-export const getAuthHeaders = (): Record<string, string> => {
-    const token = useAuthStore.getState().token;
-    return token ? { Authorization: `Bearer ${token}` } : {};
-};

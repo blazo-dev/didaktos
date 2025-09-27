@@ -1,10 +1,9 @@
 "use client";
 
-import { apiFetch } from "@/lib/api/api";
+import { authApi } from "@/lib/api/auth";
 import { useAuthStore } from "@/stores/auth-store";
 import { useToastStore } from "@/stores/ui-store";
 import { User } from "@/types/auth";
-import { HttpResponse } from "@/types/http";
 import { useQuery } from "@tanstack/react-query";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -20,10 +19,10 @@ export function useAuth() {
     const { user, login, logout, isLoggingOut } = useAuthStore();
 
     const {
-        data: response,
+        data: sessionUser,
         isLoading,
         isError,
-    } = useQuery<HttpResponse<User>>({
+    } = useQuery<User>({
         queryKey: ["session"],
         queryFn: async () => {
             const authState = useAuthStore.getState();
@@ -35,9 +34,7 @@ export function useAuth() {
 
             if (!authState.token) throw new Error("No token");
 
-            return apiFetch<HttpResponse<User>>("/auth/me", {
-                headers: { Authorization: `Bearer ${authState.token}` },
-            });
+            return authApi.checkSession();
         },
         retry: false,
         enabled: !isLoggingOut && !!useAuthStore.getState().token, // Don't run if logging out or no token
@@ -48,9 +45,9 @@ export function useAuth() {
     useEffect(() => {
         const publicAuthRoutes = ["/", "/auth/signin", "/auth/signup"];
 
-        if (response) {
+        if (sessionUser) {
             // Successful auth response - user is logged in
-            login(response.data, useAuthStore.getState().token!);
+            login(sessionUser, useAuthStore.getState().token!);
         } else if (isError) {
             // Check if we're currently logging out
             const currentAuthState = useAuthStore.getState();
@@ -74,7 +71,7 @@ export function useAuth() {
                 router.push("/auth/signin");
             }
         }
-    }, [response, isError, login, logout, addToast, router, pathname]);
+    }, [sessionUser, isError, login, logout, addToast, router, pathname]);
 
     return { user, isLoading };
 }

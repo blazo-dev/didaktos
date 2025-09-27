@@ -1,19 +1,12 @@
 import { Enrollment } from "@/types/enrollment";
 import { HttpResponse } from "@/types/http";
-import { apiFetch, getAuthHeaders } from "./api";
+import { apiGet, apiPost, apiPut } from "./api";
 
 export const enrollmentsApi = {
     // Enrollment CRUD operations
     async getEnrollments(): Promise<Enrollment[]> {
-        const response = await apiFetch<HttpResponse<Enrollment[]>>(
-            "/courses/enrollments",
-            {
-                method: "GET",
-                headers: {
-                    // 👈 asegurar header
-                    ...getAuthHeaders(),
-                },
-            }
+        const response = await apiGet<HttpResponse<Enrollment[]>>(
+            "/courses/enrollments"
         );
 
         return response.data;
@@ -22,16 +15,9 @@ export const enrollmentsApi = {
     async createEnrollment(enrollmentData: {
         courseId: string;
     }): Promise<Enrollment> {
-        const response = await apiFetch<HttpResponse<Enrollment>>(
+        const response = await apiPost<HttpResponse<Enrollment>>(
             "/courses/enrollments",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    ...getAuthHeaders(),
-                },
-                body: JSON.stringify(enrollmentData),
-            }
+            enrollmentData
         );
         return response.data;
     },
@@ -40,16 +26,9 @@ export const enrollmentsApi = {
         id: string,
         courseData: Partial<Enrollment>
     ): Promise<Enrollment> {
-        const response = await apiFetch<HttpResponse<Enrollment>>(
+        const response = await apiPut<HttpResponse<Enrollment>>(
             `/courses/enrollments`,
-            {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    ...getAuthHeaders(),
-                },
-                body: JSON.stringify(courseData),
-            }
+            courseData
         );
         return response.data;
     },
