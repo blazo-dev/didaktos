@@ -35,7 +35,7 @@ export function AssignmentView({ courseId }: AssignmentViewProps) {
         );
     }
 
-    const existingSubmission = currentAssignment.submissions[0];
+    const existingSubmission = currentAssignment.submissions?.[0];
     const deleteAssignment = useDeleteAssignment();
     const router = useRouter();
 
