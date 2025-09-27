@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient, UseMutationOptions } from "@tanstack/react-query";
-import { useToastStore } from "@/stores/toast-store";
+import { useToastStore } from "@/stores/ui-store";
 
 export interface ApiMutationOptions<TData, TVariables> {
   successMessage?: string;
