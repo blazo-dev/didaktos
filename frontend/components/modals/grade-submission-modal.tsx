@@ -1,29 +1,25 @@
 'use client';
 
-import { Modal } from '@/components/ui/modal';
-import { useModalStore } from '@/stores/ui-store';
 import { GradeSubmissionForm } from '../forms/grade-submission-form';
+import { FormModal } from './common/form-modal';
 
-interface SubmissionModalProps {
+interface GradeSubmissionModalProps {
     modalId: string;
     onSuccess?: () => void;
 }
 
-export function GradeSubmissionModal({ modalId, onSuccess }: SubmissionModalProps) {
-    const { closeModal } = useModalStore();
-
-    const handleSuccess = () => {
-        closeModal(modalId);
-        onSuccess?.();
-    };
-
-    const handleCancel = () => {
-        closeModal(modalId);
-    };
-
+export function GradeSubmissionModal({ modalId, onSuccess }: GradeSubmissionModalProps) {
     return (
-        <Modal id={modalId} onClose={handleCancel}>
-            <GradeSubmissionForm onCancel={handleCancel} onSuccess={handleSuccess} />
-        </Modal>
+        <FormModal modalId={modalId}>
+            {({ handleSuccess, handleCancel }) => (
+                <GradeSubmissionForm 
+                    onCancel={handleCancel} 
+                    onSuccess={() => {
+                        handleSuccess();
+                        onSuccess?.();
+                    }} 
+                />
+            )}
+        </FormModal>
     );
 }

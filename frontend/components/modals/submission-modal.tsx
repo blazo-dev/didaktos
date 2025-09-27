@@ -1,27 +1,21 @@
 'use client';
 
-import { Modal } from '@/components/ui/modal';
-import { useModalStore } from '@/stores/ui-store';
 import { SubmissionForm } from '../forms/submission-form';
+import { FormModal } from './common/form-modal';
 
 interface SubmissionModalProps {
     modalId: string;
 }
 
 export function SubmissionModal({ modalId }: SubmissionModalProps) {
-    const { closeModal } = useModalStore();
-
-    const handleSuccess = () => {
-        closeModal(modalId);
-    };
-
-    const handleCancel = () => {
-        closeModal(modalId);
-    };
-
     return (
-        <Modal id={modalId} onClose={handleCancel}>
-            <SubmissionForm onCancel={handleCancel} onSuccess={handleSuccess} />
-        </Modal>
+        <FormModal modalId={modalId}>
+            {({ handleSuccess, handleCancel }) => (
+                <SubmissionForm 
+                    onCancel={handleCancel} 
+                    onSuccess={handleSuccess} 
+                />
+            )}
+        </FormModal>
     );
 }

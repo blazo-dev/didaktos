@@ -1,6 +1,6 @@
 'use client';
 
-import { Loader2 } from 'lucide-react';
+import { LoadingSpinner } from '../../ui/loading-states';
 import { Button } from '../../ui/button';
 
 interface FormActionsProps {
@@ -33,7 +33,7 @@ export function FormActions({
             <Button type="submit" disabled={isPending}>
                 {isPending ? (
                     <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        <LoadingSpinner size="sm" className="mr-2" />
                         {isEdit ? loadingText.update : loadingText.create}
                     </>
                 ) : (

@@ -2,9 +2,10 @@
 
 import { Button } from "@/components/ui/button"
 import { Tooltip } from "@/components/ui/tooltip"
+import { InlineLoading } from "@/components/ui/loading-states"
 import { useAssistant } from "@/hooks/common/use-assistant"
 import { useCoursesStore } from "@/stores/courses-store"
-import { Loader2, MessageSquare, Trash, X } from "lucide-react"
+import { MessageSquare, Trash, X } from "lucide-react"
 import { useState } from "react"
 import ReactMarkdown from "react-markdown"
 import remarkBreaks from "remark-breaks"
@@ -81,10 +82,7 @@ export function StudyAssistant() {
                         {/* Input */}
                         <div className="p-4 border-t border-surface-border">
                             {isLoading ? (
-                                <div className="flex items-center space-x-2">
-                                    <Loader2 className="w-4 h-4 animate-spin" />
-                                    <span>Generating...</span>
-                                </div>
+                                <InlineLoading text="Generating..." />
                             ) : (
                                 <div className="flex gap-2 flex-wrap">
                                     <Tooltip content="Generate study questions and quiz items based on the lesson content to help you test your understanding and retention">

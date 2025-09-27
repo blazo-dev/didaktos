@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback } from "react";
+import { useModalStore } from '@/stores/ui-store';
 
 export interface ConfirmationConfig {
     title: string;
@@ -11,6 +12,8 @@ export interface ConfirmationConfig {
 }
 
 export function useConfirmationDialog() {
+    const { openModal, closeModal } = useModalStore();
+
     const confirm = useCallback(
         async (config: ConfirmationConfig): Promise<boolean> => {
             const {
@@ -18,13 +21,36 @@ export function useConfirmationDialog() {
                 message,
                 confirmText = "Confirm",
                 cancelText = "Cancel",
+                type = "info"
             } = config;
 
-            // For now, use browser's native confirm dialog
-            // TODO: Replace with custom modal component
-            return window.confirm(`${title}\n\n${message}`);
+            return new Promise<boolean>((resolve) => {
+                const modalId = `confirmation-${Date.now()}`;
+                
+                openModal({
+                    id: modalId,
+                    title: title,
+                    size: 'sm',
+                    closable: true,
+                    backdrop: true,
+                    data: {
+                        message,
+                        confirmText,
+                        cancelText,
+                        type,
+                        onConfirm: () => {
+                            closeModal(modalId);
+                            resolve(true);
+                        },
+                        onCancel: () => {
+                            closeModal(modalId);
+                            resolve(false);
+                        }
+                    }
+                });
+            });
         },
-        []
+        [openModal, closeModal]
     );
 
     const confirmDeletion = useCallback(
@@ -45,16 +71,15 @@ export function useConfirmationDialog() {
 
     const confirmModuleDeletion = useCallback(
         async (moduleName: string): Promise<boolean> => {
-            return window.confirm(
-                `Are you sure you want to delete "${moduleName}"?\n\n` +
-                    `This will permanently remove:\n` +
-                    `• All lessons in this module\n` +
-                    `• All assignments in this module\n` +
-                    `• All student submissions\n\n` +
-                    `This action cannot be undone.`
-            );
+            return confirm({
+                title: 'Delete Module',
+                message: `Are you sure you want to delete "${moduleName}"?\n\nThis will permanently remove:\n• All lessons in this module\n• All assignments in this module\n• All student submissions\n\nThis action cannot be undone.`,
+                confirmText: 'Delete Module',
+                cancelText: 'Cancel',
+                type: 'danger'
+            });
         },
-        []
+        [confirm]
     );
 
     return {
