@@ -1,5 +1,5 @@
 import { enrollmentsApi } from "@/lib/api/enrollments";
-import { useToastStore } from "@/stores/toast-store";
+import { useToastStore } from "@/stores/ui-store";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export const useCreateEnrollment = () => {

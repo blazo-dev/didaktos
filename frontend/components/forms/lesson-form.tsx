@@ -4,7 +4,7 @@ import { useCreateLesson } from "@/hooks/lessons/use-create-lesson";
 import { useUpdateLesson } from "@/hooks/lessons/use-update-lesson";
 import { LessonFormData, lessonSchema } from "@/lib/schemas/lesson";
 import { useAuthStore } from "@/stores/auth-store";
-import { useToastStore } from "@/stores/toast-store";
+import { useToastStore } from "@/stores/ui-store";
 import { Lesson } from "@/types/course";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";

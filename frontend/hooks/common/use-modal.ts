@@ -1,4 +1,4 @@
-import { ModalConfig, useModalStore } from "@/stores/modal-store";
+import { ModalConfig, useModalStore } from "@/stores/ui-store";
 import { useCallback } from "react";
 
 export interface UseModalOptions {

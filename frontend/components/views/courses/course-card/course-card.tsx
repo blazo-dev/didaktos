@@ -12,7 +12,7 @@ import {
 import { useDeleteCourse } from '@/hooks/courses/use-delete-course';
 import { useAuthStore } from '@/stores/auth-store';
 import { useCoursesStore } from '@/stores/courses-store';
-import { useModalStore } from '@/stores/modal-store';
+import { useModalStore } from '@/stores/ui-store';
 import { Course } from '@/types/course';
 import {
     BookOpen,

@@ -1,8 +1,9 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
-import { createUISlice, UIState, UIActions } from "./slices/ui-slice";
+import { createUISlice, UIState, UIActions, ModalConfig } from "./slices/ui-slice";
 
 export type UIStore = UIState & UIActions;
+export type { ModalConfig };
 
 export const useUIStore = create<UIStore>()(
   devtools(

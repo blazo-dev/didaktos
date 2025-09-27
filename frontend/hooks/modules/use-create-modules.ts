@@ -1,5 +1,5 @@
 import { coursesApi } from "@/lib/api/course";
-import { useToastStore } from "@/stores/toast-store";
+import { useToastStore } from "@/stores/ui-store";
 import { Module } from "@/types/course";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 

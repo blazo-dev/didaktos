@@ -1,5 +1,5 @@
 import { lessonsApi } from "@/lib/api/lesson";
-import { useToastStore } from "@/stores/toast-store";
+import { useToastStore } from "@/stores/ui-store";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export const useDeleteLesson = () => {

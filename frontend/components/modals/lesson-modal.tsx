@@ -1,7 +1,7 @@
 'use client';
 
 import { Modal } from '@/components/ui/modal';
-import { useModalStore } from '@/stores/modal-store';
+import { useModalStore } from '@/stores/ui-store';
 import { Lesson } from '@/types/course';
 import { LessonForm } from '@/components/forms/lesson-form';
 

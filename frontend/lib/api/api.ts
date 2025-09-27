@@ -12,11 +12,15 @@ export async function apiFetch<T>(
     endpoint: string,
     options: ApiRequestOptions = {}
 ): Promise<T> {
-    const { requireAuth = true, skipDefaultHeaders = false, ...fetchOptions } = options;
+    const {
+        requireAuth = true,
+        skipDefaultHeaders = false,
+        ...fetchOptions
+    } = options;
 
     // Build headers
     const headers: Record<string, string> = {};
-    
+
     if (!skipDefaultHeaders) {
         headers["Content-Type"] = "application/json";
     }
@@ -45,24 +49,32 @@ export async function apiFetch<T>(
 }
 
 // Convenience methods
-export const apiGet = <T>(endpoint: string, options?: ApiRequestOptions) => 
+export const apiGet = <T>(endpoint: string, options?: ApiRequestOptions) =>
     apiFetch<T>(endpoint, { ...options, method: "GET" });
 
-export const apiPost = <T>(endpoint: string, data?: any, options?: ApiRequestOptions) => 
-    apiFetch<T>(endpoint, { 
-        ...options, 
-        method: "POST", 
-        body: data ? JSON.stringify(data) : undefined 
+export const apiPost = <T>(
+    endpoint: string,
+    data?: any,
+    options?: ApiRequestOptions
+) =>
+    apiFetch<T>(endpoint, {
+        ...options,
+        method: "POST",
+        body: data ? JSON.stringify(data) : undefined,
     });
 
-export const apiPut = <T>(endpoint: string, data?: any, options?: ApiRequestOptions) => 
-    apiFetch<T>(endpoint, { 
-        ...options, 
-        method: "PUT", 
-        body: data ? JSON.stringify(data) : undefined 
+export const apiPut = <T>(
+    endpoint: string,
+    data?: any,
+    options?: ApiRequestOptions
+) =>
+    apiFetch<T>(endpoint, {
+        ...options,
+        method: "PUT",
+        body: data ? JSON.stringify(data) : undefined,
     });
 
-export const apiDelete = <T>(endpoint: string, options?: ApiRequestOptions) => 
+export const apiDelete = <T>(endpoint: string, options?: ApiRequestOptions) =>
     apiFetch<T>(endpoint, { ...options, method: "DELETE" });
 
 // Helper function to get auth headers - kept for backward compatibility

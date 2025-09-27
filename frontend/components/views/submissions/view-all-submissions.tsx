@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { useAuthStore } from "@/stores/auth-store"
 import { useCoursesStore } from "@/stores/courses-store"
-import { useModalStore } from "@/stores/modal-store"
+import { useModalStore } from "@/stores/ui-store"
 import { Submission } from "@/types/course"
 import { Award, Calendar, Edit, Eye, FileText, User } from "lucide-react"
 

@@ -1,6 +1,6 @@
 import { HttpResponse } from "@/types/http";
 import { Course, Module } from "../../types/course";
-import { apiGet, apiPost, apiPut, apiDelete } from "./api";
+import { apiDelete, apiGet, apiPost, apiPut } from "./api";
 
 export const coursesApi = {
     // Course CRUD operations
@@ -17,7 +17,10 @@ export const coursesApi = {
     async createCourse(
         courseData: Omit<Course, "id" | "createdAt" | "updatedAt">
     ): Promise<Course> {
-        const response = await apiPost<HttpResponse<Course>>("/courses", courseData);
+        const response = await apiPost<HttpResponse<Course>>(
+            "/courses",
+            courseData
+        );
         return response.data;
     },
 
@@ -25,10 +28,11 @@ export const coursesApi = {
         id: string,
         { title, description }: Partial<Course>
     ): Promise<Course> {
-        const response = await apiPut<HttpResponse<Course>>(
-            `/courses/${id}`, 
-            { id, title, description }
-        );
+        const response = await apiPut<HttpResponse<Course>>(`/courses/${id}`, {
+            id,
+            title,
+            description,
+        });
         return response.data;
     },
 

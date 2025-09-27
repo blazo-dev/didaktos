@@ -1,10 +1,10 @@
 "use client";
 
+import { submissionsApi } from "@/lib/api/submission";
 import { useAuthStore } from "@/stores/auth-store";
 import { Course } from "@/types/course";
-import { submissionsApi } from "@/lib/api/submission";
-import { useMemo } from "react";
 import { useQueries } from "@tanstack/react-query";
+import { useMemo } from "react";
 
 export interface DashboardStats {
     activeCourses: number;
@@ -61,17 +61,18 @@ export function useDashboardData(courses: Course[]): DashboardData {
         // Get assignment IDs that have grades from current user's submissions
         const gradedAssignmentIds = new Set(
             allSubmissions
-                .filter((submission) => 
-                    submission.studentId === userId && 
-                    submission.grade !== null && 
-                    submission.grade !== undefined
+                .filter(
+                    (submission) =>
+                        submission.studentId === userId &&
+                        submission.grade !== null &&
+                        submission.grade !== undefined
                 )
                 .map((submission) => submission.assignmentId)
         );
 
         // Filter out graded assignments from all assignments
         const ungradedAssignments = enrolledCourses.flatMap((c) =>
-            c.modules.flatMap((m) => 
+            c.modules.flatMap((m) =>
                 m.assignments.filter((a) => !gradedAssignmentIds.has(a.id))
             )
         );
@@ -85,15 +86,22 @@ export function useDashboardData(courses: Course[]): DashboardData {
         }).length;
 
         // Calculate average grade from submissions for current user
-        const userGradedSubmissions = allSubmissions.filter((s) => 
-            s.studentId === userId && 
-            s.grade !== null && 
-            s.grade !== undefined
+        const userGradedSubmissions = allSubmissions.filter(
+            (s) =>
+                s.studentId === userId &&
+                s.grade !== null &&
+                s.grade !== undefined
         );
-        
-        const avgGrade = userGradedSubmissions.length > 0 
-            ? Math.round(userGradedSubmissions.reduce((sum, s) => sum + s.grade!, 0) / userGradedSubmissions.length)
-            : 0;
+
+        const avgGrade =
+            userGradedSubmissions.length > 0
+                ? Math.round(
+                      userGradedSubmissions.reduce(
+                          (sum, s) => sum + s.grade!,
+                          0
+                      ) / userGradedSubmissions.length
+                  )
+                : 0;
 
         return {
             activeCourses,
@@ -109,10 +117,11 @@ export function useDashboardData(courses: Course[]): DashboardData {
         // Get assignment IDs that have grades from current user's submissions
         const gradedAssignmentIds = new Set(
             allSubmissions
-                .filter((submission) => 
-                    submission.studentId === userId && 
-                    submission.grade !== null && 
-                    submission.grade !== undefined
+                .filter(
+                    (submission) =>
+                        submission.studentId === userId &&
+                        submission.grade !== null &&
+                        submission.grade !== undefined
                 )
                 .map((submission) => submission.assignmentId)
         );
@@ -153,30 +162,39 @@ export function useDashboardData(courses: Course[]): DashboardData {
 
         // Filter submissions with grades for current user and map to recent grades format
         const gradedSubmissions = allSubmissions
-            .filter((submission) => 
-                submission.studentId === userId && 
-                submission.grade !== null && 
-                submission.grade !== undefined &&
-                submission.id !== undefined // Ensure submission has an ID
+            .filter(
+                (submission) =>
+                    submission.studentId === userId &&
+                    submission.grade !== null &&
+                    submission.grade !== undefined &&
+                    submission.id !== undefined // Ensure submission has an ID
             )
             .map((submission) => {
-                const assignmentInfo = assignmentMap.get(submission.assignmentId);
+                const assignmentInfo = assignmentMap.get(
+                    submission.assignmentId
+                );
                 return {
                     id: submission.id!, // Now we know ID is defined due to filter
-                    title: assignmentInfo?.title || 'Unknown Assignment',
-                    courseTitle: assignmentInfo?.courseTitle || 'Unknown Course',
+                    title: assignmentInfo?.title || "Unknown Assignment",
+                    courseTitle:
+                        assignmentInfo?.courseTitle || "Unknown Course",
                     grade: submission.grade!.toString(),
                     submittedAt: submission.submittedAt,
                 };
             })
             // Remove potential duplicates by submission ID
-            .filter((submission, index, array) => 
-                array.findIndex(s => s.id === submission.id) === index
+            .filter(
+                (submission, index, array) =>
+                    array.findIndex((s) => s.id === submission.id) === index
             )
             // Sort by submission date (most recent first) and take the first 5
             .sort((a, b) => {
-                const aTime = a.submittedAt ? new Date(a.submittedAt).getTime() : -Infinity;
-                const bTime = b.submittedAt ? new Date(b.submittedAt).getTime() : -Infinity;
+                const aTime = a.submittedAt
+                    ? new Date(a.submittedAt).getTime()
+                    : -Infinity;
+                const bTime = b.submittedAt
+                    ? new Date(b.submittedAt).getTime()
+                    : -Infinity;
                 return bTime - aTime;
             })
             .slice(0, 5)

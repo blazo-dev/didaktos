@@ -1,5 +1,5 @@
 import { assignmentsApi } from "@/lib/api/assignments";
-import { useToastStore } from "@/stores/toast-store";
+import { useToastStore } from "@/stores/ui-store";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export const useDeleteAssignment = (moduleId: string) => {

@@ -5,7 +5,7 @@ import { SubmissionGradeRequestDto } from "@/lib/api/submission";
 import { GradeSubmissionFormData, gradeSubmissionSchema } from "@/lib/schemas/submission";
 import { useAuthStore } from "@/stores/auth-store";
 import { useCoursesStore } from "@/stores/courses-store";
-import { useToastStore } from "@/stores/toast-store";
+import { useToastStore } from "@/stores/ui-store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";

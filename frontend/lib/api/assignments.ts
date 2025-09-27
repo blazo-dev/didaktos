@@ -1,6 +1,6 @@
 import { HttpResponse } from "@/types/http";
 import { Assignment } from "../../types/course";
-import { apiGet, apiPost, apiPut, apiDelete } from "./api";
+import { apiDelete, apiGet, apiPost, apiPut } from "./api";
 
 export const assignmentsApi = {
     getAssignmentsByModule: async (moduleId: string) => {

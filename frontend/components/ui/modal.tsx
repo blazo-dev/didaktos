@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { useModalStore } from '@/stores/modal-store';
+import { useModalStore } from '@/stores/ui-store';
 import { XIcon } from 'lucide-react';
 import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';

@@ -3,7 +3,7 @@
 import { AssignmentFormData, assignmentSchema } from "@/lib/schemas/assignment";
 import { useAuthStore } from "@/stores/auth-store";
 import { useCoursesStore } from "@/stores/courses-store";
-import { useToastStore } from "@/stores/toast-store";
+import { useToastStore } from "@/stores/ui-store";
 import { Assignment } from "@/types/course";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";

@@ -10,7 +10,7 @@ import { ViewSubmissionModal } from '@/components/modals/view-submission-modal';
 import { useCourseById } from '@/hooks/courses/use-course-by-id';
 import { useGetAllSubmissionsByCourse } from '@/hooks/submissions/use-get-all-submission-by-course';
 import { useCoursesStore } from '@/stores/courses-store';
-import { useModalStore } from '@/stores/modal-store';
+import { useModalStore } from '@/stores/ui-store';
 import { CourseDetailHeader } from './course-detail-header';
 import { CourseInfoCard } from './course-info-card';
 import { CourseModulesSection } from './course-modules-section';

@@ -1,6 +1,6 @@
 import { lessonsApi } from "@/lib/api/lesson";
 import { useCoursesStore } from "@/stores/courses-store";
-import { useToastStore } from "@/stores/toast-store";
+import { useToastStore } from "@/stores/ui-store";
 import { Lesson } from "@/types/course";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 

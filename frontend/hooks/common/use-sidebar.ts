@@ -1,6 +1,6 @@
 "use client";
 
-import { useSidebarStore } from "@/stores/sidebar-store";
+import { useSidebarStore } from "@/stores/ui-store";
 
 /**
  * Custom hook for sidebar management

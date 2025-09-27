@@ -1,7 +1,7 @@
 'use client';
 
 import { Modal } from '@/components/ui/modal';
-import { useModalStore } from '@/stores/modal-store';
+import { useModalStore } from '@/stores/ui-store';
 import { Submission } from '@/types/course';
 import ViewAllSubmissions from '../views/submissions/view-all-submissions';
 

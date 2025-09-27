@@ -8,7 +8,7 @@ import { Card } from '@/components/ui/card';
 import { useDeleteAssignment } from '@/hooks/assignments/use-delete-assignment';
 import { useAuthStore } from '@/stores/auth-store';
 import { useCoursesStore } from '@/stores/courses-store';
-import { useModalStore } from '@/stores/modal-store';
+import { useModalStore } from '@/stores/ui-store';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import AssignmentHeader from './assignment-header';

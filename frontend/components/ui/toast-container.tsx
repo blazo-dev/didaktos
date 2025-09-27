@@ -1,6 +1,6 @@
 "use client"
 
-import { useToastStore } from "@/stores/toast-store"
+import { useToastStore } from "@/stores/ui-store"
 import { Toast } from "./toast"
 
 

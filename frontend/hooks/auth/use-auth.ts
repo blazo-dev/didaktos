@@ -2,7 +2,7 @@
 
 import { apiFetch } from "@/lib/api/api";
 import { useAuthStore } from "@/stores/auth-store";
-import { useToastStore } from "@/stores/toast-store";
+import { useToastStore } from "@/stores/ui-store";
 import { User } from "@/types/auth";
 import { HttpResponse } from "@/types/http";
 import { useQuery } from "@tanstack/react-query";

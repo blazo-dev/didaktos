@@ -2,7 +2,7 @@
 
 import Loader from "@/components/layout/loader";
 import { useAuthStore } from "@/stores/auth-store";
-import { useToastStore } from "@/stores/toast-store";
+import { useToastStore } from "@/stores/ui-store";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";

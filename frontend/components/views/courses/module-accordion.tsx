@@ -1,7 +1,7 @@
 'use client';
 
 import { useCoursesStore } from '@/stores/courses-store';
-import { useModalStore } from '@/stores/modal-store';
+import { useModalStore } from '@/stores/ui-store';
 import { Assignment, Lesson, Module } from '@/types/course';
 import {
     BookOpen,

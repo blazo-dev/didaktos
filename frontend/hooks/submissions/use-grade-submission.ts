@@ -2,7 +2,7 @@ import {
     SubmissionGradeRequestDto,
     submissionsApi,
 } from "@/lib/api/submission";
-import { useToastStore } from "@/stores/toast-store";
+import { useToastStore } from "@/stores/ui-store";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export const useGradeSubmission = () => {

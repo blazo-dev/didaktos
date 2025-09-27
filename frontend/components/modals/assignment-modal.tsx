@@ -1,7 +1,7 @@
 'use client';
 
 import { Modal } from '@/components/ui/modal';
-import { useModalStore } from '@/stores/modal-store';
+import { useModalStore } from '@/stores/ui-store';
 import { Assignment } from '@/types/course';
 import { AssignmentForm } from '@/components/forms/assignment-form';
 

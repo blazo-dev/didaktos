@@ -2,7 +2,7 @@
 
 import { CourseForm } from '@/components/forms/course-form';
 import { Modal } from '@/components/ui/modal';
-import { useModalStore } from '@/stores/modal-store';
+import { useModalStore } from '@/stores/ui-store';
 import { Course } from '@/types/course';
 
 interface CourseModalProps {

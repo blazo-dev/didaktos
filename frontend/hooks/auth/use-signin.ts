@@ -1,11 +1,11 @@
 import { apiFetch } from "@/lib/api/api";
 import { useAuthStore } from "@/stores/auth-store";
-import { useToastStore } from "@/stores/toast-store";
+import { useToastStore } from "@/stores/ui-store";
 import { SignInRequest } from "@/types/auth";
 import { useMutation } from "@tanstack/react-query";
 
 export function useSignIn() {
-    const addToast = useToastStore((state) => state.addToast);
+    const { addToast } = useToastStore();
     const login = useAuthStore((state) => state.login);
 
     return useMutation({

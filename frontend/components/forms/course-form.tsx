@@ -7,7 +7,7 @@ import { useCreateCourse } from '@/hooks/courses/use-create-course';
 import { useUpdateCourse } from '@/hooks/courses/use-update-course';
 import { CourseFormData, courseSchema } from '@/lib/schemas/course';
 import { useAuthStore } from '@/stores/auth-store';
-import { useToastStore } from '@/stores/toast-store';
+import { useToastStore } from '@/stores/ui-store';
 import { Course } from '@/types/course';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
