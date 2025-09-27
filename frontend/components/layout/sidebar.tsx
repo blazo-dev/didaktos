@@ -31,23 +31,23 @@ export function Sidebar() {
     });
 
     if (confirmed) {
-      // STEP 1: Set logging out flag to disable auth query
+      // Set logging out flag to disable auth query
       setLoggingOut(true);
-      
-      // STEP 2: Clear all queries to prevent race conditions
+
+      // Clear all queries to prevent race conditions
       queryClient.removeQueries();
-      
-      // STEP 3: Short delay to ensure state propagation
+
+      // Short delay to ensure state propagation
       await new Promise(resolve => setTimeout(resolve, 100));
-      
-      // STEP 4: Perform logout and cleanup
+
+      // Perform logout and cleanup
       logout(); // This will reset isLoggingOut to false
-      
-      // STEP 5: Show success message and redirect
+
+      // Show success message and redirect
       addToast({ type: "info", message: "You have been signed out successfully" });
       router.replace("/");
     }
-  };  return (
+  }; return (
     <aside className="sticky top-18 w-full flex flex-col">
       <div className="space-y-4 p-4">
         <h3 className="text-sm font-medium text-secondary mb-4">General</h3>

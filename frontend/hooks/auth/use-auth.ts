@@ -27,12 +27,12 @@ export function useAuth() {
         queryKey: ["session"],
         queryFn: async () => {
             const authState = useAuthStore.getState();
-            
+
             // If we're in the process of logging out, don't attempt session validation
             if (authState.isLoggingOut) {
                 throw new Error("Logout in progress");
             }
-            
+
             if (!authState.token) throw new Error("No token");
 
             return apiFetch<HttpResponse<User>>("/auth/me", {
@@ -54,14 +54,16 @@ export function useAuth() {
         } else if (isError) {
             // Check if we're currently logging out
             const currentAuthState = useAuthStore.getState();
-            
+
             if (currentAuthState.isLoggingOut) {
                 // This is a voluntary logout - just clean up without error messages
-                console.log("Voluntary logout detected - cleaning up without errors");
+                console.log(
+                    "Voluntary logout detected - cleaning up without errors"
+                );
                 logout();
                 return;
             }
-            
+
             // This is an actual authentication failure (session expired, etc.)
             console.log("Authentication failed - showing error toast");
             logout();
