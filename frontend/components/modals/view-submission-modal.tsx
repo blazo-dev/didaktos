@@ -12,8 +12,8 @@ export function ViewSubmissionModal({ modalId }: ViewSubmissionModalProps) {
     const { closeModal } = useModalStore();
 
     return (
-        <Modal 
-            id={modalId} 
+        <Modal
+            id={modalId}
             onClose={() => closeModal(modalId)}
         >
             <ViewSubmission />

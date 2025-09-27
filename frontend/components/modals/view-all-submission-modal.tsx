@@ -14,8 +14,8 @@ export function ViewAllSubmissionsModal({ modalId, submissions }: ViewAllSubmiss
     const { closeModal } = useModalStore();
 
     return (
-        <Modal 
-            id={modalId} 
+        <Modal
+            id={modalId}
             onClose={() => closeModal(modalId)}
         >
             <ViewAllSubmissions submissions={submissions} />
