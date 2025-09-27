@@ -1,8 +1,8 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { Tooltip } from "@/components/ui/tooltip"
 import { InlineLoading } from "@/components/ui/loading-states"
+import { Tooltip } from "@/components/ui/tooltip"
 import { useAssistant } from "@/hooks/common/use-assistant"
 import { useCoursesStore } from "@/stores/courses-store"
 import { MessageSquare, Trash, X } from "lucide-react"

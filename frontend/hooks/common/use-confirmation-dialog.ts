@@ -1,7 +1,7 @@
 "use client";
 
+import { useModalStore } from "@/stores/ui-store";
 import { useCallback } from "react";
-import { useModalStore } from '@/stores/ui-store';
 
 export interface ConfirmationConfig {
     title: string;
@@ -21,16 +21,16 @@ export function useConfirmationDialog() {
                 message,
                 confirmText = "Confirm",
                 cancelText = "Cancel",
-                type = "info"
+                type = "info",
             } = config;
 
             return new Promise<boolean>((resolve) => {
                 const modalId = `confirmation-${Date.now()}`;
-                
+
                 openModal({
                     id: modalId,
                     title: title,
-                    size: 'sm',
+                    size: "sm",
                     closable: true,
                     backdrop: true,
                     data: {
@@ -45,8 +45,8 @@ export function useConfirmationDialog() {
                         onCancel: () => {
                             closeModal(modalId);
                             resolve(false);
-                        }
-                    }
+                        },
+                    },
                 });
             });
         },
@@ -72,11 +72,11 @@ export function useConfirmationDialog() {
     const confirmModuleDeletion = useCallback(
         async (moduleName: string): Promise<boolean> => {
             return confirm({
-                title: 'Delete Module',
+                title: "Delete Module",
                 message: `Are you sure you want to delete "${moduleName}"?\n\nThis will permanently remove:\n• All lessons in this module\n• All assignments in this module\n• All student submissions\n\nThis action cannot be undone.`,
-                confirmText: 'Delete Module',
-                cancelText: 'Cancel',
-                type: 'danger'
+                confirmText: "Delete Module",
+                cancelText: "Cancel",
+                type: "danger",
             });
         },
         [confirm]

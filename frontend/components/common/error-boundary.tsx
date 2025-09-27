@@ -1,9 +1,9 @@
 'use client';
 
+import { AlertTriangle, RefreshCw } from 'lucide-react';
 import { Component, ErrorInfo, ReactNode } from 'react';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
-import { AlertTriangle, RefreshCw } from 'lucide-react';
 
 interface Props {
     children: ReactNode;
@@ -52,7 +52,7 @@ export class ErrorBoundary extends Component<Props, State> {
                             Something went wrong
                         </h3>
                     </div>
-                    
+
                     <p className="text-sm text-muted-foreground mb-4">
                         We encountered an unexpected error. You can try refreshing the page or contact support if the problem persists.
                     </p>
@@ -96,8 +96,8 @@ export function withErrorBoundary<T extends {}>(
             <Component {...props} />
         </ErrorBoundary>
     );
-    
+
     WrappedComponent.displayName = `withErrorBoundary(${Component.displayName || Component.name})`;
-    
+
     return WrappedComponent;
 }

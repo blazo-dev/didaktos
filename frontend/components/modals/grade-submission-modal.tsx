@@ -12,12 +12,12 @@ export function GradeSubmissionModal({ modalId, onSuccess }: GradeSubmissionModa
     return (
         <FormModal modalId={modalId}>
             {({ handleSuccess, handleCancel }) => (
-                <GradeSubmissionForm 
-                    onCancel={handleCancel} 
+                <GradeSubmissionForm
+                    onCancel={handleCancel}
                     onSuccess={() => {
                         handleSuccess();
                         onSuccess?.();
-                    }} 
+                    }}
                 />
             )}
         </FormModal>

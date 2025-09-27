@@ -1,9 +1,9 @@
 'use client';
 
+import { useModalStore } from '@/stores/ui-store';
+import { AlertCircle, AlertTriangle, Info } from 'lucide-react';
 import { Button } from '../../ui/button';
 import { Modal } from '../../ui/modal';
-import { useModalStore } from '@/stores/ui-store';
-import { AlertTriangle, Info, AlertCircle } from 'lucide-react';
 
 interface ConfirmationModalProps {
     modalId: string;
@@ -67,7 +67,7 @@ export function ConfirmationModal({
                     {getIcon()}
                     <h3 className="text-lg font-semibold">{title}</h3>
                 </div>
-                
+
                 <div className="text-sm text-muted-foreground whitespace-pre-line">
                     {message}
                 </div>

@@ -1,7 +1,7 @@
 'use client';
 
-import { LoadingSpinner } from '../../ui/loading-states';
 import { Button } from '../../ui/button';
+import { LoadingSpinner } from '../../ui/loading-states';
 
 interface FormActionsProps {
     onCancel: () => void;

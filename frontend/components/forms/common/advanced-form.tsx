@@ -1,13 +1,13 @@
 'use client';
 
+import { useAdvancedValidation, ValidationRule } from '@/hooks/forms/use-advanced-validation';
+import { PerformanceConfig, useFormPerformanceMonitoring } from '@/hooks/forms/use-form-performance';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTransition } from 'react';
 import { FieldValues, FormProvider, useForm } from 'react-hook-form';
 import { ZodType } from 'zod';
 import { ErrorBoundary } from '../../common/error-boundary';
 import { FormActions } from './form-actions';
-import { useAdvancedValidation, ValidationRule } from '@/hooks/forms/use-advanced-validation';
-import { useFormPerformanceMonitoring, PerformanceConfig } from '@/hooks/forms/use-form-performance';
 
 interface AdvancedFormProps<T extends FieldValues> {
     initialValues?: Partial<T>;
@@ -56,7 +56,7 @@ export function AdvancedForm<T extends FieldValues>({
 
     // Advanced validation
     const { validateForm } = useAdvancedValidation(
-        methods, 
+        methods,
         customValidationRules,
         validationOptions
     );
@@ -126,8 +126,8 @@ export function createFormWithPresets<T extends FieldValues>(
         'performance-monitored': {
             errorBoundary: true,
             validationOptions: { showToast: true, focusOnError: true },
-            performanceConfig: { 
-                enableLogging: true, 
+            performanceConfig: {
+                enableLogging: true,
                 enableToasts: true,
                 slowThreshold: 1500
             }

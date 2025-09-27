@@ -11,9 +11,9 @@ export function SubmissionModal({ modalId }: SubmissionModalProps) {
     return (
         <FormModal modalId={modalId}>
             {({ handleSuccess, handleCancel }) => (
-                <SubmissionForm 
-                    onCancel={handleCancel} 
-                    onSuccess={handleSuccess} 
+                <SubmissionForm
+                    onCancel={handleCancel}
+                    onSuccess={handleSuccess}
                 />
             )}
         </FormModal>

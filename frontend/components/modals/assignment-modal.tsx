@@ -1,7 +1,7 @@
 'use client';
 
-import { Assignment } from '@/types/course';
 import { AssignmentForm } from '@/components/forms/assignment-form';
+import { Assignment } from '@/types/course';
 import { FormModal } from './common/form-modal';
 
 interface AssignmentModalProps {
@@ -14,13 +14,13 @@ export function AssignmentModal({ modalId, assignment, onSuccess }: AssignmentMo
     return (
         <FormModal modalId={modalId}>
             {({ handleSuccess, handleCancel }) => (
-                <AssignmentForm 
-                    assignment={assignment} 
-                    onCancel={handleCancel} 
+                <AssignmentForm
+                    assignment={assignment}
+                    onCancel={handleCancel}
                     onSuccess={(assignmentData) => {
                         handleSuccess();
                         onSuccess?.(assignmentData);
-                    }} 
+                    }}
                 />
             )}
         </FormModal>
