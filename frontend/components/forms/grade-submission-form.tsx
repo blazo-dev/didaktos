@@ -9,8 +9,8 @@ import { useToastStore } from "@/stores/ui-store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Button } from "../ui/button";
 import { Input } from "../ui/input";
+import { FormActions } from "./common/form-actions";
 
 
 
@@ -82,28 +82,13 @@ export function GradeSubmissionForm({ onSuccess, onCancel }: SubmissionFormProps
             />
 
             {/* Form Actions */}
-            <div className="flex items-center justify-end space-x-4 pt-4 border-t border-border">
-                <Button
-                    type="button"
-                    variant="outline"
-                    onClick={onCancel}
-                    disabled={isSubmitting}
-                >
-                    Cancel
-                </Button>
-                <Button
-                    disabled={isSubmitting}
-                >
-                    {isSubmitting ? (
-                        <div className="flex items-center space-x-2">
-                            <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                            <span>Grading...</span>
-                        </div>
-                    ) : (
-                        'Grade Assignment'
-                    )}
-                </Button>
-            </div>
+            <FormActions
+                onCancel={onCancel || (() => {})}
+                isPending={isSubmitting}
+                isEdit={false}
+                submitText={{ create: 'Grade Assignment', update: 'Grade Assignment' }}
+                loadingText={{ create: 'Grading...', update: 'Grading...' }}
+            />
         </form>
     );
 }

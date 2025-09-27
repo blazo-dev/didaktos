@@ -9,8 +9,8 @@ import { Assignment, Submission } from "@/types/course";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Button } from "../ui/button";
 import { Textarea } from "../ui/textarea";
+import { FormActions } from "./common/form-actions";
 
 
 
@@ -85,28 +85,13 @@ export function SubmissionForm({ assignment, courseId, onSuccess, onCancel }: Su
             />
 
             {/* Form Actions */}
-            <div className="flex items-center justify-end space-x-4 pt-4 border-t border-border">
-                <Button
-                    type="button"
-                    variant="outline"
-                    onClick={onCancel}
-                    disabled={isSubmitting}
-                >
-                    Cancel
-                </Button>
-                <Button
-                    disabled={isSubmitting}
-                >
-                    {isSubmitting ? (
-                        <div className="flex items-center space-x-2">
-                            <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                            <span>Submitting...</span>
-                        </div>
-                    ) : (
-                        'Submit Assignment'
-                    )}
-                </Button>
-            </div>
+            <FormActions
+                onCancel={onCancel || (() => {})}
+                isPending={isSubmitting}
+                isEdit={false}
+                submitText={{ create: 'Submit Assignment', update: 'Submit Assignment' }}
+                loadingText={{ create: 'Submitting...', update: 'Submitting...' }}
+            />
         </form>
     );
 }

@@ -8,11 +8,11 @@ import { Assignment } from "@/types/course";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { useCreateAssignment } from "@/hooks/assignments/use-create-assignment";
 import { useUpdateAssignment } from "@/hooks/assignments/use-update-assignment";
+import { FormActions } from "./common/form-actions";
 
 
 interface AssignmentFormProps {
@@ -115,28 +115,13 @@ export function AssignmentForm({ assignment, onSuccess, onCancel }: AssignmentFo
 
 
             {/* Form Actions */}
-            <div className="flex items-center justify-end space-x-4 pt-4 border-t border-border">
-                <Button
-                    type="button"
-                    variant="outline"
-                    onClick={onCancel}
-                    disabled={isLoading}
-                >
-                    Cancel
-                </Button>
-                <Button
-                    disabled={isLoading}
-                >
-                    {isLoading ? (
-                        <div className="flex items-center space-x-2">
-                            <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                            <span>{assignment ? 'Updating...' : 'Creating...'}</span>
-                        </div>
-                    ) : (
-                        assignment ? 'Update Assignment' : 'Create Assignment'
-                    )}
-                </Button>
-            </div>
+            <FormActions
+                onCancel={onCancel || (() => {})}
+                isPending={isLoading}
+                isEdit={!!assignment}
+                submitText={{ create: 'Create Assignment', update: 'Update Assignment' }}
+                loadingText={{ create: 'Creating...', update: 'Updating...' }}
+            />
         </form>
     );
 }

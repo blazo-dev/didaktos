@@ -1,6 +1,5 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useCreateCourse } from '@/hooks/courses/use-create-course';
@@ -12,6 +11,7 @@ import { Course } from '@/types/course';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { FormActions } from './common/form-actions';
 
 interface CourseFormProps {
     course?: Course;
@@ -101,28 +101,13 @@ export function CourseForm({ course, onSuccess, onCancel }: CourseFormProps) {
             />
 
             {/* Form Actions */}
-            <div className="flex items-center justify-end space-x-4 pt-4 border-t border-border">
-                <Button
-                    type="button"
-                    variant="outline"
-                    onClick={onCancel}
-                    disabled={isLoading}
-                >
-                    Cancel
-                </Button>
-                <Button
-                    disabled={isLoading}
-                >
-                    {isLoading ? (
-                        <div className="flex items-center space-x-2">
-                            <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                            <span>{course ? 'Updating...' : 'Creating...'}</span>
-                        </div>
-                    ) : (
-                        course ? 'Update Course' : 'Create Course'
-                    )}
-                </Button>
-            </div>
+            <FormActions
+                onCancel={onCancel || (() => {})}
+                isPending={isLoading}
+                isEdit={!!course}
+                submitText={{ create: 'Create Course', update: 'Update Course' }}
+                loadingText={{ create: 'Creating...', update: 'Updating...' }}
+            />
         </form>
     );
 }

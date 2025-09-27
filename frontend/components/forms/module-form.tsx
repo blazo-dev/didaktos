@@ -1,6 +1,5 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useCreateModule } from '@/hooks/modules/use-create-modules';
 import { useUpdateModule } from '@/hooks/modules/use-update-module';
@@ -9,6 +8,7 @@ import { Module } from '@/types/course';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { FormActions } from './common/form-actions';
 
 interface ModuleFormProps {
     courseId: string;
@@ -72,28 +72,13 @@ export function ModuleForm({ courseId, module, onSuccess, onCancel }: ModuleForm
             />
 
             {/* Form Actions */}
-            <div className="flex items-center justify-end space-x-4 pt-4 border-t border-border">
-                <Button
-                    type="button"
-                    variant="outline"
-                    onClick={onCancel}
-                    disabled={isLoading}
-                >
-                    Cancel
-                </Button>
-                <Button
-                    disabled={isLoading}
-                >
-                    {isLoading ? (
-                        <div className="flex items-center space-x-2">
-                            <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                            <span>{module ? 'Updating...' : 'Creating...'}</span>
-                        </div>
-                    ) : (
-                        module ? 'Update Module' : 'Create Module'
-                    )}
-                </Button>
-            </div>
+            <FormActions
+                onCancel={onCancel || (() => {})}
+                isPending={isLoading}
+                isEdit={!!module}
+                submitText={{ create: 'Create Module', update: 'Update Module' }}
+                loadingText={{ create: 'Creating...', update: 'Updating...' }}
+            />
         </form>
     );
 }
