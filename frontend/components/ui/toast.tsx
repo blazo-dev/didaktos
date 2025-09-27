@@ -1,7 +1,7 @@
 "use client"
 
 import { CheckIcon, InfoIcon, TriangleAlertIcon, X, XIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 interface ToastProps {
     message: string;
@@ -13,19 +13,19 @@ interface ToastProps {
 export function Toast({ message, type = "info", duration = 2000, onClose }: ToastProps) {
     const [isExiting, setIsExiting] = useState(false);
 
+    const handleClose = useCallback(() => {
+        setIsExiting(true);
+        setTimeout(() => {
+            onClose();
+        }, 300);
+    }, [onClose]);
+
     useEffect(() => {
         const timer = setTimeout(() => {
             handleClose();
         }, duration);
         return () => clearTimeout(timer);
-    }, [duration]);
-
-    const handleClose = () => {
-        setIsExiting(true);
-        setTimeout(() => {
-            onClose();
-        }, 300);
-    };
+    }, [duration, handleClose]);
 
     const typeConfig = {
         success: {

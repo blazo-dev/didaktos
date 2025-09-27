@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useModalStore } from '@/stores/ui-store';
 import { XIcon } from 'lucide-react';
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 
 interface ModalProps {
@@ -30,6 +30,11 @@ export function Modal({ id, children, onClose }: ModalProps) {
         };
     }, [isOpen]);
 
+    const handleClose = useCallback(() => {
+        closeModal(id);
+        onClose?.();
+    }, [closeModal, id, onClose]);
+
     useEffect(() => {
         const handleEscape = (event: KeyboardEvent) => {
             if (event.key === 'Escape' && modal?.closable !== false) {
@@ -44,12 +49,7 @@ export function Modal({ id, children, onClose }: ModalProps) {
         return () => {
             document.removeEventListener('keydown', handleEscape);
         };
-    }, [isOpen, modal?.closable]);
-
-    const handleClose = () => {
-        closeModal(id);
-        onClose?.();
-    };
+    }, [isOpen, modal?.closable, handleClose]);
 
     const handleBackdropClick = (event: React.MouseEvent) => {
         if (event.target === event.currentTarget && modal?.backdrop !== false) {

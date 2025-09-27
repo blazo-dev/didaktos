@@ -20,6 +20,10 @@ interface AssignmentViewProps {
 
 export function AssignmentView({ courseId }: AssignmentViewProps) {
     const { currentCourse, currentAssignment, setCurrentSubmission, setCurrentSubmissions } = useCoursesStore();
+    const deleteAssignment = useDeleteAssignment();
+    const router = useRouter();
+    const { openModal } = useModalStore();
+    const { user } = useAuthStore();
 
     if (!currentAssignment || !currentCourse) {
         return (
@@ -36,12 +40,6 @@ export function AssignmentView({ courseId }: AssignmentViewProps) {
     }
 
     const existingSubmission = currentAssignment.submissions?.[0];
-    const deleteAssignment = useDeleteAssignment();
-    const router = useRouter();
-
-    const { openModal } = useModalStore();
-    const { user } = useAuthStore();
-
     const isOwner = currentCourse.instructor.id === user?.id;
 
     const handleAssignmentEdit = () => {
