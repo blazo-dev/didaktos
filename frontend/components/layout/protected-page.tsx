@@ -2,7 +2,7 @@
 
 import { useAuth } from "@/hooks/auth/use-auth";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Loader from "./loader";
 
 interface ProtectedPageProps {
@@ -13,14 +13,24 @@ interface ProtectedPageProps {
 function ProtectedPage({ children, loadingText = "Checking credentials..." }: ProtectedPageProps) {
     const { user, isLoading } = useAuth();
     const router = useRouter();
+    const [isHydrated, setIsHydrated] = useState(false);
+
+    // Handle hydration
+    useEffect(() => {
+        setIsHydrated(true);
+    }, []);
 
     useEffect(() => {
-        if (!isLoading && !user) {
+        if (!isLoading && !user && isHydrated) {
             router.replace("/auth/signin");
         }
-    }, [isLoading, user, router]);
+    }, [isLoading, user, router, isHydrated]);
 
-    if (isLoading) return <Loader text={loadingText} />;
+    // Always show loader during SSR and initial hydration
+    if (!isHydrated || isLoading) {
+        return <Loader text={loadingText} />;
+    }
+
     if (!user) return null;
 
     return <>{children}</>;

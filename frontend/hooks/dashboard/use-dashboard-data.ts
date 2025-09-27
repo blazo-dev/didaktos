@@ -166,15 +166,14 @@ export function useDashboardData(courses: Course[]): DashboardData {
                 (submission) =>
                     submission.studentId === userId &&
                     submission.grade !== null &&
-                    submission.grade !== undefined &&
-                    submission.id !== undefined // Ensure submission has an ID
+                    submission.grade !== undefined
             )
             .map((submission) => {
                 const assignmentInfo = assignmentMap.get(
                     submission.assignmentId
                 );
                 return {
-                    id: submission.id!, // Now we know ID is defined due to filter
+                    id: submission.id ?? "", // Ensure id is always a string
                     title: assignmentInfo?.title || "Unknown Assignment",
                     courseTitle:
                         assignmentInfo?.courseTitle || "Unknown Course",

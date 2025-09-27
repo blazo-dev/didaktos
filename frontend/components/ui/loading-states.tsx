@@ -31,7 +31,7 @@ interface LoadingStateProps {
 export function LoadingState({ text, size = 'md', className }: LoadingStateProps) {
     return (
         <div className={cn("flex items-center justify-center space-x-2", className)}>
-            <LoadingSpinner size={size} />
+            <LoadingSpinner size={size} className='text-secondary' />
             <span className={cn(
                 size === 'sm' && "text-sm",
                 size === 'md' && "text-base",
@@ -51,7 +51,7 @@ interface InlineLoadingProps {
 export function InlineLoading({ text, className }: InlineLoadingProps) {
     return (
         <div className={cn("flex items-center space-x-2", className)}>
-            <LoadingSpinner size="sm" />
+            <LoadingSpinner size="sm" className='text-secondary' />
             <span className="text-sm">{text}</span>
         </div>
     );
