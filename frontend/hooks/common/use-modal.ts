@@ -38,18 +38,3 @@ export function useModal(modalId: string, options?: UseModalOptions) {
         modal: getModal(modalId),
     };
 }
-
-// Predefined modal configurations for common use cases
-export const MODAL_IDS = {
-    CREATE_COURSE: "create-course",
-    EDIT_COURSE: "edit-course",
-    DELETE_COURSE: "delete-course",
-    CREATE_MODULE: "create-module",
-    EDIT_MODULE: "edit-module",
-    DELETE_MODULE: "delete-module",
-    CREATE_LESSON: "create-lesson",
-    EDIT_LESSON: "edit-lesson",
-    DELETE_LESSON: "delete-lesson",
-} as const;
-
-export type ModalId = (typeof MODAL_IDS)[keyof typeof MODAL_IDS];
