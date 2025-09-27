@@ -33,11 +33,11 @@ export function Sidebar() {
     if (confirmed) {
       // Set logging out state to prevent "You must login" toast
       setLoggingOut(true);
-      
+
       // Clear queries and logout
       queryClient.clear();
       logout();
-      
+
       // Show success message and redirect
       addToast({ type: "info", message: "You have been signed out successfully" });
       router.replace("/");

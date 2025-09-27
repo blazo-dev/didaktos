@@ -54,7 +54,16 @@ export function useAuth() {
             // If this is a voluntary logout, just clean up without showing error
             logout();
         }
-    }, [response, isError, isLoggingOut, login, logout, addToast, router, pathname]);
+    }, [
+        response,
+        isError,
+        isLoggingOut,
+        login,
+        logout,
+        addToast,
+        router,
+        pathname,
+    ]);
 
     return { user, isLoading };
 }
