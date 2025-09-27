@@ -1,25 +1,20 @@
-import { apiFetch } from "@/lib/api/api";
+import { authApi } from "@/lib/api/auth";
+import { useApiMutation } from "@/lib/hooks/use-api-mutation";
 import { useAuthStore } from "@/stores/auth-store";
-import { useToastStore } from "@/stores/ui-store";
 import { SignInRequest } from "@/types/auth";
-import { useMutation } from "@tanstack/react-query";
 
 export function useSignIn() {
-    const { addToast } = useToastStore();
     const login = useAuthStore((state) => state.login);
 
-    return useMutation({
-        mutationFn: (data: SignInRequest) =>
-            apiFetch<{ data: { token: string; user: any } }>("/auth/login", {
-                method: "POST",
-                body: JSON.stringify(data),
-            }),
-        onSuccess: (res) => {
-            login(res.data.user, res.data.token); // ✅ single point of truth
-            addToast({ message: "Login successful", type: "success" });
-        },
-        onError: (error: any) => {
-            addToast({ message: error.message, type: "error" });
-        },
-    });
+    return useApiMutation(
+        ({ email, password }: SignInRequest) => authApi.signIn(email, password),
+        {
+            successMessage: "Login successful! Updated",
+            errorMessage: "Failed to login. Please try again.",
+            invalidateKeys: ["auth"],
+            onSuccess: ({ token, user }) => {
+                login(user, token);
+            },
+        }
+    );
 }
