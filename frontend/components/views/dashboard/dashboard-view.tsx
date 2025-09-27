@@ -11,18 +11,18 @@ export function DashboardView() {
     const { user } = useAuthStore();
 
     // Use the new optimized dashboard state hook
-    const { 
-        stats, 
-        upcomingAssignments, 
-        recentGrades, 
-        isLoading, 
+    const {
+        stats,
+        upcomingAssignments,
+        recentGrades,
+        isLoading,
         isEmpty,
         quickStats,
         dashboardStatus,
         ownedCourses,
         enrolledCourses
     } = useDashboardState();
-    
+
     // Create courses array for DashboardStats component compatibility
     const allCourses = [...ownedCourses, ...enrolledCourses];
 

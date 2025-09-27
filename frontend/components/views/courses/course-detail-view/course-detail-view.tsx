@@ -26,21 +26,21 @@ interface CourseDetailViewProps {
 export function CourseDetailView({ courseId }: CourseDetailViewProps) {
     const { currentModule } = useCoursesStore();
     const { data: submissions } = useGetAllSubmissionsByCourse(courseId);
-    
+
     // Use new state management hooks
-    const { 
-        course, 
-        isOwner, 
-        isEnrolled, 
-        isLoading, 
-        courseStats, 
+    const {
+        course,
+        isOwner,
+        isEnrolled,
+        isLoading,
+        courseStats,
         permissions,
-        courseStatus 
+        courseStatus
     } = useCourseContext(courseId);
-    
-    const { 
-        openCreateModule, 
-        openViewAllSubmissions 
+
+    const {
+        openCreateModule,
+        openViewAllSubmissions
     } = useCourseModals(courseId);
 
     // Handle modal actions with new hooks
@@ -86,7 +86,7 @@ export function CourseDetailView({ courseId }: CourseDetailViewProps) {
                 onCreateModule={handleCreateModule}
                 onViewSubmissions={handleViewSubmissions}
             />
-            
+
             {/* Use courseStats from context instead of manual calculation */}
             <CourseInfoCard
                 course={course}
@@ -95,7 +95,7 @@ export function CourseDetailView({ courseId }: CourseDetailViewProps) {
                 totalLessons={courseStats.totalLessons}
                 totalAssignments={courseStats.totalAssignments}
             />
-            
+
             <CourseModulesSection
                 modules={course.modules}
                 courseId={course.id}

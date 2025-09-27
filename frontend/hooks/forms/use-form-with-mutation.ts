@@ -16,15 +16,17 @@ export function useFormWithMutation<TData, TVariables>({
     createMutation,
     updateMutation,
     onSuccess,
-    onError
+    onError,
 }: UseFormWithMutationOptions<TData, TVariables>) {
-    
     // Determine which mutation is active
-    const activeMutation = createMutation?.isPending ? createMutation : 
-                          updateMutation?.isPending ? updateMutation : 
-                          createMutation || updateMutation;
+    const activeMutation = createMutation?.isPending
+        ? createMutation
+        : updateMutation?.isPending
+        ? updateMutation
+        : createMutation || updateMutation;
 
-    const isLoading = createMutation?.isPending || updateMutation?.isPending || false;
+    const isLoading =
+        createMutation?.isPending || updateMutation?.isPending || false;
     const error = createMutation?.error || updateMutation?.error;
 
     // Handle success automatically
@@ -54,17 +56,17 @@ export function useFormWithMutation<TData, TVariables>({
     }, [updateMutation?.isError, updateMutation?.error, onError]);
 
     // Submit handler helper
-    const handleSubmit = useCallback(async (
-        data: TVariables, 
-        isEdit: boolean = false
-    ) => {
-        if (isEdit && updateMutation) {
-            return await updateMutation.mutateAsync(data);
-        } else if (createMutation) {
-            return await createMutation.mutateAsync(data);
-        }
-        throw new Error("No appropriate mutation available");
-    }, [createMutation, updateMutation]);
+    const handleSubmit = useCallback(
+        async (data: TVariables, isEdit: boolean = false) => {
+            if (isEdit && updateMutation) {
+                return await updateMutation.mutateAsync(data);
+            } else if (createMutation) {
+                return await createMutation.mutateAsync(data);
+            }
+            throw new Error("No appropriate mutation available");
+        },
+        [createMutation, updateMutation]
+    );
 
     // Reset mutations helper
     const resetMutations = useCallback(() => {
@@ -73,35 +75,39 @@ export function useFormWithMutation<TData, TVariables>({
     }, [createMutation, updateMutation]);
 
     // Check if form can be submitted
-    const canSubmit = useCallback((isEdit: boolean = false) => {
-        if (isLoading) return false;
-        if (isEdit) return !!updateMutation && !updateMutation.isPending;
-        return !!createMutation && !createMutation.isPending;
-    }, [isLoading, createMutation, updateMutation]);
+    const canSubmit = useCallback(
+        (isEdit: boolean = false) => {
+            if (isLoading) return false;
+            if (isEdit) return !!updateMutation && !updateMutation.isPending;
+            return !!createMutation && !createMutation.isPending;
+        },
+        [isLoading, createMutation, updateMutation]
+    );
 
     return {
         // State
         isLoading,
         error,
-        
+
         // Success flags
         isCreateSuccess: createMutation?.isSuccess || false,
         isUpdateSuccess: updateMutation?.isSuccess || false,
-        isSuccess: createMutation?.isSuccess || updateMutation?.isSuccess || false,
-        
+        isSuccess:
+            createMutation?.isSuccess || updateMutation?.isSuccess || false,
+
         // Data
         createData: createMutation?.data,
         updateData: updateMutation?.data,
         data: createMutation?.data || updateMutation?.data,
-        
+
         // Helpers
         handleSubmit,
         resetMutations,
         canSubmit,
-        
+
         // Individual mutation states for advanced use
         createMutation,
         updateMutation,
-        activeMutation
+        activeMutation,
     };
 }
