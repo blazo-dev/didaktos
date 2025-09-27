@@ -5,7 +5,7 @@ export interface ApiMutationOptions<TData, TVariables> {
   successMessage?: string;
   errorMessage?: string;
   invalidateKeys?: string[];
-  onSuccess?: (data: TData) => void;
+  onSuccess?: (data: TData, variables: TVariables, queryClient: any) => void;
   onError?: (error: Error) => void;
 }
 
@@ -26,7 +26,7 @@ export function useApiMutation<TData, TVariables>(
 
   return useMutation<TData, Error, TVariables>({
     mutationFn,
-    onSuccess: (data) => {
+    onSuccess: (data, variables) => {
       // Invalidate specified query keys
       invalidateKeys.forEach(key => {
         queryClient.invalidateQueries({ queryKey: [key] });
@@ -38,7 +38,7 @@ export function useApiMutation<TData, TVariables>(
       }
 
       // Call custom onSuccess if provided
-      onSuccess?.(data);
+      onSuccess?.(data, variables, queryClient);
     },
     onError: (error) => {
       // Show error toast
