@@ -1,25 +1,13 @@
 import { lessonsApi } from "@/lib/api/lesson";
-import { useToastStore } from "@/stores/ui-store";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useApiMutation } from "@/lib/hooks/use-api-mutation";
 
 export const useDeleteLesson = () => {
-    const queryClient = useQueryClient();
-    const { addToast } = useToastStore();
-
-    return useMutation({
-        mutationFn: lessonsApi.deleteLesson,
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["courses"] });
-            addToast({
-                type: "success",
-                message: "Lesson deleted successfully!",
-            });
-        },
-        onError: () => {
-            addToast({
-                type: "error",
-                message: "Failed to delete lesson. Please try again.",
-            });
-        },
-    });
+  return useApiMutation(
+    lessonsApi.deleteLesson,
+    {
+      successMessage: "Lesson deleted successfully!",
+      errorMessage: "Failed to delete lesson. Please try again.",
+      invalidateKeys: ["courses"],
+    }
+  );
 };
