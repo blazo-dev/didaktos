@@ -13,7 +13,11 @@ export const assignmentsApi = {
     // Assignment CRUD operations
     async createAssignment(
         moduleId: string,
-        assignmentData: Omit<Assignment, "id" | "moduleId">
+        assignmentData: {
+            title: string;
+            description: string;
+            dueDate: string;
+        }
     ): Promise<Assignment> {
         const response = await apiPost<HttpResponse<Assignment>>(
             `/modules/${moduleId}/assignments`,

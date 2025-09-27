@@ -1,12 +1,17 @@
 import { assignmentsApi } from "@/lib/api/assignments";
 import { useApiMutation } from "@/lib/hooks/use-api-mutation";
-import { Assignment } from "@/types/course";
+
+interface CreateAssignmentData {
+  title: string;
+  description: string;
+  dueDate: string;
+}
 
 export const useCreateAssignment = () => {
   return useApiMutation(
     ({ moduleId, assignmentData }: {
       moduleId: string;
-      assignmentData: Omit<Assignment, "id" | "moduleId">;
+      assignmentData: CreateAssignmentData;
     }) => assignmentsApi.createAssignment(moduleId, assignmentData),
     {
       successMessage: "Assignment created successfully!",
