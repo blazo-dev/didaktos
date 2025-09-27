@@ -73,7 +73,7 @@ export function ModuleForm({ courseId, module, onSuccess, onCancel }: ModuleForm
 
             {/* Form Actions */}
             <FormActions
-                onCancel={onCancel || (() => {})}
+                onCancel={onCancel || (() => { })}
                 isPending={isLoading}
                 isEdit={!!module}
                 submitText={{ create: 'Create Module', update: 'Update Module' }}

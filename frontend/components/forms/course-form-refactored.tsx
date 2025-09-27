@@ -102,7 +102,7 @@ export function CourseForm({ course, onSuccess, onCancel }: CourseFormProps) {
             }}
             validationSchema={courseSchema}
             onSubmit={handleSubmit}
-            onCancel={onCancel || (() => {})}
+            onCancel={onCancel || (() => { })}
             isEdit={!!course}
             submitText={{ create: 'Create Course', update: 'Update Course' }}
             loadingText={{ create: 'Creating...', update: 'Updating...' }}

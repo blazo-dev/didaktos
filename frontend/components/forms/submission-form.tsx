@@ -86,7 +86,7 @@ export function SubmissionForm({ assignment, courseId, onSuccess, onCancel }: Su
 
             {/* Form Actions */}
             <FormActions
-                onCancel={onCancel || (() => {})}
+                onCancel={onCancel || (() => { })}
                 isPending={isSubmitting}
                 isEdit={false}
                 submitText={{ create: 'Submit Assignment', update: 'Submit Assignment' }}

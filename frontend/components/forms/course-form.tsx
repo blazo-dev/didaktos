@@ -102,7 +102,7 @@ export function CourseForm({ course, onSuccess, onCancel }: CourseFormProps) {
 
             {/* Form Actions */}
             <FormActions
-                onCancel={onCancel || (() => {})}
+                onCancel={onCancel || (() => { })}
                 isPending={isLoading}
                 isEdit={!!course}
                 submitText={{ create: 'Create Course', update: 'Update Course' }}

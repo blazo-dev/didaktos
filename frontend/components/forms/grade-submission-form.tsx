@@ -83,7 +83,7 @@ export function GradeSubmissionForm({ onSuccess, onCancel }: SubmissionFormProps
 
             {/* Form Actions */}
             <FormActions
-                onCancel={onCancel || (() => {})}
+                onCancel={onCancel || (() => { })}
                 isPending={isSubmitting}
                 isEdit={false}
                 submitText={{ create: 'Grade Assignment', update: 'Grade Assignment' }}

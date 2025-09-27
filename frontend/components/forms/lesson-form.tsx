@@ -4,6 +4,7 @@ import { useCreateLesson } from "@/hooks/lessons/use-create-lesson";
 import { useUpdateLesson } from "@/hooks/lessons/use-update-lesson";
 import { LessonFormData, lessonSchema } from "@/lib/schemas/lesson";
 import { useAuthStore } from "@/stores/auth-store";
+import { useCoursesStore } from "@/stores/courses-store";
 import { useToastStore } from "@/stores/ui-store";
 import { Lesson } from "@/types/course";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -11,7 +12,6 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
-import { useCoursesStore } from "@/stores/courses-store";
 import { FormActions } from "./common/form-actions";
 
 
@@ -102,7 +102,7 @@ export function LessonForm({ lesson, onSuccess, onCancel }: LessonFormProps) {
 
             {/* Form Actions */}
             <FormActions
-                onCancel={onCancel || (() => {})}
+                onCancel={onCancel || (() => { })}
                 isPending={isLoading}
                 isEdit={!!lesson}
                 submitText={{ create: 'Create Lesson', update: 'Update Lesson' }}
