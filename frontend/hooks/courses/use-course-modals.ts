@@ -9,12 +9,12 @@ import { useCallback } from "react";
  */
 export function useCourseModals(courseId: string) {
     const { openModal, closeModal } = useModalStore();
-    const { 
-        setCurrentModule, 
-        setCurrentLesson, 
-        setCurrentAssignment, 
+    const {
+        setCurrentModule,
+        setCurrentLesson,
+        setCurrentAssignment,
         setCurrentSubmission,
-        setCurrentSubmissions 
+        setCurrentSubmissions,
     } = useCoursesStore();
 
     // Module-related modals
@@ -24,124 +24,165 @@ export function useCourseModals(courseId: string) {
             title: "Create Module",
             closable: true,
             backdrop: true,
-            size: 'md',
+            size: "md",
         });
     }, [openModal]);
 
-    const openEditModule = useCallback((module: Module) => {
-        setCurrentModule(module);
-        openModal({
-            id: "edit-module",
-            title: "Edit Module",
-            closable: true,
-            backdrop: true,
-            size: 'md',
-        });
-    }, [openModal, setCurrentModule]);
+    const openEditModule = useCallback(
+        (module: Module) => {
+            setCurrentModule(module);
+            openModal({
+                id: "edit-module",
+                title: "Edit Module",
+                closable: true,
+                backdrop: true,
+                size: "md",
+            });
+        },
+        [openModal, setCurrentModule]
+    );
 
     // Lesson-related modals
-    const openCreateLesson = useCallback((moduleId?: string) => {
-        openModal({
-            id: "create-lesson",
-            title: "Create Lesson",
-            closable: true,
-            backdrop: true,
-            size: 'md',
-            data: { moduleId } // Pass module context
-        });
-    }, [openModal]);
+    const openCreateLesson = useCallback(
+        (moduleId?: string) => {
+            openModal({
+                id: "create-lesson",
+                title: "Create Lesson",
+                closable: true,
+                backdrop: true,
+                size: "md",
+                data: { moduleId }, // Pass module context
+            });
+        },
+        [openModal]
+    );
 
-    const openEditLesson = useCallback((lesson: Lesson, moduleId?: string) => {
-        setCurrentLesson(lesson);
-        openModal({
-            id: "edit-lesson",
-            title: "Edit Lesson",
-            closable: true,
-            backdrop: true,
-            size: 'md',
-            data: { moduleId }
-        });
-    }, [openModal, setCurrentLesson]);
+    const openEditLesson = useCallback(
+        (lesson: Lesson, moduleId?: string) => {
+            setCurrentLesson(lesson);
+            openModal({
+                id: "edit-lesson",
+                title: "Edit Lesson",
+                closable: true,
+                backdrop: true,
+                size: "md",
+                data: { moduleId },
+            });
+        },
+        [openModal, setCurrentLesson]
+    );
 
     // Assignment-related modals
-    const openCreateAssignment = useCallback((moduleId?: string) => {
-        openModal({
-            id: "create-assignment",
-            title: "Create Assignment",
-            closable: true,
-            backdrop: true,
-            size: 'md',
-            data: { moduleId }
-        });
-    }, [openModal]);
+    const openCreateAssignment = useCallback(
+        (moduleId?: string) => {
+            openModal({
+                id: "create-assignment",
+                title: "Create Assignment",
+                closable: true,
+                backdrop: true,
+                size: "md",
+                data: { moduleId },
+            });
+        },
+        [openModal]
+    );
 
-    const openEditAssignment = useCallback((assignment: Assignment) => {
-        setCurrentAssignment(assignment);
-        openModal({
-            id: "edit-assignment",
-            title: "Edit Assignment",
-            closable: true,
-            backdrop: true,
-            size: 'md',
-        });
-    }, [openModal, setCurrentAssignment]);
+    const openEditAssignment = useCallback(
+        (assignment: Assignment) => {
+            setCurrentAssignment(assignment);
+            openModal({
+                id: "edit-assignment",
+                title: "Edit Assignment",
+                closable: true,
+                backdrop: true,
+                size: "md",
+            });
+        },
+        [openModal, setCurrentAssignment]
+    );
 
     // Submission-related modals
-    const openCreateSubmission = useCallback((assignment: Assignment) => {
-        setCurrentAssignment(assignment);
-        openModal({
-            id: "create-submission",
-            title: "Submit Assignment",
-            closable: true,
-            backdrop: true,
-            size: 'xl',
-        });
-    }, [openModal, setCurrentAssignment]);
-
-    const openViewSubmission = useCallback((submission: Submission, assignment?: Assignment, context: 'student' | 'instructor' = 'student') => {
-        setCurrentSubmission(submission);
-        if (assignment) {
+    const openCreateSubmission = useCallback(
+        (assignment: Assignment) => {
             setCurrentAssignment(assignment);
-        }
+            openModal({
+                id: "create-submission",
+                title: "Submit Assignment",
+                closable: true,
+                backdrop: true,
+                size: "xl",
+            });
+        },
+        [openModal, setCurrentAssignment]
+    );
 
-        openModal({
-            id: context === 'instructor' ? "view-submission-instructor" : "view-submission-student",
-            title: context === 'instructor' ? "Review Submission" : "View Submission",
-            closable: true,
-            backdrop: true,
-            size: 'xl',
-        });
-    }, [openModal, setCurrentSubmission, setCurrentAssignment]);
+    const openViewSubmission = useCallback(
+        (
+            submission: Submission,
+            assignment?: Assignment,
+            context: "student" | "instructor" = "student"
+        ) => {
+            setCurrentSubmission(submission);
+            if (assignment) {
+                setCurrentAssignment(assignment);
+            }
 
-    const openGradeSubmission = useCallback((submission: Submission, assignment?: Assignment) => {
-        setCurrentSubmission(submission);
-        if (assignment) {
-            setCurrentAssignment(assignment);
-        }
+            openModal({
+                id:
+                    context === "instructor"
+                        ? "view-submission-instructor"
+                        : "view-submission-student",
+                title:
+                    context === "instructor"
+                        ? "Review Submission"
+                        : "View Submission",
+                closable: true,
+                backdrop: true,
+                size: "xl",
+            });
+        },
+        [openModal, setCurrentSubmission, setCurrentAssignment]
+    );
 
-        openModal({
-            id: "grade-submission",
-            title: "Grade Submission",
-            closable: true,
-            backdrop: true,
-            size: 'lg',
-        });
-    }, [openModal, setCurrentSubmission, setCurrentAssignment]);
+    const openGradeSubmission = useCallback(
+        (submission: Submission, assignment?: Assignment) => {
+            setCurrentSubmission(submission);
+            if (assignment) {
+                setCurrentAssignment(assignment);
+            }
 
-    const openViewAllSubmissions = useCallback((submissions: Submission[], assignment?: Assignment, title?: string) => {
-        setCurrentSubmissions(submissions);
-        if (assignment) {
-            setCurrentAssignment(assignment);
-        }
+            openModal({
+                id: "grade-submission",
+                title: "Grade Submission",
+                closable: true,
+                backdrop: true,
+                size: "lg",
+            });
+        },
+        [openModal, setCurrentSubmission, setCurrentAssignment]
+    );
 
-        openModal({
-            id: 'view-all-submissions',
-            title: title || 'All Submissions',
-            closable: true,
-            backdrop: true,
-            size: 'xl',
-        });
-    }, [openModal, setCurrentSubmissions, setCurrentAssignment]);
+    const openViewAllSubmissions = useCallback(
+        (
+            submissions: Submission[],
+            assignment?: Assignment,
+            title?: string
+        ) => {
+            setCurrentSubmissions(submissions);
+            if (assignment) {
+                setCurrentAssignment(assignment);
+            }
+
+            openModal({
+                id: "view-all-submissions",
+                title: title || "All Submissions",
+                closable: true,
+                backdrop: true,
+                size: "xl",
+            });
+        },
+        [openModal, setCurrentSubmissions, setCurrentAssignment]
+    );
 
     // Generic close methods
     const closeModuleModals = useCallback(() => {
@@ -172,32 +213,37 @@ export function useCourseModals(courseId: string) {
         closeLessonModals();
         closeAssignmentModals();
         closeSubmissionModals();
-    }, [closeModuleModals, closeLessonModals, closeAssignmentModals, closeSubmissionModals]);
+    }, [
+        closeModuleModals,
+        closeLessonModals,
+        closeAssignmentModals,
+        closeSubmissionModals,
+    ]);
 
     return {
         // Module modals
         openCreateModule,
         openEditModule,
-        
-        // Lesson modals  
+
+        // Lesson modals
         openCreateLesson,
         openEditLesson,
-        
+
         // Assignment modals
         openCreateAssignment,
         openEditAssignment,
-        
+
         // Submission modals
         openCreateSubmission,
         openViewSubmission,
         openGradeSubmission,
         openViewAllSubmissions,
-        
+
         // Batch close methods
         closeModuleModals,
         closeLessonModals,
         closeAssignmentModals,
         closeSubmissionModals,
-        closeAllCourseModals
+        closeAllCourseModals,
     };
 }

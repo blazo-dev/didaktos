@@ -8,7 +8,7 @@ import { useCourses } from "@/hooks/courses/use-courses";
 import { useAuthStore } from "@/stores/auth-store";
 import { useCoursesStore } from "@/stores/courses-store";
 import { useModalStore } from "@/stores/ui-store";
-import { CoursesFilters, FilterType } from "./courses-filters";
+import { CoursesFilters } from "./courses-filters";
 import { CoursesGrid } from "./courses-grid";
 import { CoursesHeader } from "./courses-header";
 
@@ -17,15 +17,15 @@ export function CoursesLayout() {
     const { openModal } = useModalStore();
     const { currentCourse } = useCoursesStore();
     const { data: courses = [], isLoading } = useCourses();
-    
+
     // Use the new filtering hook
-    const { 
-        searchTerm, 
-        setSearchTerm, 
-        filterType, 
+    const {
+        searchTerm,
+        setSearchTerm,
+        filterType,
         setFilterType,
-        filteredCourses, 
-        stats 
+        filteredCourses,
+        stats
     } = useCourseFiltering(courses, user?.id);
 
     const handleCreateCourse = () => {

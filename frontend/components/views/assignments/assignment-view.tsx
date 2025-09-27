@@ -49,7 +49,7 @@ export function AssignmentView({ courseId }: AssignmentViewProps) {
 
     const handleOpenSubmission = useCallback(() => {
         if (!currentAssignment) return;
-        
+
         const existingSubmission = currentAssignment.submissions?.[0];
         if (existingSubmission) {
             openViewSubmission(existingSubmission, currentAssignment, 'student');
