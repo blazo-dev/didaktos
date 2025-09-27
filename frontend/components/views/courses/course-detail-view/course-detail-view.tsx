@@ -10,7 +10,7 @@ import { ViewSubmissionModal } from '@/components/modals/view-submission-modal';
 import { useCourseContext } from '@/hooks/courses/use-course-context';
 import { useCourseModals } from '@/hooks/courses/use-course-modals';
 import { useGetAllSubmissionsByCourse } from '@/hooks/submissions/use-get-all-submission-by-course';
-import { useCoursesStore } from '@/stores/courses-store';
+import { useAppStore } from '@/stores/app-store';
 import { useCallback } from 'react';
 import { CourseDetailHeader } from './course-detail-header';
 import { CourseInfoCard } from './course-info-card';
@@ -24,7 +24,7 @@ interface CourseDetailViewProps {
 }
 
 export function CourseDetailView({ courseId }: CourseDetailViewProps) {
-    const { currentModule } = useCoursesStore();
+    const { currentModule } = useAppStore();
     const { data: submissions } = useGetAllSubmissionsByCourse(courseId);
 
     // Use new state management hooks
@@ -97,7 +97,7 @@ export function CourseDetailView({ courseId }: CourseDetailViewProps) {
             />
 
             <CourseModulesSection
-                modules={course.modules}
+                modules={course.modules ?? []}
                 courseId={course.id}
                 isOwner={isOwner}
                 isEnrolled={isEnrolled}

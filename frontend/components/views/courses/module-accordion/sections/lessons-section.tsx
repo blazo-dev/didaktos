@@ -1,6 +1,6 @@
 'use client';
 
-import { useCoursesStore } from '@/stores/courses-store';
+import { useAppStore } from '@/stores/app-store';
 import { useModalStore } from '@/stores/ui-store';
 import { Lesson, Module } from '@/types/course';
 import { BookOpen, ChevronRight, File, Plus } from 'lucide-react';
@@ -15,7 +15,7 @@ interface LessonsSectionProps {
 
 export function LessonsSection({ module, courseId, canEdit }: LessonsSectionProps) {
     const { openModal } = useModalStore();
-    const { setCurrentLesson, setCurrentModule } = useCoursesStore();
+    const { setCurrentLesson, setCurrentModule } = useAppStore();
     const router = useRouter();
 
     const handleOpenLesson = (module: Module, lesson: Lesson) => {

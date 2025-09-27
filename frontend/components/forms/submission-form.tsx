@@ -1,9 +1,9 @@
 'use client';
 
-import { useCreateSubmission } from "@/hooks/submissions/use-create-submission";
+import { useCreateSubmission } from "@/hooks/submissions/use-submission-crud";
 import { SubmissionFormData, submissionSchema } from "@/lib/schemas/submission";
+import { useAppStore } from "@/stores/app-store";
 import { useAuthStore } from "@/stores/auth-store";
-import { useCoursesStore } from "@/stores/courses-store";
 import { useToastStore } from "@/stores/ui-store";
 import { Assignment, Submission } from "@/types/course";
 import { useFormContext } from "react-hook-form";
@@ -39,7 +39,7 @@ function SubmissionFormFields() {
 
 export function SubmissionForm({ assignment, courseId, onSuccess, onCancel }: SubmissionFormProps) {
     const { user } = useAuthStore();
-    const { currentCourse, currentAssignment } = useCoursesStore();
+    const { currentCourse, currentAssignment } = useAppStore();
     const createSubmissionMutation = useCreateSubmission();
     const { addToast } = useToastStore();
 

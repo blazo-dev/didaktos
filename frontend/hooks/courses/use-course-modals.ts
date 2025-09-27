@@ -1,4 +1,4 @@
-import { useCoursesStore } from "@/stores/courses-store";
+import { useAppStore } from "@/stores/app-store";
 import { useModalStore } from "@/stores/ui-store";
 import { Assignment, Lesson, Module, Submission } from "@/types/course";
 import { useCallback } from "react";
@@ -15,7 +15,7 @@ export function useCourseModals(courseId: string) {
         setCurrentAssignment,
         setCurrentSubmission,
         setCurrentSubmissions,
-    } = useCoursesStore();
+    } = useAppStore();
 
     // Module-related modals
     const openCreateModule = useCallback(() => {

@@ -1,7 +1,7 @@
 import { Assignment, Course, Lesson, Module, Submission } from "@/types/course";
 import { create } from "zustand";
 
-interface CoursesState {
+interface AppState {
     courses: Course[];
     currentCourse: Course | null;
     setCourses: (courses: Course[]) => void;
@@ -15,6 +15,7 @@ interface CoursesState {
 
     currentSubmission: Submission | null;
     setCurrentSubmission: (submission: Submission | null) => void;
+
     currentSubmissions: Submission[] | null;
     setCurrentSubmissions: (submissions: Submission[] | null) => void;
 
@@ -22,7 +23,7 @@ interface CoursesState {
     setCurrentAssignment: (assignment: Assignment | null) => void;
 }
 
-export const useCoursesStore = create<CoursesState>((set) => ({
+export const useAppStore = create<AppState>((set) => ({
     courses: [],
     currentCourse: null,
     setCourses: (courses) => set({ courses }),

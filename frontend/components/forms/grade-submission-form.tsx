@@ -1,10 +1,10 @@
 'use client';
 
-import { useGradeSubmission } from "@/hooks/submissions/use-grade-submission";
+import { useGradeSubmission } from "@/hooks/submissions/use-submission-crud";
 import { SubmissionGradeRequestDto } from "@/lib/api/submission";
 import { GradeSubmissionFormData, gradeSubmissionSchema } from "@/lib/schemas/submission";
+import { useAppStore } from "@/stores/app-store";
 import { useAuthStore } from "@/stores/auth-store";
-import { useCoursesStore } from "@/stores/courses-store";
 import { useToastStore } from "@/stores/ui-store";
 import { useFormContext } from "react-hook-form";
 import { Input } from "../ui/input";
@@ -36,7 +36,7 @@ function GradeSubmissionFormFields() {
 
 export function GradeSubmissionForm({ onSuccess, onCancel }: SubmissionFormProps) {
     const { user } = useAuthStore();
-    const { currentCourse, currentSubmission } = useCoursesStore();
+    const { currentCourse, currentSubmission } = useAppStore();
     const createGradeSubmissionMutation = useGradeSubmission();
     const { addToast } = useToastStore();
 

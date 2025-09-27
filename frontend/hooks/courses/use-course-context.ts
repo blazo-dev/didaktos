@@ -24,16 +24,18 @@ export function useCourseContext(courseId: string) {
             };
         }
 
-        const totalLessons = course.modules.reduce(
-            (acc, module) => acc + module.lessons.length,
-            0
-        );
-        const totalAssignments = course.modules.reduce(
-            (acc, module) => acc + module.assignments.length,
-            0
-        );
-        const moduleCount = course.modules.length;
-        const enrollmentCount = course.enrollments.length;
+        const totalLessons =
+            course.modules?.reduce(
+                (acc, module) => acc + module.lessons.length,
+                0
+            ) || 0;
+        const totalAssignments =
+            course.modules?.reduce(
+                (acc, module) => acc + module.assignments.length,
+                0
+            ) || 0;
+        const moduleCount = course.modules?.length || 0;
+        const enrollmentCount = course.enrollments?.length || 0;
 
         return {
             totalLessons,

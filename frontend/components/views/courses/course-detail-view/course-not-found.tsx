@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { useCreateEnrollment } from '@/hooks/enrollments/use-create-enroll';
-import { useCoursesStore } from '@/stores/courses-store';
+import { useAppStore } from '@/stores/app-store';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
@@ -13,7 +13,7 @@ interface CourseNotFoundProps {
 export function CourseNotFound({ type }: CourseNotFoundProps) {
     const router = useRouter();
     const createEnrollment = useCreateEnrollment();
-    const { currentCourse } = useCoursesStore();
+    const { currentCourse } = useAppStore();
 
 
     if (type === 'not-found') {

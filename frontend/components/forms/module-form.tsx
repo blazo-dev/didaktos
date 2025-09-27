@@ -1,13 +1,12 @@
 'use client';
 
 import { Input } from '@/components/ui/input';
-import { useCreateModule } from '@/hooks/modules/use-create-modules';
-import { useUpdateModule } from '@/hooks/modules/use-update-module';
 import { ModuleFormData, moduleSchema } from '@/lib/schemas/module';
 import { Module } from '@/types/course';
 import { useEffect } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { BaseForm } from './common/base-form';
+import { useCreateModule, useUpdateModule } from '@/hooks/modules/use-module-crud';
 
 interface ModuleFormProps {
     courseId: string;

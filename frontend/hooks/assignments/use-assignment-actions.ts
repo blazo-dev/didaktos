@@ -1,4 +1,4 @@
-import { useCoursesStore } from "@/stores/courses-store";
+import { useAppStore } from "@/stores/app-store";
 import { Assignment, Submission } from "@/types/course";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
@@ -15,7 +15,7 @@ export function useAssignmentActions() {
         setCurrentSubmissions,
         currentAssignment,
         currentSubmission,
-    } = useCoursesStore();
+    } = useAppStore();
 
     /**
      * Update assignment with new submission and sync all related state

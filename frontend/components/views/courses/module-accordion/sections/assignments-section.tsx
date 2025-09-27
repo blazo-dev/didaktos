@@ -1,6 +1,6 @@
 'use client';
 
-import { useCoursesStore } from '@/stores/courses-store';
+import { useAppStore } from '@/stores/app-store';
 import { useModalStore } from '@/stores/ui-store';
 import { Assignment, Module } from '@/types/course';
 import { Calendar, ChevronRight, FileText, Plus } from 'lucide-react';
@@ -15,7 +15,7 @@ interface AssignmentsSectionProps {
 
 export function AssignmentsSection({ module, courseId, canEdit }: AssignmentsSectionProps) {
     const { openModal } = useModalStore();
-    const { setCurrentAssignment, setCurrentModule } = useCoursesStore();
+    const { setCurrentAssignment, setCurrentModule } = useAppStore();
     const router = useRouter();
 
     const handleOpenAssignment = (module: Module, assignment: Assignment) => {

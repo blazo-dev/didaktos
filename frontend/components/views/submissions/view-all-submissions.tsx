@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
+import { useAppStore } from "@/stores/app-store"
 import { useAuthStore } from "@/stores/auth-store"
-import { useCoursesStore } from "@/stores/courses-store"
 import { useModalStore } from "@/stores/ui-store"
 import { Submission } from "@/types/course"
 import { Award, Calendar, Edit, Eye, FileText, User } from "lucide-react"
@@ -13,7 +13,7 @@ interface ViewAllSubmissionsProps {
 
 function ViewAllSubmissions({ submissions }: ViewAllSubmissionsProps) {
     // Note: currentSubmissions will be implemented in useCoursesStore
-    const { currentCourse, setCurrentSubmission } = useCoursesStore()
+    const { currentCourse, setCurrentSubmission } = useAppStore()
     const { openModal } = useModalStore()
     const { user } = useAuthStore()
 

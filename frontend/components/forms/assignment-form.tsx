@@ -1,10 +1,9 @@
 'use client';
 
-import { useCreateAssignment } from "@/hooks/assignments/use-create-assignment";
-import { useUpdateAssignment } from "@/hooks/assignments/use-update-assignment";
+import { useCreateAssignment, useUpdateAssignment } from "@/hooks/assignments/use-assignment-crud";
 import { AssignmentFormData, assignmentSchema } from "@/lib/schemas/assignment";
+import { useAppStore } from "@/stores/app-store";
 import { useAuthStore } from "@/stores/auth-store";
-import { useCoursesStore } from "@/stores/courses-store";
 import { useToastStore } from "@/stores/ui-store";
 import { Assignment } from "@/types/course";
 import { useEffect } from "react";
@@ -63,7 +62,7 @@ function AssignmentFormFields() {
 
 export function AssignmentForm({ assignment, onSuccess, onCancel }: AssignmentFormProps) {
     const { user } = useAuthStore();
-    const { currentModule } = useCoursesStore();
+    const { currentModule } = useAppStore();
     const { addToast } = useToastStore();
     const createAssignmentMutation = useCreateAssignment();
     const updateAssignmentMutation = useUpdateAssignment();

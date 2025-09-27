@@ -1,10 +1,10 @@
 import { Card } from "@/components/ui/card"
+import { useAppStore } from "@/stores/app-store"
 import { useAuthStore } from "@/stores/auth-store"
-import { useCoursesStore } from "@/stores/courses-store"
 import { Award, FileText } from "lucide-react"
 
 function ViewSubmission() {
-    const { currentSubmission, currentAssignment, currentCourse } = useCoursesStore()
+    const { currentSubmission, currentAssignment, currentCourse } = useAppStore()
     const { user } = useAuthStore()
 
     if (!currentSubmission) {

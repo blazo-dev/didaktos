@@ -1,13 +1,13 @@
 'use client';
 
-import { useCoursesStore } from '@/stores/courses-store';
+import { Card } from '@/components/ui/card';
+import { useConfirmationDialog } from '@/hooks/common/use-confirmation-dialog';
+import { useDeleteModule } from '@/hooks/modules/use-module-crud';
+import { useAppStore } from '@/stores/app-store';
 import { useModalStore } from '@/stores/ui-store';
 import { Module } from '@/types/course';
-import { useConfirmationDialog } from '../../../../hooks/common/use-confirmation-dialog';
-import { useDeleteModule } from '../../../../hooks/modules/use-delete-module';
-import { Card } from '../../../ui/card';
-import { ModuleHeader } from './module-header';
 import { ModuleContent } from './module-content';
+import { ModuleHeader } from './module-header';
 
 interface ModuleCardProps {
     module: Module;
@@ -19,7 +19,7 @@ interface ModuleCardProps {
 
 export function ModuleCard({ module, courseId, canEdit, isExpanded, onToggle }: ModuleCardProps) {
     const { openModal } = useModalStore();
-    const { setCurrentModule } = useCoursesStore();
+    const { setCurrentModule } = useAppStore();
     const deleteModule = useDeleteModule(courseId);
     const { confirmModuleDeletion } = useConfirmationDialog();
 

@@ -1,10 +1,9 @@
 'use client';
 
-import { useCreateLesson } from "@/hooks/lessons/use-create-lesson";
-import { useUpdateLesson } from "@/hooks/lessons/use-update-lesson";
+import { useCreateLesson, useUpdateLesson } from "@/hooks/lessons/use-lesson-crud";
 import { LessonFormData, lessonSchema } from "@/lib/schemas/lesson";
+import { useAppStore } from "@/stores/app-store";
 import { useAuthStore } from "@/stores/auth-store";
-import { useCoursesStore } from "@/stores/courses-store";
 import { useToastStore } from "@/stores/ui-store";
 import { Lesson } from "@/types/course";
 import { useEffect } from "react";
@@ -52,7 +51,7 @@ function LessonFormFields() {
 
 export function LessonForm({ lesson, onSuccess, onCancel }: LessonFormProps) {
     const { user } = useAuthStore();
-    const { currentModule, setCurrentLesson } = useCoursesStore();
+    const { currentModule } = useAppStore();
     const { addToast } = useToastStore();
     const createLessonMutation = useCreateLesson();
     const updateLessonMutation = useUpdateLesson();

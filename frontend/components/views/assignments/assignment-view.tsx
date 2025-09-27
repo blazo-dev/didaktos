@@ -6,7 +6,7 @@ import { ViewSubmissionModal } from '@/components/modals/view-submission-modal';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useAssignmentActions } from '@/hooks/assignments/use-assignment-actions';
-import { useDeleteAssignment } from '@/hooks/assignments/use-delete-assignment';
+import { useDeleteAssignment } from '@/hooks/assignments/use-assignment-crud';
 import { useConfirmationDialog } from '@/hooks/common/use-confirmation-dialog';
 import { useCourseContext } from '@/hooks/courses/use-course-context';
 import { useCourseModals } from '@/hooks/courses/use-course-modals';
@@ -25,12 +25,10 @@ export function AssignmentView({ courseId }: AssignmentViewProps) {
     const { confirmDeletion } = useConfirmationDialog();
     const deleteAssignment = useDeleteAssignment();
 
-    // Use new state management hooks
-    const { course, user, permissions, isOwner } = useCourseContext(courseId);
+    const { course, isOwner } = useCourseContext(courseId);
     const { currentAssignment, updateAssignmentWithSubmission } = useAssignmentActions();
     const { openEditAssignment, openCreateSubmission, openViewSubmission } = useCourseModals(courseId);
 
-    // Define callbacks before early returns
     const handleAssignmentEdit = useCallback(() => {
         if (currentAssignment) {
             openEditAssignment(currentAssignment);

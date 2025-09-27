@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { InlineLoading } from "@/components/ui/loading-states"
 import { Tooltip } from "@/components/ui/tooltip"
 import { useAssistant } from "@/hooks/common/use-assistant"
-import { useCoursesStore } from "@/stores/courses-store"
+import { useAppStore } from "@/stores/app-store"
 import { MessageSquare, Trash, X } from "lucide-react"
 import { useState } from "react"
 import ReactMarkdown from "react-markdown"
@@ -15,7 +15,7 @@ import remarkGfm from "remark-gfm"
 export function StudyAssistant() {
     const [isOpen, setIsOpen] = useState(false)
     const { askWithChoice, assistantMessages, isLoading, clearMessages } = useAssistant()
-    const { currentLesson } = useCoursesStore()
+    const { currentLesson } = useAppStore()
 
 
     return (

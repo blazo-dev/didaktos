@@ -10,9 +10,9 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { useConfirmationDialog } from '@/hooks/common/use-confirmation-dialog';
-import { useDeleteCourse } from '@/hooks/courses/use-delete-course';
+import { useDeleteCourse } from '@/hooks/courses/use-course-crud';
+import { useAppStore } from '@/stores/app-store';
 import { useAuthStore } from '@/stores/auth-store';
-import { useCoursesStore } from '@/stores/courses-store';
 import { useModalStore } from '@/stores/ui-store';
 import { Course } from '@/types/course';
 import {
@@ -37,12 +37,12 @@ export function CourseCard({ course }: CourseCardProps) {
     const { openModal } = useModalStore();
     const deleteCourse = useDeleteCourse();
     const { confirmDeletion } = useConfirmationDialog();
-    const { setCurrentCourse } = useCoursesStore();
+    const { setCurrentCourse } = useAppStore();
     const { user } = useAuthStore();
 
 
-    const isOwner = course.instructor.id === user!.id;
-    const isEnrolled = course.enrollments.includes(user!.id);
+    const isOwner = course?.instructor?.id === user?.id;
+    const isEnrolled = course?.enrollments?.includes(user!.id);
 
     const handleViewCourse = () => {
         setCurrentCourse(course);
@@ -128,17 +128,17 @@ export function CourseCard({ course }: CourseCardProps) {
                 <div className="flex items-center justify-between text-sm text-muted-foreground">
                     <div className="flex items-center">
                         <Users className="h-4 w-4 mr-1" />
-                        {course!.enrollments.length} students
+                        {course?.enrollments?.length} students
                     </div>
                     <div className="flex items-center">
                         <BookOpen className="h-4 w-4 mr-1" />
-                        {course!.modules.length} modules
+                        {course?.modules?.length} modules
                     </div>
                 </div>
 
                 {!isOwner && (
                     <div className="text-sm text-muted-foreground">
-                        Instructor: {course!.instructor.name}
+                        Instructor: {course?.instructor?.name}
                     </div>
                 )}
             </CardContent>

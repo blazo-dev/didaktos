@@ -2,15 +2,15 @@ export interface Course {
     id: string;
     title: string;
     description: string;
-    instructor: {
+    instructor?: {
         id: string;
         name: string;
         email: string;
     };
-    enrollments: string[];
-    modules: Module[];
-    createdAt: string;
-    updatedAt: string;
+    enrollments?: string[];
+    modules?: Module[];
+    createdAt?: string;
+    updatedAt?: string;
 }
 
 export interface Module {

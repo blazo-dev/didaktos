@@ -2,8 +2,7 @@
 
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { useCreateCourse } from '@/hooks/courses/use-create-course';
-import { useUpdateCourse } from '@/hooks/courses/use-update-course';
+import { useCreateCourse, useUpdateCourse } from '@/hooks/courses/use-course-crud';
 import { CourseFormData, courseSchema } from '@/lib/schemas/course';
 import { useAuthStore } from '@/stores/auth-store';
 import { useToastStore } from '@/stores/ui-store';
@@ -75,22 +74,17 @@ export function CourseForm({ course, onSuccess, onCancel }: CourseFormProps) {
             // Update existing course
             await updateCourseMutation.mutateAsync({
                 id: course.id,
-                data: data,
+                input: {
+                    ...data
+                }
             });
         } else {
             // Create new course
             const newCourseData = {
                 ...data,
-                instructor: {
-                    id: user.id,
-                    name: user.name || '',
-                    email: user.email,
-                },
-                enrollments: [],
-                modules: [],
             };
 
-            await createCourseMutation.mutateAsync(newCourseData);
+            await createCourseMutation.mutateAsync({ ...newCourseData });
         }
     };
 

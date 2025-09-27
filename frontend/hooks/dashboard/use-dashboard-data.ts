@@ -36,7 +36,7 @@ export function useDashboardData(courses: Course[]): DashboardData {
 
     const enrolledCourses = useMemo(() => {
         if (!userId) return [];
-        return courses.filter((course) => course.enrollments.includes(userId));
+        return courses.filter((course) => course.enrollments?.includes(userId));
     }, [courses, userId]);
 
     // Fetch submissions for each enrolled course
@@ -72,7 +72,7 @@ export function useDashboardData(courses: Course[]): DashboardData {
 
         // Filter out graded assignments from all assignments
         const ungradedAssignments = enrolledCourses.flatMap((c) =>
-            c.modules.flatMap((m) =>
+            c.modules?.flatMap((m) =>
                 m.assignments.filter((a) => !gradedAssignmentIds.has(a.id))
             )
         );
@@ -81,7 +81,7 @@ export function useDashboardData(courses: Course[]): DashboardData {
         const nextWeek = new Date();
         nextWeek.setDate(now.getDate() + 7);
         const dueThisWeek = ungradedAssignments.filter((a) => {
-            const due = new Date(a.dueDate);
+            const due = new Date(a!.dueDate);
             return due >= now && due <= nextWeek;
         }).length;
 
@@ -127,7 +127,7 @@ export function useDashboardData(courses: Course[]): DashboardData {
         );
 
         return enrolledCourses.flatMap((course) =>
-            course.modules.flatMap((m) =>
+            course.modules?.flatMap((m) =>
                 m.assignments
                     // Filter out assignments that already have grades
                     .filter((a) => !gradedAssignmentIds.has(a.id))
@@ -137,8 +137,8 @@ export function useDashboardData(courses: Course[]): DashboardData {
                         courseTitle: course.title,
                         dueDate: a.dueDate,
                     }))
-            )
-        );
+            ) || []
+        ).filter((a): a is { id: string; title: string; courseTitle: string; dueDate: string } => !!a);
     }, [enrolledCourses, allSubmissions, userId]);
 
     // Get recent grades from submissions data
@@ -150,7 +150,7 @@ export function useDashboardData(courses: Course[]): DashboardData {
         // Create a map of assignments for quick lookup
         const assignmentMap = new Map();
         enrolledCourses.forEach((course) => {
-            course.modules.forEach((module) => {
+            course.modules?.forEach((module) => {
                 module.assignments.forEach((assignment) => {
                     assignmentMap.set(assignment.id, {
                         title: assignment.title,
