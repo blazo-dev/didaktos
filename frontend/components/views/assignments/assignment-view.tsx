@@ -5,13 +5,14 @@ import { SubmissionModal } from '@/components/modals/submission-modal';
 import { ViewSubmissionModal } from '@/components/modals/view-submission-modal';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { useAssignmentActions } from '@/hooks/assignments/use-assignment-actions';
 import { useDeleteAssignment } from '@/hooks/assignments/use-delete-assignment';
 import { useConfirmationDialog } from '@/hooks/common/use-confirmation-dialog';
-import { useAuthStore } from '@/stores/auth-store';
-import { useCoursesStore } from '@/stores/courses-store';
-import { useModalStore } from '@/stores/ui-store';
+import { useCourseContext } from '@/hooks/courses/use-course-context';
+import { useCourseModals } from '@/hooks/courses/use-course-modals';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useCallback } from 'react';
 import AssignmentHeader from './assignment-header';
 
 interface AssignmentViewProps {
@@ -20,14 +21,51 @@ interface AssignmentViewProps {
 
 
 export function AssignmentView({ courseId }: AssignmentViewProps) {
-    const { currentCourse, currentAssignment, setCurrentSubmission, setCurrentSubmissions } = useCoursesStore();
-    const deleteAssignment = useDeleteAssignment();
     const router = useRouter();
-    const { openModal } = useModalStore();
     const { confirmDeletion } = useConfirmationDialog();
-    const { user } = useAuthStore();
+    const deleteAssignment = useDeleteAssignment();
 
-    if (!currentAssignment || !currentCourse) {
+    // Use new state management hooks
+    const { course, user, permissions, isOwner } = useCourseContext(courseId);
+    const { currentAssignment, updateAssignmentWithSubmission } = useAssignmentActions();
+    const { openEditAssignment, openCreateSubmission, openViewSubmission } = useCourseModals(courseId);
+
+    // Define callbacks before early returns
+    const handleAssignmentEdit = useCallback(() => {
+        if (currentAssignment) {
+            openEditAssignment(currentAssignment);
+        }
+    }, [currentAssignment, openEditAssignment]);
+
+    const handleAssignmentDelete = useCallback(async () => {
+        if (currentAssignment) {
+            const confirmed = await confirmDeletion(currentAssignment.title, "assignment");
+            if (confirmed) {
+                await deleteAssignment.mutateAsync(currentAssignment.id);
+                router.push(`/courses/${courseId}`);
+            }
+        }
+    }, [currentAssignment, confirmDeletion, deleteAssignment, router, courseId]);
+
+    const handleOpenSubmission = useCallback(() => {
+        if (!currentAssignment) return;
+        
+        const existingSubmission = currentAssignment.submissions?.[0];
+        if (existingSubmission) {
+            openViewSubmission(existingSubmission, currentAssignment, 'student');
+        } else {
+            openCreateSubmission(currentAssignment);
+        }
+    }, [currentAssignment, openViewSubmission, openCreateSubmission]);
+
+    const handleSubmissionSuccess = useCallback((newSubmission: any) => {
+        if (currentAssignment) {
+            updateAssignmentWithSubmission(currentAssignment, newSubmission);
+        }
+    }, [currentAssignment, updateAssignmentWithSubmission]);
+
+    // Early returns after all hooks
+    if (!currentAssignment || !course) {
         return (
             <div className="p-6 text-center">
                 <h2 className="text-2xl font-bold mb-2">Assignment not found</h2>
@@ -42,66 +80,6 @@ export function AssignmentView({ courseId }: AssignmentViewProps) {
     }
 
     const existingSubmission = currentAssignment.submissions?.[0];
-    const isOwner = currentCourse.instructor.id === user?.id;
-
-    const handleAssignmentEdit = () => {
-        openModal({
-            id: 'edit-assignment',
-            title: 'Edit Assignment',
-            closable: true,
-            backdrop: true,
-            size: 'md',
-        })
-
-    }
-
-    const handleAssignmentDelete = async () => {
-        const confirmed = await confirmDeletion(currentAssignment.title, "assignment");
-        if (confirmed) {
-            await deleteAssignment.mutateAsync(currentAssignment.id);
-            router.push(`/courses/${courseId}`);
-        }
-    }
-
-    const handleOpenSubmission = () => {
-        if (existingSubmission) {
-            setCurrentSubmission(existingSubmission);
-
-            openModal({
-                id: 'view-submission-student',
-                title: 'View Submission',
-                closable: true,
-                backdrop: true,
-                size: 'xl',
-            });
-            return;
-        }
-
-        openModal({
-            id: 'create-submission',
-            title: 'Create Submission',
-            closable: true,
-            backdrop: true,
-            size: 'xl',
-        });
-    }
-
-    const handleSubmissionSuccess = (newSubmission: any) => {
-        // Update the current assignment with the new submission
-        if (currentAssignment) {
-            const updatedAssignment = {
-                ...currentAssignment,
-                submissions: [newSubmission]
-            };
-            
-            // Update the course store with the new assignment data
-            setCurrentSubmission(newSubmission);
-            
-            // Update the assignment in courses store (if you have this method)
-            // This ensures the UI updates immediately
-            useCoursesStore.getState().setCurrentAssignment(updatedAssignment);
-        }
-    };
 
 
     return (
