@@ -6,6 +6,8 @@ import { cn } from "@/lib/utils"
 import { useEffect, type ReactNode } from "react"
 import { ModalRegistry } from "../ui/modal-registry"
 import { ToastContainer } from "../ui/toast-container"
+import { GlobalLoadingIndicator } from "../ui/global-loading-indicator"
+import { ErrorNotifications } from "../ui/error-boundary"
 import { Header } from "./header"
 import Loader from "./loader"
 import { Sidebar } from "./sidebar"
@@ -53,6 +55,8 @@ export function AppLayout({ children, showSidebar = false, showHeader = true, is
     <div className={cn("min-h-screen bg-background grid", showHeader ? "grid-rows-[auto_1fr]" : "")}>
       <ToastContainer />
       <ModalRegistry />
+      <GlobalLoadingIndicator position="top" showProgress showOperationCount />
+      <ErrorNotifications />
       {isLoading && <Loader text="Loading..." />}
       {showHeader && (
         <Header showSidebar={showSidebar} isLanding={isLanding} />
