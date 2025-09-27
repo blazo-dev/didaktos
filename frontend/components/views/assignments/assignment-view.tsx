@@ -5,6 +5,7 @@ import { SubmissionModal } from '@/components/modals/submission-modal';
 import { ViewSubmissionModal } from '@/components/modals/view-submission-modal';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { useConfirmationDialog } from '@/hooks/common/use-confirmation-dialog';
 import { useDeleteAssignment } from '@/hooks/assignments/use-delete-assignment';
 import { useAuthStore } from '@/stores/auth-store';
 import { useCoursesStore } from '@/stores/courses-store';
@@ -23,6 +24,7 @@ export function AssignmentView({ courseId }: AssignmentViewProps) {
     const deleteAssignment = useDeleteAssignment();
     const router = useRouter();
     const { openModal } = useModalStore();
+    const { confirmDeletion } = useConfirmationDialog();
     const { user } = useAuthStore();
 
     if (!currentAssignment || !currentCourse) {
@@ -54,16 +56,11 @@ export function AssignmentView({ courseId }: AssignmentViewProps) {
     }
 
     const handleAssignmentDelete = async () => {
-
-        if (
-            confirm(
-                'Are you sure you want to delete this assignment? This action cannot be undone.',
-            )
-        ) {
+        const confirmed = await confirmDeletion(currentAssignment.title, "assignment");
+        if (confirmed) {
             await deleteAssignment.mutateAsync(currentAssignment.id);
             router.push(`/courses/${courseId}`);
         }
-
     }
 
     const handleOpenSubmission = () => {

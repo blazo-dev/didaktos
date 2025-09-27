@@ -3,6 +3,7 @@
 import { LessonModal } from '@/components/modals/lesson-modal';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { useConfirmationDialog } from '@/hooks/common/use-confirmation-dialog';
 import { useDeleteLesson } from '@/hooks/lessons/use-delete-lesson';
 import { useAuthStore } from '@/stores/auth-store';
 import { useCoursesStore } from '@/stores/courses-store';
@@ -21,6 +22,7 @@ export function LessonView({ courseId }: LessonViewProps) {
     const { currentCourse, currentLesson } = useCoursesStore();
     const deleteLesson = useDeleteLesson();
     const router = useRouter();
+    const { confirmDeletion } = useConfirmationDialog();
 
     const { openModal } = useModalStore();
     const { user } = useAuthStore();
@@ -53,16 +55,11 @@ export function LessonView({ courseId }: LessonViewProps) {
     }
 
     const handleLessonDelete = async () => {
-
-        if (
-            confirm(
-                'Are you sure you want to delete this lesson? This action cannot be undone.',
-            )
-        ) {
+        const confirmed = await confirmDeletion(currentLesson!.title, "lesson");
+        if (confirmed) {
             await deleteLesson.mutateAsync(currentLesson!.id);
             router.push(`/courses/${courseId}`);
         }
-
     }
 
     return (

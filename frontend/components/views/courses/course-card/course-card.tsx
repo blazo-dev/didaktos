@@ -9,6 +9,7 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
+import { useConfirmationDialog } from '@/hooks/common/use-confirmation-dialog';
 import { useDeleteCourse } from '@/hooks/courses/use-delete-course';
 import { useAuthStore } from '@/stores/auth-store';
 import { useCoursesStore } from '@/stores/courses-store';
@@ -35,6 +36,7 @@ export function CourseCard({ course }: CourseCardProps) {
     const [showMenu, setShowMenu] = useState(false);
     const { openModal } = useModalStore();
     const deleteCourse = useDeleteCourse();
+    const { confirmDeletion } = useConfirmationDialog();
     const { setCurrentCourse } = useCoursesStore();
     const { user } = useAuthStore();
 
@@ -59,11 +61,8 @@ export function CourseCard({ course }: CourseCardProps) {
     };
 
     const handleDeleteCourse = async () => {
-        if (
-            confirm(
-                'Are you sure you want to delete this course? This action cannot be undone.',
-            )
-        ) {
+        const confirmed = await confirmDeletion(course.title, "course");
+        if (confirmed) {
             await deleteCourse.mutateAsync(course!.id);
         }
         setShowMenu(false);
