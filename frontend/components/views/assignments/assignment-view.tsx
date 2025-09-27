@@ -77,7 +77,6 @@ export function AssignmentView({ courseId }: AssignmentViewProps) {
             return;
         }
 
-
         openModal({
             id: 'create-submission',
             title: 'Create Submission',
@@ -86,6 +85,23 @@ export function AssignmentView({ courseId }: AssignmentViewProps) {
             size: 'xl',
         });
     }
+
+    const handleSubmissionSuccess = (newSubmission: any) => {
+        // Update the current assignment with the new submission
+        if (currentAssignment) {
+            const updatedAssignment = {
+                ...currentAssignment,
+                submissions: [newSubmission]
+            };
+            
+            // Update the course store with the new assignment data
+            setCurrentSubmission(newSubmission);
+            
+            // Update the assignment in courses store (if you have this method)
+            // This ensures the UI updates immediately
+            useCoursesStore.getState().setCurrentAssignment(updatedAssignment);
+        }
+    };
 
 
     return (
@@ -121,6 +137,7 @@ export function AssignmentView({ courseId }: AssignmentViewProps) {
             />
             <SubmissionModal
                 modalId="create-submission"
+                onSuccess={handleSubmissionSuccess}
             />
             <ViewSubmissionModal
                 modalId="view-submission-student"
