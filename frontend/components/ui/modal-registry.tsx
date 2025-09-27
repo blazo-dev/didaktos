@@ -26,7 +26,7 @@ export function ModalRegistry() {
                         />
                     );
                 }
-                
+
                 // For other modal types, they handle their own rendering
                 return null;
             })}

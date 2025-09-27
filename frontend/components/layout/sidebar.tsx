@@ -3,7 +3,7 @@ import { useConfirmationDialog } from "@/hooks/common/use-confirmation-dialog"
 import { useAuthStore } from "@/stores/auth-store"
 import { useToastStore } from "@/stores/ui-store"
 import { useQueryClient } from "@tanstack/react-query"
-import { AlertTriangle, BookOpenIcon, HelpCircle, Home, LogOut, Shield, User, LayoutDashboardIcon } from "lucide-react"
+import { BookOpenIcon, Home, LayoutDashboardIcon, LogOut } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 
@@ -33,8 +33,8 @@ export function Sidebar() {
     if (confirmed) {
       logout();
       queryClient.clear();
+      router.refresh();
       addToast({ type: "info", message: "You have been signed out" });
-      router.replace("/");
     }
   };
 
@@ -60,7 +60,7 @@ export function Sidebar() {
               </Button>
             )
           })}
-          
+
           {/* Logout Button with Confirmation */}
           <Button
             variant="ghost"
