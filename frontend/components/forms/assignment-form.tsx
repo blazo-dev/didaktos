@@ -7,13 +7,11 @@ import { useAuthStore } from "@/stores/auth-store";
 import { useCoursesStore } from "@/stores/courses-store";
 import { useToastStore } from "@/stores/ui-store";
 import { Assignment } from "@/types/course";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
-import { FormActions } from "./common/form-actions";
-
+import { BaseForm } from "./common/base-form";
 
 interface AssignmentFormProps {
     assignment?: Assignment;
@@ -21,63 +19,11 @@ interface AssignmentFormProps {
     onCancel?: () => void;
 }
 
-export function AssignmentForm({ assignment, onSuccess, onCancel }: AssignmentFormProps) {
-    const { user } = useAuthStore();
-    const { currentModule } = useCoursesStore();
-    const { addToast } = useToastStore();
-    const createAssignmentMutation = useCreateAssignment();
-    const updateAssignmentMutation = useUpdateAssignment();
-
-    // React Hook Form setup
-    const { register, handleSubmit, formState: { errors }, reset } = useForm<AssignmentFormData>({
-        resolver: zodResolver(assignmentSchema),
-        defaultValues: {
-            title: assignment?.title || '',
-            description: assignment?.description || '',
-            dueDate: assignment?.dueDate ? assignment.dueDate.split('T')[0] : '',
-        },
-    });
-
-    // Handle success with useEffect
-    useEffect(() => {
-        if (createAssignmentMutation.isSuccess || updateAssignmentMutation.isSuccess) {
-            reset();
-            onSuccess?.(assignment as Assignment);
-        }
-    }, [createAssignmentMutation.isSuccess, updateAssignmentMutation.isSuccess, assignment, onSuccess, reset]);
-
-    const onSubmit = (data: AssignmentFormData) => {
-        if (!user) {
-            addToast({
-                message: 'You must be logged in to create an assignment',
-                type: 'error',
-            });
-            return;
-        }
-
-        if (assignment) {
-            // Update existing assignment
-            updateAssignmentMutation.mutate({
-                assignmentId: assignment.id,
-                assignmentData: data,
-            });
-        } else {
-            // Create new assignment
-            const newAssignment = {
-                ...data,
-            };
-
-            createAssignmentMutation.mutate({
-                moduleId: currentModule!.id,
-                assignmentData: newAssignment,
-            });
-        }
-    };
-
-    const isLoading = createAssignmentMutation.isPending || updateAssignmentMutation.isPending;
+function AssignmentFormFields() {
+    const { register, formState: { errors } } = useFormContext<AssignmentFormData>();
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 p-4">
+        <>
             {/* Assignment Title */}
             <Input
                 id="assignment-title"
@@ -111,17 +57,68 @@ export function AssignmentForm({ assignment, onSuccess, onCancel }: AssignmentFo
                 error={errors.description?.message}
                 className="resize-y"
             />
+        </>
+    );
+}
 
+export function AssignmentForm({ assignment, onSuccess, onCancel }: AssignmentFormProps) {
+    const { user } = useAuthStore();
+    const { currentModule } = useCoursesStore();
+    const { addToast } = useToastStore();
+    const createAssignmentMutation = useCreateAssignment();
+    const updateAssignmentMutation = useUpdateAssignment();
 
+    // Handle success with useEffect
+    useEffect(() => {
+        if (createAssignmentMutation.isSuccess || updateAssignmentMutation.isSuccess) {
+            const resultAssignment = createAssignmentMutation.data || updateAssignmentMutation.data || assignment;
+            onSuccess?.(resultAssignment as Assignment);
+        }
+    }, [createAssignmentMutation.isSuccess, updateAssignmentMutation.isSuccess, createAssignmentMutation.data, updateAssignmentMutation.data, assignment, onSuccess]);
 
-            {/* Form Actions */}
-            <FormActions
-                onCancel={onCancel || (() => { })}
-                isPending={isLoading}
-                isEdit={!!assignment}
-                submitText={{ create: 'Create Assignment', update: 'Update Assignment' }}
-                loadingText={{ create: 'Creating...', update: 'Updating...' }}
-            />
-        </form>
+    const handleSubmit = async (data: AssignmentFormData) => {
+        if (!user) {
+            addToast({
+                message: 'You must be logged in to create an assignment',
+                type: 'error',
+            });
+            return;
+        }
+
+        if (assignment) {
+            // Update existing assignment
+            await updateAssignmentMutation.mutateAsync({
+                assignmentId: assignment.id,
+                assignmentData: data,
+            });
+        } else {
+            // Create new assignment
+            const newAssignment = {
+                ...data,
+            };
+
+            await createAssignmentMutation.mutateAsync({
+                moduleId: currentModule!.id,
+                assignmentData: newAssignment,
+            });
+        }
+    };
+
+    return (
+        <BaseForm<AssignmentFormData>
+            initialValues={{
+                title: assignment?.title || '',
+                description: assignment?.description || '',
+                dueDate: assignment?.dueDate ? assignment.dueDate.split('T')[0] : '',
+            }}
+            validationSchema={assignmentSchema}
+            onSubmit={handleSubmit}
+            onCancel={onCancel || (() => { })}
+            isEdit={!!assignment}
+            submitText={{ create: 'Create Assignment', update: 'Update Assignment' }}
+            loadingText={{ create: 'Creating...', update: 'Updating...' }}
+        >
+            <AssignmentFormFields />
+        </BaseForm>
     );
 }

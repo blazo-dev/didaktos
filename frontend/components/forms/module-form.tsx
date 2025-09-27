@@ -5,10 +5,9 @@ import { useCreateModule } from '@/hooks/modules/use-create-modules';
 import { useUpdateModule } from '@/hooks/modules/use-update-module';
 import { ModuleFormData, moduleSchema } from '@/lib/schemas/module';
 import { Module } from '@/types/course';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { FormActions } from './common/form-actions';
+import { useFormContext } from 'react-hook-form';
+import { BaseForm } from './common/base-form';
 
 interface ModuleFormProps {
     courseId: string;
@@ -17,30 +16,41 @@ interface ModuleFormProps {
     onCancel?: () => void;
 }
 
+function ModuleFormFields() {
+    const { register, formState: { errors } } = useFormContext<ModuleFormData>();
+
+    return (
+        <>
+            {/* Module Title */}
+            <Input
+                id="module-title"
+                label="Module Title"
+                placeholder="Enter module title"
+                type="text"
+                required
+                register={register("title")}
+                error={errors.title?.message}
+            />
+        </>
+    );
+}
+
 export function ModuleForm({ courseId, module, onSuccess, onCancel }: ModuleFormProps) {
     const createModuleMutation = useCreateModule(courseId);
     const updateModuleMutation = useUpdateModule(courseId);
 
-    // React Hook Form setup
-    const { register, handleSubmit, formState: { errors }, reset } = useForm<ModuleFormData>({
-        resolver: zodResolver(moduleSchema),
-        defaultValues: {
-            title: module?.title || '',
-        },
-    });
-
     // Handle success with useEffect
     useEffect(() => {
         if (createModuleMutation.isSuccess || updateModuleMutation.isSuccess) {
-            reset();
-            onSuccess?.(module as Module);
+            const resultModule = createModuleMutation.data || updateModuleMutation.data || module;
+            onSuccess?.(resultModule as Module);
         }
-    }, [createModuleMutation.isSuccess, updateModuleMutation.isSuccess, module, onSuccess, reset]);
+    }, [createModuleMutation.isSuccess, updateModuleMutation.isSuccess, createModuleMutation.data, updateModuleMutation.data, module, onSuccess]);
 
-    const onSubmit = (data: ModuleFormData) => {
+    const handleSubmit = async (data: ModuleFormData) => {
         if (module) {
             // Update existing module
-            updateModuleMutation.mutate({
+            await updateModuleMutation.mutateAsync({
                 moduleId: module.id,
                 data: data,
             });
@@ -52,33 +62,23 @@ export function ModuleForm({ courseId, module, onSuccess, onCancel }: ModuleForm
                 assignments: [],
             };
 
-            createModuleMutation.mutate(newModuleData);
+            await createModuleMutation.mutateAsync(newModuleData);
         }
     };
 
-    const isLoading = createModuleMutation.isPending || updateModuleMutation.isPending;
-
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 p-4">
-            {/* Module Title */}
-            <Input
-                id="module-title"
-                label="Module Title"
-                placeholder="Enter module title"
-                type="text"
-                required
-                register={register("title")}
-                error={errors.title?.message}
-            />
-
-            {/* Form Actions */}
-            <FormActions
-                onCancel={onCancel || (() => { })}
-                isPending={isLoading}
-                isEdit={!!module}
-                submitText={{ create: 'Create Module', update: 'Update Module' }}
-                loadingText={{ create: 'Creating...', update: 'Updating...' }}
-            />
-        </form>
+        <BaseForm<ModuleFormData>
+            initialValues={{
+                title: module?.title || '',
+            }}
+            validationSchema={moduleSchema}
+            onSubmit={handleSubmit}
+            onCancel={onCancel || (() => { })}
+            isEdit={!!module}
+            submitText={{ create: 'Create Module', update: 'Update Module' }}
+            loadingText={{ create: 'Creating...', update: 'Updating...' }}
+        >
+            <ModuleFormFields />
+        </BaseForm>
     );
 }

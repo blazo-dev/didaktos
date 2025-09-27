@@ -6,14 +6,32 @@ import { GradeSubmissionFormData, gradeSubmissionSchema } from "@/lib/schemas/su
 import { useAuthStore } from "@/stores/auth-store";
 import { useCoursesStore } from "@/stores/courses-store";
 import { useToastStore } from "@/stores/ui-store";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 import { Input } from "../ui/input";
-import { FormActions } from "./common/form-actions";
+import { BaseForm } from "./common/base-form";
 
 interface SubmissionFormProps {
     onSuccess: (submission: any) => void;
     onCancel?: () => void;
+}
+
+function GradeSubmissionFormFields() {
+    const { register, formState: { errors } } = useFormContext<GradeSubmissionFormData>();
+
+    return (
+        <>
+            {/* Grade Input */}
+            <Input
+                type="number"
+                id="grade-submission-content"
+                label="Grade"
+                required
+                placeholder="Enter grade (0-100)"
+                register={register("grade", { valueAsNumber: true })}
+                error={errors.grade?.message}
+            />
+        </>
+    );
 }
 
 export function GradeSubmissionForm({ onSuccess, onCancel }: SubmissionFormProps) {
@@ -22,18 +40,10 @@ export function GradeSubmissionForm({ onSuccess, onCancel }: SubmissionFormProps
     const createGradeSubmissionMutation = useGradeSubmission();
     const { addToast } = useToastStore();
 
-    // React Hook Form setup
-    const { register, handleSubmit, formState: { errors }, reset } = useForm<GradeSubmissionFormData>({
-        resolver: zodResolver(gradeSubmissionSchema),
-        defaultValues: {
-            grade: 0,
-        },
-    });
-
-    const onSubmit = async (data: GradeSubmissionFormData) => {
+    const handleSubmit = async (data: GradeSubmissionFormData) => {
         if (!user) {
             addToast({
-                message: 'You must be logged in to submit an assignment',
+                message: 'You must be logged in to grade a submission',
                 type: 'error',
             });
             return;
@@ -48,7 +58,6 @@ export function GradeSubmissionForm({ onSuccess, onCancel }: SubmissionFormProps
         try {
             // Here you would call your submission API
             await createGradeSubmissionMutation.mutateAsync(gradeData);
-            reset();
             onSuccess(gradeData);
         } catch (error) {
             // Error handling is done in the mutation
@@ -56,27 +65,18 @@ export function GradeSubmissionForm({ onSuccess, onCancel }: SubmissionFormProps
     };
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 p-4">
-            {/* Submission Content */}
-            <Input
-                type="number"
-                id="grade-submission-content"
-                label="Your Submission"
-                required
-                placeholder="Enter your submission grading here..."
-                register={register("grade", { valueAsNumber: true })}
-                error={errors.grade?.message}
-                className="resize-y"
-            />
-
-            {/* Form Actions */}
-            <FormActions
-                onCancel={onCancel || (() => { })}
-                isPending={createGradeSubmissionMutation.isPending}
-                isEdit={false}
-                submitText={{ create: 'Grade Assignment', update: 'Grade Assignment' }}
-                loadingText={{ create: 'Grading...', update: 'Grading...' }}
-            />
-        </form>
+        <BaseForm<GradeSubmissionFormData>
+            initialValues={{
+                grade: 0,
+            }}
+            validationSchema={gradeSubmissionSchema}
+            onSubmit={handleSubmit}
+            onCancel={onCancel || (() => { })}
+            isEdit={false}
+            submitText={{ create: 'Grade Assignment', update: 'Grade Assignment' }}
+            loadingText={{ create: 'Grading...', update: 'Grading...' }}
+        >
+            <GradeSubmissionFormFields />
+        </BaseForm>
     );
 }

@@ -6,10 +6,9 @@ import { useAuthStore } from "@/stores/auth-store";
 import { useCoursesStore } from "@/stores/courses-store";
 import { useToastStore } from "@/stores/ui-store";
 import { Assignment, Submission } from "@/types/course";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 import { Textarea } from "../ui/textarea";
-import { FormActions } from "./common/form-actions";
+import { BaseForm } from "./common/base-form";
 
 interface SubmissionFormProps {
     assignment?: Assignment;
@@ -18,21 +17,33 @@ interface SubmissionFormProps {
     onCancel?: () => void;
 }
 
+function SubmissionFormFields() {
+    const { register, formState: { errors } } = useFormContext<SubmissionFormData>();
+
+    return (
+        <>
+            {/* Submission Content */}
+            <Textarea
+                id="submission-content"
+                label="Your Submission"
+                placeholder="Enter your assignment submission here..."
+                rows={10}
+                required
+                register={register("content")}
+                error={errors.content?.message}
+                className="resize-y"
+            />
+        </>
+    );
+}
+
 export function SubmissionForm({ assignment, courseId, onSuccess, onCancel }: SubmissionFormProps) {
     const { user } = useAuthStore();
     const { currentCourse, currentAssignment } = useCoursesStore();
     const createSubmissionMutation = useCreateSubmission();
     const { addToast } = useToastStore();
 
-    // React Hook Form setup
-    const { register, handleSubmit, formState: { errors }, reset } = useForm<SubmissionFormData>({
-        resolver: zodResolver(submissionSchema),
-        defaultValues: {
-            content: '',
-        },
-    });
-
-    const onSubmit = async (data: SubmissionFormData) => {
+    const handleSubmit = async (data: SubmissionFormData) => {
         if (!user) {
             addToast({
                 message: 'You must be logged in to submit an assignment',
@@ -51,7 +62,6 @@ export function SubmissionForm({ assignment, courseId, onSuccess, onCancel }: Su
         try {
             // Here you would call your submission API
             await createSubmissionMutation.mutateAsync({ submissionData });
-            reset();
             onSuccess(submissionData);
         } catch (error) {
             // Error handling is done in the mutation
@@ -59,27 +69,18 @@ export function SubmissionForm({ assignment, courseId, onSuccess, onCancel }: Su
     };
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 p-4">
-            {/* Submission Content */}
-            <Textarea
-                id="submission-content"
-                label="Your Submission"
-                placeholder="Enter your assignment submission here..."
-                rows={10}
-                required
-                register={register("content")}
-                error={errors.content?.message}
-                className="resize-y"
-            />
-
-            {/* Form Actions */}
-            <FormActions
-                onCancel={onCancel || (() => { })}
-                isPending={createSubmissionMutation.isPending}
-                isEdit={false}
-                submitText={{ create: 'Submit Assignment', update: 'Submit Assignment' }}
-                loadingText={{ create: 'Submitting...', update: 'Submitting...' }}
-            />
-        </form>
+        <BaseForm<SubmissionFormData>
+            initialValues={{
+                content: '',
+            }}
+            validationSchema={submissionSchema}
+            onSubmit={handleSubmit}
+            onCancel={onCancel || (() => { })}
+            isEdit={false}
+            submitText={{ create: 'Submit Assignment', update: 'Submit Assignment' }}
+            loadingText={{ create: 'Submitting...', update: 'Submitting...' }}
+        >
+            <SubmissionFormFields />
+        </BaseForm>
     );
 }

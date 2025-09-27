@@ -7,13 +7,11 @@ import { useAuthStore } from "@/stores/auth-store";
 import { useCoursesStore } from "@/stores/courses-store";
 import { useToastStore } from "@/stores/ui-store";
 import { Lesson } from "@/types/course";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
-import { FormActions } from "./common/form-actions";
-
+import { BaseForm } from "./common/base-form";
 
 interface LessonFormProps {
     lesson?: Lesson;
@@ -21,62 +19,11 @@ interface LessonFormProps {
     onCancel?: () => void;
 }
 
-export function LessonForm({ lesson, onSuccess, onCancel }: LessonFormProps) {
-    const { user } = useAuthStore();
-    const { currentModule, setCurrentLesson } = useCoursesStore();
-    const { addToast } = useToastStore();
-    const createLessonMutation = useCreateLesson();
-    const updateLessonMutation = useUpdateLesson();
-
-    // React Hook Form setup
-    const { register, handleSubmit, formState: { errors }, reset } = useForm<LessonFormData>({
-        resolver: zodResolver(lessonSchema),
-        defaultValues: {
-            title: lesson?.title || '',
-            content: lesson?.content || '',
-        },
-    });
-
-    // Handle success with useEffect
-    useEffect(() => {
-        if (createLessonMutation.isSuccess || updateLessonMutation.isSuccess) {
-            reset();
-            onSuccess?.(lesson as Lesson);
-        }
-    }, [createLessonMutation.isSuccess, updateLessonMutation.isSuccess, lesson, onSuccess, reset]);
-
-    const onSubmit = (data: LessonFormData) => {
-        if (!user) {
-            addToast({
-                message: 'You must be logged in to create a lesson',
-                type: 'error',
-            });
-            return;
-        }
-
-        if (lesson) {
-            // Update existing lesson
-            updateLessonMutation.mutate({
-                id: lesson.id,
-                lessonData: data,
-            });
-        } else {
-            // Create new lesson
-            const newLesson = {
-                ...data,
-            };
-
-            createLessonMutation.mutate({
-                moduleId: currentModule!.id,
-                lessonData: newLesson,
-            });
-        }
-    };
-
-    const isLoading = createLessonMutation.isPending || updateLessonMutation.isPending;
+function LessonFormFields() {
+    const { register, formState: { errors } } = useFormContext<LessonFormData>();
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 p-4">
+        <>
             {/* Lesson Title */}
             <Input
                 id="lesson-title"
@@ -99,15 +46,67 @@ export function LessonForm({ lesson, onSuccess, onCancel }: LessonFormProps) {
                 error={errors.content?.message}
                 className="resize-y"
             />
+        </>
+    );
+}
 
-            {/* Form Actions */}
-            <FormActions
-                onCancel={onCancel || (() => { })}
-                isPending={isLoading}
-                isEdit={!!lesson}
-                submitText={{ create: 'Create Lesson', update: 'Update Lesson' }}
-                loadingText={{ create: 'Creating...', update: 'Updating...' }}
-            />
-        </form>
+export function LessonForm({ lesson, onSuccess, onCancel }: LessonFormProps) {
+    const { user } = useAuthStore();
+    const { currentModule, setCurrentLesson } = useCoursesStore();
+    const { addToast } = useToastStore();
+    const createLessonMutation = useCreateLesson();
+    const updateLessonMutation = useUpdateLesson();
+
+    // Handle success with useEffect
+    useEffect(() => {
+        if (createLessonMutation.isSuccess || updateLessonMutation.isSuccess) {
+            const resultLesson = createLessonMutation.data || updateLessonMutation.data || lesson;
+            onSuccess?.(resultLesson as Lesson);
+        }
+    }, [createLessonMutation.isSuccess, updateLessonMutation.isSuccess, createLessonMutation.data, updateLessonMutation.data, lesson, onSuccess]);
+
+    const handleSubmit = async (data: LessonFormData) => {
+        if (!user) {
+            addToast({
+                message: 'You must be logged in to create a lesson',
+                type: 'error',
+            });
+            return;
+        }
+
+        if (lesson) {
+            // Update existing lesson
+            await updateLessonMutation.mutateAsync({
+                id: lesson.id,
+                lessonData: data,
+            });
+        } else {
+            // Create new lesson
+            const newLesson = {
+                ...data,
+            };
+
+            await createLessonMutation.mutateAsync({
+                moduleId: currentModule!.id,
+                lessonData: newLesson,
+            });
+        }
+    };
+
+    return (
+        <BaseForm<LessonFormData>
+            initialValues={{
+                title: lesson?.title || '',
+                content: lesson?.content || '',
+            }}
+            validationSchema={lessonSchema}
+            onSubmit={handleSubmit}
+            onCancel={onCancel || (() => { })}
+            isEdit={!!lesson}
+            submitText={{ create: 'Create Lesson', update: 'Update Lesson' }}
+            loadingText={{ create: 'Creating...', update: 'Updating...' }}
+        >
+            <LessonFormFields />
+        </BaseForm>
     );
 }

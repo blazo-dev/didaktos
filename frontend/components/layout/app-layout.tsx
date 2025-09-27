@@ -4,7 +4,6 @@ import { useSidebar } from "@/hooks/common/use-sidebar"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { cn } from "@/lib/utils"
 import { useEffect, type ReactNode } from "react"
-import { ErrorNotifications } from "../ui/error-boundary"
 import { GlobalLoadingIndicator } from "../ui/global-loading-indicator"
 import { ModalRegistry } from "../ui/modal-registry"
 import { ToastContainer } from "../ui/toast-container"
@@ -56,7 +55,6 @@ export function AppLayout({ children, showSidebar = false, showHeader = true, is
       <ToastContainer />
       <ModalRegistry />
       <GlobalLoadingIndicator position="top" showProgress showOperationCount />
-      <ErrorNotifications />
       {isLoading && <Loader text="Loading..." />}
       {showHeader && (
         <Header showSidebar={showSidebar} isLanding={isLanding} />
