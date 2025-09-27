@@ -5,21 +5,19 @@ import { useModalStore } from '@/stores/ui-store';
 import { Submission } from '@/types/course';
 import ViewAllSubmissions from '../views/submissions/view-all-submissions';
 
-interface SubmissionModalProps {
+interface ViewAllSubmissionsModalProps {
     modalId: string;
     submissions: Submission[];
-
 }
 
-export function ViewAllSubmissionsModal({ modalId, submissions }: SubmissionModalProps) {
+export function ViewAllSubmissionsModal({ modalId, submissions }: ViewAllSubmissionsModalProps) {
     const { closeModal } = useModalStore();
 
-    const handleCancel = () => {
-        closeModal(modalId);
-    };
-
     return (
-        <Modal id={modalId} onClose={handleCancel}>
+        <Modal 
+            id={modalId} 
+            onClose={() => closeModal(modalId)}
+        >
             <ViewAllSubmissions submissions={submissions} />
         </Modal>
     );

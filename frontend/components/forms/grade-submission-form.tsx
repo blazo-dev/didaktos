@@ -7,13 +7,9 @@ import { useAuthStore } from "@/stores/auth-store";
 import { useCoursesStore } from "@/stores/courses-store";
 import { useToastStore } from "@/stores/ui-store";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Input } from "../ui/input";
 import { FormActions } from "./common/form-actions";
-
-
-
 
 interface SubmissionFormProps {
     onSuccess: (submission: any) => void;
@@ -34,8 +30,6 @@ export function GradeSubmissionForm({ onSuccess, onCancel }: SubmissionFormProps
         },
     });
 
-    const [isSubmitting, setIsSubmitting] = useState(false);
-
     const onSubmit = async (data: GradeSubmissionFormData) => {
         if (!user) {
             addToast({
@@ -44,8 +38,6 @@ export function GradeSubmissionForm({ onSuccess, onCancel }: SubmissionFormProps
             });
             return;
         }
-
-        setIsSubmitting(true);
 
         const gradeData: SubmissionGradeRequestDto = {
             id: currentSubmission?.id || '',
@@ -56,14 +48,10 @@ export function GradeSubmissionForm({ onSuccess, onCancel }: SubmissionFormProps
         try {
             // Here you would call your submission API
             await createGradeSubmissionMutation.mutateAsync(gradeData);
-
-
             reset();
             onSuccess(gradeData);
         } catch (error) {
-
-        } finally {
-            setIsSubmitting(false);
+            // Error handling is done in the mutation
         }
     };
 
@@ -84,7 +72,7 @@ export function GradeSubmissionForm({ onSuccess, onCancel }: SubmissionFormProps
             {/* Form Actions */}
             <FormActions
                 onCancel={onCancel || (() => { })}
-                isPending={isSubmitting}
+                isPending={createGradeSubmissionMutation.isPending}
                 isEdit={false}
                 submitText={{ create: 'Grade Assignment', update: 'Grade Assignment' }}
                 loadingText={{ create: 'Grading...', update: 'Grading...' }}

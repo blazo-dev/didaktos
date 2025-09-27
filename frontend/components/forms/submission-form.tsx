@@ -7,13 +7,9 @@ import { useCoursesStore } from "@/stores/courses-store";
 import { useToastStore } from "@/stores/ui-store";
 import { Assignment, Submission } from "@/types/course";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Textarea } from "../ui/textarea";
 import { FormActions } from "./common/form-actions";
-
-
-
 
 interface SubmissionFormProps {
     assignment?: Assignment;
@@ -36,8 +32,6 @@ export function SubmissionForm({ assignment, courseId, onSuccess, onCancel }: Su
         },
     });
 
-    const [isSubmitting, setIsSubmitting] = useState(false);
-
     const onSubmit = async (data: SubmissionFormData) => {
         if (!user) {
             addToast({
@@ -46,8 +40,6 @@ export function SubmissionForm({ assignment, courseId, onSuccess, onCancel }: Su
             });
             return;
         }
-
-        setIsSubmitting(true);
 
         const submissionData: Submission = {
             content: data.content,
@@ -59,14 +51,10 @@ export function SubmissionForm({ assignment, courseId, onSuccess, onCancel }: Su
         try {
             // Here you would call your submission API
             await createSubmissionMutation.mutateAsync({ submissionData });
-
-
             reset();
             onSuccess(submissionData);
         } catch (error) {
-
-        } finally {
-            setIsSubmitting(false);
+            // Error handling is done in the mutation
         }
     };
 
@@ -87,7 +75,7 @@ export function SubmissionForm({ assignment, courseId, onSuccess, onCancel }: Su
             {/* Form Actions */}
             <FormActions
                 onCancel={onCancel || (() => { })}
-                isPending={isSubmitting}
+                isPending={createSubmissionMutation.isPending}
                 isEdit={false}
                 submitText={{ create: 'Submit Assignment', update: 'Submit Assignment' }}
                 loadingText={{ create: 'Submitting...', update: 'Submitting...' }}
