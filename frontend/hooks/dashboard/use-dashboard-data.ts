@@ -173,7 +173,11 @@ export function useDashboardData(courses: Course[]): DashboardData {
                 array.findIndex(s => s.id === submission.id) === index
             )
             // Sort by submission date (most recent first) and take the first 5
-            .sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime())
+            .sort((a, b) => {
+                const aTime = a.submittedAt ? new Date(a.submittedAt).getTime() : -Infinity;
+                const bTime = b.submittedAt ? new Date(b.submittedAt).getTime() : -Infinity;
+                return bTime - aTime;
+            })
             .slice(0, 5)
             .map(({ submittedAt, ...grade }) => grade); // Remove submittedAt from final result
 
