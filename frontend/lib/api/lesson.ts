@@ -1,6 +1,6 @@
 import { HttpResponse } from "@/types/http";
 import { Lesson } from "../../types/course";
-import { apiGet, apiPost, apiPut, apiDelete } from "./api";
+import { apiDelete, apiGet, apiPost, apiPut } from "./api";
 
 export const lessonsApi = {
     // Lesson CRUD operations

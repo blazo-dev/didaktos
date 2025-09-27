@@ -9,8 +9,8 @@ import { useCoursesStore } from '@/stores/courses-store';
 import { useModalStore } from '@/stores/ui-store';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import LessonHeader from './lesson-header';
 import { StudyAssistant } from '../assistant/study-assistant';
+import LessonHeader from './lesson-header';
 
 interface LessonViewProps {
     courseId: string;
