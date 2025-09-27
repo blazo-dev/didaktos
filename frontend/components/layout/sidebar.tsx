@@ -15,7 +15,7 @@ const navigationLinks = [
 
 
 export function Sidebar() {
-  const { logout } = useAuthStore();
+  const { logout, setLoggingOut } = useAuthStore();
   const { addToast } = useToastStore();
   const { confirm } = useConfirmationDialog();
   const queryClient = useQueryClient();
@@ -31,10 +31,16 @@ export function Sidebar() {
     });
 
     if (confirmed) {
-      logout();
+      // Set logging out state to prevent "You must login" toast
+      setLoggingOut(true);
+      
+      // Clear queries and logout
       queryClient.clear();
-      router.refresh();
-      addToast({ type: "info", message: "You have been signed out" });
+      logout();
+      
+      // Show success message and redirect
+      addToast({ type: "info", message: "You have been signed out successfully" });
+      router.replace("/");
     }
   };
 

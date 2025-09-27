@@ -11,8 +11,10 @@ interface AuthState {
     user: User | null;
     token: string | null;
     isAuthenticated: boolean;
+    isLoggingOut: boolean; // Track voluntary logout state
     login: (user: User, token: string) => void;
     logout: () => void;
+    setLoggingOut: (isLoggingOut: boolean) => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -21,12 +23,14 @@ export const useAuthStore = create<AuthState>()(
             user: null,
             token: null,
             isAuthenticated: false,
+            isLoggingOut: false,
 
             login: (user, token) =>
                 set(() => ({
                     user,
                     token,
                     isAuthenticated: true,
+                    isLoggingOut: false,
                 })),
 
             logout: () =>
@@ -34,6 +38,12 @@ export const useAuthStore = create<AuthState>()(
                     user: null,
                     token: null,
                     isAuthenticated: false,
+                    isLoggingOut: false,
+                })),
+
+            setLoggingOut: (isLoggingOut) =>
+                set(() => ({
+                    isLoggingOut,
                 })),
         }),
         {
