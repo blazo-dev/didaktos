@@ -1,46 +1,23 @@
 import { HttpResponse } from "@/types/http";
 import { Course, Module } from "../../types/course";
-import { apiFetch, getAuthHeaders } from "./api";
+import { apiGet, apiPost, apiPut, apiDelete } from "./api";
 
 export const coursesApi = {
     // Course CRUD operations
     async getCourses(): Promise<Course[]> {
-        const response = await apiFetch<HttpResponse<Course[]>>("/courses", {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                ...getAuthHeaders(),
-            },
-        });
-
+        const response = await apiGet<HttpResponse<Course[]>>("/courses");
         return response.data ?? [];
     },
 
     async getCourse(id: string): Promise<Course> {
-        const response = await apiFetch<HttpResponse<Course>>(
-            `/courses/${id}`,
-            {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    ...getAuthHeaders(),
-                },
-            }
-        );
+        const response = await apiGet<HttpResponse<Course>>(`/courses/${id}`);
         return response.data;
     },
 
     async createCourse(
         courseData: Omit<Course, "id" | "createdAt" | "updatedAt">
     ): Promise<Course> {
-        const response = await apiFetch<HttpResponse<Course>>("/courses", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                ...getAuthHeaders(),
-            },
-            body: JSON.stringify(courseData),
-        });
+        const response = await apiPost<HttpResponse<Course>>("/courses", courseData);
         return response.data;
     },
 
@@ -48,28 +25,15 @@ export const coursesApi = {
         id: string,
         { title, description }: Partial<Course>
     ): Promise<Course> {
-        const response = await apiFetch<HttpResponse<Course>>(
-            `/courses/${id}`,
-            {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    ...getAuthHeaders(),
-                },
-                body: JSON.stringify({ id, title, description }),
-            }
+        const response = await apiPut<HttpResponse<Course>>(
+            `/courses/${id}`, 
+            { id, title, description }
         );
         return response.data;
     },
 
     async deleteCourse(id: string): Promise<void> {
-        await apiFetch<HttpResponse<void>>(`/courses/${id}`, {
-            method: "DELETE",
-            headers: {
-                "Content-Type": "application/json",
-                ...getAuthHeaders(),
-            },
-        });
+        await apiDelete<HttpResponse<void>>(`/courses/${id}`);
     },
 
     // Module CRUD operations
@@ -77,16 +41,9 @@ export const coursesApi = {
         courseId: string,
         moduleData: Omit<Module, "id" | "courseId">
     ): Promise<Module> {
-        const response = await apiFetch<HttpResponse<Module>>(
+        const response = await apiPost<HttpResponse<Module>>(
             `/courses/${courseId}/modules`,
-            {
-                method: "POST",
-                headers: {
-                    ...getAuthHeaders(),
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(moduleData),
-            }
+            moduleData
         );
         return response.data;
     },
@@ -96,26 +53,14 @@ export const coursesApi = {
         moduleId: string,
         moduleData: Partial<Module>
     ): Promise<Module> {
-        const response = await apiFetch<HttpResponse<Module>>(
+        const response = await apiPut<HttpResponse<Module>>(
             `/modules/${moduleId}`,
-            {
-                method: "PUT",
-                headers: {
-                    ...getAuthHeaders(),
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(moduleData),
-            }
+            moduleData
         );
         return response.data;
     },
 
     async deleteModule(moduleId: string): Promise<void> {
-        await apiFetch<HttpResponse<void>>(`/modules/${moduleId}`, {
-            method: "DELETE",
-            headers: {
-                ...getAuthHeaders(),
-            },
-        });
+        await apiDelete<HttpResponse<void>>(`/modules/${moduleId}`);
     },
 };
