@@ -1,6 +1,6 @@
 import { Submission } from "@/types/course";
 import { HttpResponse } from "@/types/http";
-import { apiFetch, getAuthHeaders } from "./api";
+import { apiGet, apiPost, apiPut } from "./api";
 
 // Request DTOs to match your backend
 export interface SubmissionAddRequestDto {
@@ -19,34 +19,18 @@ export const submissionsApi = {
     async createSubmission(
         submissionData: SubmissionAddRequestDto
     ): Promise<Submission> {
-        const response = await apiFetch<HttpResponse<Submission>>(
+        const response = await apiPost<HttpResponse<Submission>>(
             "/evaluation/create",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    ...getAuthHeaders(),
-                },
-                body: JSON.stringify(submissionData),
-            }
+            submissionData
         );
         return response.data;
     },
 
     // Get all submissions for a course
     async getCourseSubmissions(courseId: string): Promise<Submission[]> {
-        const response = await apiFetch<HttpResponse<Submission[]>>(
-            `/evaluation/enrollments?CourseId=${courseId}`,
-            {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    ...getAuthHeaders(),
-                },
-            }
+        const response = await apiGet<HttpResponse<Submission[]>>(
+            `/evaluation/enrollments?CourseId=${courseId}`
         );
-
-
         return response.data ?? [];
     },
 
@@ -54,16 +38,9 @@ export const submissionsApi = {
     async gradeSubmission(
         gradeData: SubmissionGradeRequestDto
     ): Promise<Submission> {
-        const response = await apiFetch<HttpResponse<Submission>>(
+        const response = await apiPut<HttpResponse<Submission>>(
             "/evaluation/grade",
-            {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    ...getAuthHeaders(),
-                },
-                body: JSON.stringify(gradeData),
-            }
+            gradeData
         );
         return response.data;
     },

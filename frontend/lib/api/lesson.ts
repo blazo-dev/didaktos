@@ -1,6 +1,6 @@
 import { HttpResponse } from "@/types/http";
 import { Lesson } from "../../types/course";
-import { apiFetch, getAuthHeaders } from "./api";
+import { apiGet, apiPost, apiPut, apiDelete } from "./api";
 
 export const lessonsApi = {
     // Lesson CRUD operations
@@ -8,16 +8,9 @@ export const lessonsApi = {
         moduleId: string,
         lessonData: Omit<Lesson, "id" | "moduleId">
     ): Promise<Lesson> {
-        const response = await apiFetch<HttpResponse<Lesson>>(
+        const response = await apiPost<HttpResponse<Lesson>>(
             `/modules/${moduleId}/lessons`,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    ...getAuthHeaders(),
-                },
-                body: JSON.stringify(lessonData),
-            }
+            lessonData
         );
         return response.data;
     },
@@ -27,15 +20,8 @@ export const lessonsApi = {
         moduleId: string,
         lessonId: string
     ): Promise<Lesson> {
-        const response = await apiFetch<HttpResponse<Lesson>>(
-            `/courses/${courseId}/modules/${moduleId}/lessons/${lessonId}`,
-            {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    ...getAuthHeaders(),
-                },
-            }
+        const response = await apiGet<HttpResponse<Lesson>>(
+            `/courses/${courseId}/modules/${moduleId}/lessons/${lessonId}`
         );
         return response.data;
     },
@@ -44,27 +30,14 @@ export const lessonsApi = {
         lessonId: string,
         lessonData: Partial<Lesson>
     ): Promise<Lesson> {
-        const response = await apiFetch<HttpResponse<Lesson>>(
+        const response = await apiPut<HttpResponse<Lesson>>(
             `/modules/lessons/${lessonId}`,
-            {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    ...getAuthHeaders(),
-                },
-                body: JSON.stringify(lessonData),
-            }
+            lessonData
         );
         return response.data;
     },
 
     async deleteLesson(lessonId: string): Promise<void> {
-        await apiFetch<HttpResponse<void>>(`/modules/lessons/${lessonId}`, {
-            method: "DELETE",
-            headers: {
-                "Content-Type": "application/json",
-                ...getAuthHeaders(),
-            },
-        });
+        await apiDelete<HttpResponse<void>>(`/modules/lessons/${lessonId}`);
     },
 };

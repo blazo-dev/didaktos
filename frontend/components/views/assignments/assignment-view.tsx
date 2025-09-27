@@ -36,7 +36,7 @@ export function AssignmentView({ courseId }: AssignmentViewProps) {
     }
 
     const existingSubmission = currentAssignment.submissions[0];
-    const deleteAssignment = useDeleteAssignment(currentAssignment.moduleId);
+    const deleteAssignment = useDeleteAssignment();
     const router = useRouter();
 
     const { openModal } = useModalStore();
