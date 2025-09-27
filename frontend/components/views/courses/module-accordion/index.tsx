@@ -1,6 +1,6 @@
 'use client';
 
-import { Assignment, Lesson, Module } from '@/types/course';
+import { Module } from '@/types/course';
 import { useState } from 'react';
 import { ModuleCard } from './module-card';
 
@@ -11,7 +11,7 @@ interface ModuleAccordionProps {
     isEnrolled: boolean;
 }
 
-export function ModuleAccordionRefactored({ modules, courseId, canEdit }: ModuleAccordionProps) {
+export function ModuleAccordion({ modules, courseId, canEdit }: ModuleAccordionProps) {
     const [expandedModules, setExpandedModules] = useState<Set<string>>(new Set());
 
     const toggleModule = (moduleId: string) => {

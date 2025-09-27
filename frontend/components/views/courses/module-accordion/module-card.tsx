@@ -3,11 +3,11 @@
 import { useCoursesStore } from '@/stores/courses-store';
 import { useModalStore } from '@/stores/ui-store';
 import { Module } from '@/types/course';
-import { useDeleteModule } from '../../../../hooks/modules/use-delete-module';
 import { useConfirmationDialog } from '../../../../hooks/common/use-confirmation-dialog';
+import { useDeleteModule } from '../../../../hooks/modules/use-delete-module';
 import { Card } from '../../../ui/card';
-import { ModuleContent } from './module-content';
 import { ModuleHeader } from './module-header';
+import { ModuleContent } from './module-content';
 
 interface ModuleCardProps {
     module: Module;
@@ -49,10 +49,10 @@ export function ModuleCard({ module, courseId, canEdit, isExpanded, onToggle }: 
                 onDelete={() => handleDeleteModule(module.id, module.title)}
             />
             {isExpanded && (
-                <ModuleContent 
-                    module={module} 
-                    courseId={courseId} 
-                    canEdit={canEdit} 
+                <ModuleContent
+                    module={module}
+                    courseId={courseId}
+                    canEdit={canEdit}
                 />
             )}
         </Card>

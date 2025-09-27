@@ -13,13 +13,13 @@ interface ModuleHeaderProps {
     onDelete: () => void;
 }
 
-export function ModuleHeader({ 
-    module, 
-    canEdit, 
-    isExpanded, 
-    onToggle, 
-    onEdit, 
-    onDelete 
+export function ModuleHeader({
+    module,
+    canEdit,
+    isExpanded,
+    onToggle,
+    onEdit,
+    onDelete
 }: ModuleHeaderProps) {
     return (
         <div

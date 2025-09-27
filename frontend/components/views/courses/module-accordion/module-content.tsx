@@ -1,8 +1,8 @@
 'use client';
 
 import { Module } from '@/types/course';
-import { AssignmentsSection } from './sections/assignments-section';
 import { LessonsSection } from './sections/lessons-section';
+import { AssignmentsSection } from './sections/assignments-section';
 
 interface ModuleContentProps {
     module: Module;
