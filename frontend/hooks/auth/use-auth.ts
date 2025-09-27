@@ -26,44 +26,53 @@ export function useAuth() {
     } = useQuery<HttpResponse<User>>({
         queryKey: ["session"],
         queryFn: async () => {
-            const token = useAuthStore.getState().token;
-            if (!token) throw new Error("No token");
+            const authState = useAuthStore.getState();
+            
+            // If we're in the process of logging out, don't attempt session validation
+            if (authState.isLoggingOut) {
+                throw new Error("Logout in progress");
+            }
+            
+            if (!authState.token) throw new Error("No token");
 
             return apiFetch<HttpResponse<User>>("/auth/me", {
-                headers: { Authorization: `Bearer ${token}` },
+                headers: { Authorization: `Bearer ${authState.token}` },
             });
         },
         retry: false,
+        enabled: !isLoggingOut && !!useAuthStore.getState().token, // Don't run if logging out or no token
+        staleTime: 5 * 60 * 1000, // 5 minutes
+        refetchOnWindowFocus: false,
     });
 
     useEffect(() => {
         const publicAuthRoutes = ["/", "/auth/signin", "/auth/signup"];
 
         if (response) {
+            // Successful auth response - user is logged in
             login(response.data, useAuthStore.getState().token!);
-        } else if (isError && !isLoggingOut) {
-            // Only show error toast and redirect if this is NOT a voluntary logout
+        } else if (isError) {
+            // Check if we're currently logging out
+            const currentAuthState = useAuthStore.getState();
+            
+            if (currentAuthState.isLoggingOut) {
+                // This is a voluntary logout - just clean up without error messages
+                console.log("Voluntary logout detected - cleaning up without errors");
+                logout();
+                return;
+            }
+            
+            // This is an actual authentication failure (session expired, etc.)
+            console.log("Authentication failed - showing error toast");
             logout();
 
-            // only redirect + toast if not on an auth page and not logging out voluntarily
+            // Only redirect + toast if not on a public page
             if (!publicAuthRoutes.includes(pathname)) {
                 addToast({ type: "error", message: "You must log in" });
                 router.push("/auth/signin");
             }
-        } else if (isError && isLoggingOut) {
-            // If this is a voluntary logout, just clean up without showing error
-            logout();
         }
-    }, [
-        response,
-        isError,
-        isLoggingOut,
-        login,
-        logout,
-        addToast,
-        router,
-        pathname,
-    ]);
+    }, [response, isError, login, logout, addToast, router, pathname]);
 
     return { user, isLoading };
 }

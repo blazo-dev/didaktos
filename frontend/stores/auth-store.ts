@@ -38,7 +38,7 @@ export const useAuthStore = create<AuthState>()(
                     user: null,
                     token: null,
                     isAuthenticated: false,
-                    isLoggingOut: false,
+                    isLoggingOut: false, // Reset logging out flag
                 })),
 
             setLoggingOut: (isLoggingOut) =>
