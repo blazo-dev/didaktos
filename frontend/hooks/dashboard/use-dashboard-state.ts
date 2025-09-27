@@ -1,5 +1,6 @@
 import { useCourses } from "@/hooks/courses/use-courses";
 import { useAuthStore } from "@/stores/auth-store";
+import { useErrorHandling } from "@/hooks/common/use-error-handling";
 import { useMemo } from "react";
 
 interface DashboardStats {
@@ -31,18 +32,20 @@ interface RecentGrade {
 export function useDashboardState() {
     const { data: courses = [], isLoading: coursesLoading } = useCourses();
     const { user } = useAuthStore();
+    const { reportError } = useErrorHandling();
 
     // Process dashboard data with comprehensive memoization
     const dashboardData = useMemo(() => {
-        if (!user) {
-            return {
-                stats: {} as DashboardStats,
-                upcomingAssignments: [],
-                recentGrades: [],
-                ownedCourses: [],
-                enrolledCourses: [],
-            };
-        }
+        try {
+            if (!user) {
+                return {
+                    stats: {} as DashboardStats,
+                    upcomingAssignments: [],
+                    recentGrades: [],
+                    ownedCourses: [],
+                    enrolledCourses: [],
+                };
+            }
 
         // Categorize courses
         const ownedCourses = courses.filter((c) => c.instructor.id === user.id);
@@ -104,6 +107,7 @@ export function useDashboardState() {
                     .filter(
                         (submission) =>
                             submission.grade !== undefined &&
+                            submission.grade !== null &&
                             submission.submittedAt &&
                             new Date(submission.submittedAt) >= twoWeeksAgo
                     )
@@ -113,10 +117,18 @@ export function useDashboardState() {
                             `${assignment.id}-${submission.studentId}`,
                         title: assignment.title,
                         courseTitle: assignment.courseName,
-                        grade: submission.grade!.toString(),
+                        grade: String(submission.grade),
                     }))
             )
-            .sort((a, b) => parseInt(b.grade) - parseInt(a.grade))
+            .sort((a, b) => {
+                const gradeA = parseInt(a.grade);
+                const gradeB = parseInt(b.grade);
+                // Handle NaN values by putting them at the end
+                if (isNaN(gradeA) && isNaN(gradeB)) return 0;
+                if (isNaN(gradeA)) return 1;
+                if (isNaN(gradeB)) return -1;
+                return gradeB - gradeA;
+            })
             .slice(0, 5);
 
         // Calculate comprehensive stats to match existing interface
@@ -143,7 +155,9 @@ export function useDashboardState() {
             return dueDate >= now && dueDate <= nextWeek;
         }).length;
 
-        const gradesArray = recentGrades.map((g) => parseInt(g.grade));
+        const gradesArray = recentGrades
+            .map((g) => parseInt(g.grade))
+            .filter((grade) => !isNaN(grade)); // Filter out invalid grades
         const avgGrade =
             gradesArray.length > 0
                 ? Math.round(
@@ -166,7 +180,23 @@ export function useDashboardState() {
             ownedCourses,
             enrolledCourses,
         };
-    }, [courses, user]);
+        } catch (error) {
+            // Report error and return empty state
+            reportError(error as Error, {
+                severity: 'medium',
+                component: 'useDashboardState',
+                action: 'processing dashboard data',
+            });
+            
+            return {
+                stats: {} as DashboardStats,
+                upcomingAssignments: [],
+                recentGrades: [],
+                ownedCourses: [],
+                enrolledCourses: [],
+            };
+        }
+    }, [courses, user, reportError]);
 
     // Additional computed properties
     const dashboardStatus = useMemo(() => {

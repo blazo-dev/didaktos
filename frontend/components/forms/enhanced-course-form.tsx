@@ -1,17 +1,17 @@
 'use client';
 
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { ErrorBoundary } from '@/components/ui/error-boundary';
 import { LoadingOverlay } from '@/components/ui/global-loading-indicator';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { useEnhancedFormMutation } from '@/hooks/forms/use-enhanced-form-mutation';
-import { CourseFormData, courseSchema } from '@/lib/schemas/course';
 import { coursesApi } from '@/lib/api/course';
+import { CourseFormData, courseSchema } from '@/lib/schemas/course';
 import { useAuthStore } from '@/stores/auth-store';
-import { useToastStore } from '@/stores/ui-store';
 import { useCoursesStore } from '@/stores/courses-store';
+import { useToastStore } from '@/stores/ui-store';
 import { Course } from '@/types/course';
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { BaseForm } from './common/base-form';
 
@@ -23,7 +23,7 @@ interface EnhancedCourseFormProps {
 
 function CourseFormFields() {
     const { register, formState: { errors }, watch } = useFormContext<CourseFormData>();
-    
+
     // Watch for changes to provide real-time feedback
     const title = watch('title');
     const description = watch('description');
@@ -90,10 +90,10 @@ export function EnhancedCourseForm({ course, onSuccess, onCancel }: EnhancedCour
         updateFn: async (data) => {
             return coursesApi.updateCourse(course!.id, data);
         },
-        
+
         // Query invalidation
         queryKeys: [['courses']],
-        
+
         // Optimistic updates configuration
         optimisticType: 'course',
         getOptimisticData: (variables) => ({
@@ -109,26 +109,26 @@ export function EnhancedCourseForm({ course, onSuccess, onCancel }: EnhancedCour
             modules: course?.modules || [],
         } as Course),
         getOriginalData: () => course!,
-        
+
         // Enhanced loading and error handling
         loadingMessage: course ? 'Updating course...' : 'Creating course...',
         componentName: 'CourseForm',
-        
+
         // Success/error callbacks with state updates
         onSuccess: (data, variables) => {
             // Update current course if editing
             if (course) {
                 setCurrentCourse(data);
             }
-            
+
             addToast({
                 message: course ? 'Course updated successfully!' : 'Course created successfully!',
                 type: 'success',
             });
-            
+
             onSuccess?.(data);
         },
-        
+
         onError: (error, variables) => {
             addToast({
                 message: `Failed to ${course ? 'update' : 'create'} course: ${error.message}`,
@@ -173,17 +173,17 @@ export function EnhancedCourseForm({ course, onSuccess, onCancel }: EnhancedCour
                     onSubmit={handleSubmit}
                     onCancel={onCancel || (() => { })}
                     isEdit={!!course}
-                    submitText={{ 
-                        create: 'Create Course', 
+                    submitText={{
+                        create: 'Create Course',
                         update: 'Update Course',
                     }}
-                    loadingText={{ 
-                        create: 'Creating...', 
+                    loadingText={{
+                        create: 'Creating...',
                         update: 'Updating...',
                     }}
                 >
                     <CourseFormFields />
-                    
+
                     {/* Show optimistic update status */}
                     {mutation.isLoading && (
                         <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
@@ -195,7 +195,7 @@ export function EnhancedCourseForm({ course, onSuccess, onCancel }: EnhancedCour
                             </div>
                         </div>
                     )}
-                    
+
                     {/* Show error recovery options */}
                     {mutation.isError && (
                         <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
