@@ -35,8 +35,8 @@ interface DashboardStatsProps {
 
 export function DashboardStats({ courses, stats, userId }: DashboardStatsProps) {
     // Use the actual stats from the dashboard hook
-    const enrolledCourses = courses?.filter(course => 
-        course.enrollments.includes(userId!)
+    const enrolledCourses = courses?.filter(course =>
+        course.enrollments?.includes(userId!)
     ).length || 0;
     const dueThisWeek = stats.dueThisWeek;
     const avgGrade = stats.avgGrade > 0 ? `${stats.avgGrade}%` : "N/A";

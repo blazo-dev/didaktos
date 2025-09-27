@@ -1,4 +1,5 @@
-import { assistantApi, AssistantRequest } from "@/lib/api/assistant";
+import { assistantApi } from "@/lib/api/assistant";
+import { AssistantRequest } from "@/types/assistant";
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 

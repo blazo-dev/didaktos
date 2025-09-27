@@ -8,8 +8,8 @@ import { Card } from '@/components/ui/card';
 import { useAssignmentActions } from '@/hooks/assignments/use-assignment-actions';
 import { useDeleteAssignment } from '@/hooks/assignments/use-assignment-crud';
 import { useConfirmationDialog } from '@/hooks/common/use-confirmation-dialog';
+import { useEntityModals } from '@/hooks/common/use-entity-modals';
 import { useCourseContext } from '@/hooks/courses/use-course-context';
-import { useCourseModals } from '@/hooks/courses/use-course-modals';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCallback } from 'react';
@@ -27,13 +27,13 @@ export function AssignmentView({ courseId }: AssignmentViewProps) {
 
     const { course, isOwner } = useCourseContext(courseId);
     const { currentAssignment, updateAssignmentWithSubmission } = useAssignmentActions();
-    const { openEditAssignment, openCreateSubmission, openViewSubmission } = useCourseModals(courseId);
+    const { open } = useEntityModals();
 
     const handleAssignmentEdit = useCallback(() => {
         if (currentAssignment) {
-            openEditAssignment(currentAssignment);
+            open("assignment", "edit", currentAssignment);
         }
-    }, [currentAssignment, openEditAssignment]);
+    }, [currentAssignment, open]);
 
     const handleAssignmentDelete = useCallback(async () => {
         if (currentAssignment) {
@@ -50,11 +50,11 @@ export function AssignmentView({ courseId }: AssignmentViewProps) {
 
         const existingSubmission = currentAssignment.submissions?.[0];
         if (existingSubmission) {
-            openViewSubmission(existingSubmission, currentAssignment, 'student');
+            open("submission", "viewStudent", existingSubmission);
         } else {
-            openCreateSubmission(currentAssignment);
+            open("submission", "create", currentAssignment);
         }
-    }, [currentAssignment, openViewSubmission, openCreateSubmission]);
+    }, [currentAssignment, open]);
 
     const handleSubmissionSuccess = useCallback((newSubmission: any) => {
         if (currentAssignment) {

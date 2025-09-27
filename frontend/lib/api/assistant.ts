@@ -1,11 +1,6 @@
+import { AssistantRequest } from "@/types/assistant";
 import { HttpResponse } from "@/types/http";
 import { apiPost } from "./api";
-
-// Request types for the assistant API
-export interface AssistantRequest {
-    text: string;
-    choice: string;
-}
 
 // Assistant API object (simplified)
 export const assistantApi = {

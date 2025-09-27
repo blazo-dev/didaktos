@@ -47,7 +47,7 @@ export function CourseInfoCard({
                 <div className="flex space-x-4 flex-wrap text-sm text-muted-foreground">
                     <div className="flex items-center">
                         <Users className="h-4 w-4 mr-1" />
-                        {course.enrollments.length} enrolled
+                        {course.enrollments?.length} enrolled
                     </div>
                     <div className="flex items-center">
                         <BookOpen className="h-4 w-4 mr-1" />
@@ -59,7 +59,7 @@ export function CourseInfoCard({
                     </div>
                     <div className="flex items-center">
                         <Calendar className="h-4 w-4 mr-1" />
-                        Updated {new Date(course.updatedAt).toLocaleDateString()}
+                        Updated {new Date(course.updatedAt || Date.now()).toLocaleDateString()}
                     </div>
                 </div>
 
@@ -67,7 +67,7 @@ export function CourseInfoCard({
                     <div>
                         <p className="font-medium">Instructor</p>
                         <p className="text-sm text-muted-foreground">
-                            {course.instructor.name}
+                            {course.instructor?.name}
                             {isOwner && <span className="text-blue-600 ml-1">(You)</span>}
                         </p>
                     </div>

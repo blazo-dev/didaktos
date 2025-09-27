@@ -20,9 +20,9 @@ export function useCourseById(id: string) {
 
         const course = coursesData.find((c) => c.id === id) || null;
 
-        const isOwner = Boolean(course && course.instructor.id === user?.id);
+        const isOwner = Boolean(course && course.instructor?.id === user?.id);
         const isEnrolled = Boolean(
-            course && course.enrollments.includes(user?.id || "")
+            course && course.enrollments?.includes(user?.id || "")
         );
 
         return { course, isOwner, isEnrolled };

@@ -14,12 +14,12 @@ export function useCourseFiltering(courses: Course[], userId?: string) {
     // Categorize courses by relationship - memoized
     const coursesByRelation = useMemo(() => {
         const owned = courses.filter(
-            (course) => course.instructor.id === userId
+            (course) => course.instructor?.id === userId
         );
         const enrolled = courses.filter(
             (course) =>
-                course.enrollments.includes(userId || "") &&
-                course.instructor.id !== userId
+                course.enrollments?.includes(userId || "") &&
+                course.instructor?.id !== userId
         );
 
         return {
@@ -56,7 +56,7 @@ export function useCourseFiltering(courses: Course[], userId?: string) {
                     .toLowerCase()
                     .includes(searchLower);
                 const instructorMatch =
-                    course.instructor.name
+                    course.instructor?.name
                         ?.toLowerCase()
                         .includes(searchLower) || false;
 
@@ -70,13 +70,13 @@ export function useCourseFiltering(courses: Course[], userId?: string) {
     // Course statistics - memoized
     const stats = useMemo(() => {
         const totalModules = coursesByRelation.all.reduce(
-            (acc, course) => acc + course.modules.length,
+            (acc, course) => acc + (course.modules?.length || 0),
             0
         );
         const totalLessons = coursesByRelation.all.reduce(
             (acc, course) =>
                 acc +
-                course.modules.reduce(
+                (course.modules || []).reduce(
                     (moduleAcc, module) => moduleAcc + module.lessons.length,
                     0
                 ),
@@ -85,9 +85,9 @@ export function useCourseFiltering(courses: Course[], userId?: string) {
         const totalAssignments = coursesByRelation.all.reduce(
             (acc, course) =>
                 acc +
-                course.modules.reduce(
+                (course.modules || []).reduce(
                     (moduleAcc, module) =>
-                        moduleAcc + module.assignments.length,
+                        moduleAcc + (module.assignments?.length || 0),
                     0
                 ),
             0

@@ -4,7 +4,6 @@ import { useSidebar } from "@/hooks/common/use-sidebar"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { cn } from "@/lib/utils"
 import { useEffect, type ReactNode } from "react"
-import { GlobalLoadingIndicator } from "../ui/global-loading-indicator"
 import { ModalRegistry } from "../ui/modal-registry"
 import { ToastContainer } from "../ui/toast-container"
 import { Header } from "./header"
@@ -54,7 +53,6 @@ export function AppLayout({ children, showSidebar = false, showHeader = true, is
     <div className={cn("min-h-screen bg-background grid", showHeader ? "grid-rows-[auto_1fr]" : "")}>
       <ToastContainer />
       <ModalRegistry />
-      <GlobalLoadingIndicator position="top" showProgress showOperationCount />
       {isLoading && <Loader text="Loading..." />}
       {showHeader && (
         <Header showSidebar={showSidebar} isLanding={isLanding} />

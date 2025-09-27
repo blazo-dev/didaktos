@@ -18,7 +18,7 @@ function ViewAllSubmissions({ submissions }: ViewAllSubmissionsProps) {
     const { user } = useAuthStore()
 
     // Check if user is the instructor
-    const isInstructor = currentCourse?.instructor.id === user?.id
+    const isInstructor = currentCourse?.instructor?.id === user?.id
 
     // If not instructor, show access denied
     if (!isInstructor) {
@@ -116,7 +116,7 @@ function ViewAllSubmissions({ submissions }: ViewAllSubmissionsProps) {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                     <div>
                         <span className="font-medium">Total Students:</span>
-                        <span className="ml-2 text-muted-foreground">{currentCourse?.enrollments.length || 0}</span>
+                        <span className="ml-2 text-muted-foreground">{currentCourse?.enrollments?.length || 0}</span>
                     </div>
                     <div>
                         <span className="font-medium">Submitted:</span>
@@ -125,7 +125,7 @@ function ViewAllSubmissions({ submissions }: ViewAllSubmissionsProps) {
                     <div>
                         <span className="font-medium">Pending:</span>
                         <span className="ml-2 text-red-500">
-                            {(currentCourse?.enrollments.length || 0) - (submissions?.length || 0)}
+                            {(currentCourse?.enrollments?.length || 0) - (submissions?.length || 0)}
                         </span>
                     </div>
                 </div>

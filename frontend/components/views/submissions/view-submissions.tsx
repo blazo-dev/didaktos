@@ -21,7 +21,7 @@ function ViewSubmission() {
         )
     }
 
-    const isInstructor = currentCourse?.instructor.id === user?.id;
+    const isInstructor = currentCourse?.instructor?.id === user?.id;
 
     const formatDate = (dateString?: string) => {
         if (!dateString) return "Not available"
@@ -115,7 +115,7 @@ function ViewSubmission() {
                         {!isInstructor ? (<div>
                             <p className="text-sm font-medium text-foreground">Instructor</p>
                             <p className="text-muted-foreground">
-                                {currentCourse.instructor.name} ({currentCourse.instructor.email})
+                                {currentCourse.instructor?.name} ({currentCourse.instructor?.email})
                             </p>
                         </div>) : (
                             <div>

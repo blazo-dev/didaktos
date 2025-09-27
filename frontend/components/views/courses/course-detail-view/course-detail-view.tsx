@@ -7,8 +7,8 @@ import { LessonModal } from '@/components/modals/lesson-modal';
 import { ModuleModal } from '@/components/modals/module-modal';
 import { ViewAllSubmissionsModal } from '@/components/modals/view-all-submission-modal';
 import { ViewSubmissionModal } from '@/components/modals/view-submission-modal';
+import { useEntityModals } from '@/hooks/common/use-entity-modals';
 import { useCourseContext } from '@/hooks/courses/use-course-context';
-import { useCourseModals } from '@/hooks/courses/use-course-modals';
 import { useGetAllSubmissionsByCourse } from '@/hooks/submissions/use-get-all-submission-by-course';
 import { useAppStore } from '@/stores/app-store';
 import { useCallback } from 'react';
@@ -34,31 +34,22 @@ export function CourseDetailView({ courseId }: CourseDetailViewProps) {
         isEnrolled,
         isLoading,
         courseStats,
-        permissions,
         courseStatus
     } = useCourseContext(courseId);
 
     const {
-        openCreateModule,
-        openViewAllSubmissions
-    } = useCourseModals(courseId);
+        open
+    } = useEntityModals();
 
     // Handle modal actions with new hooks
     const handleCreateModule = useCallback(() => {
-        openCreateModule();
-    }, [openCreateModule]);
+        open("module", "create");
+    }, [open]);
 
     const handleViewSubmissions = useCallback(() => {
-        if (submissions) {
-            openViewAllSubmissions(submissions, undefined, 'All Submissions');
-        }
-    }, [submissions, openViewAllSubmissions]);
+        open("submission", "all", submissions);
+    }, [submissions, open]);
 
-    // Handle grading success
-    const handleGradingSuccess = useCallback(() => {
-        // The submission data will be automatically refreshed via React Query
-        // No manual state management needed
-    }, []);
 
     // Handle loading and error states using courseStatus
     if (isLoading || courseStatus.status === 'loading') {
@@ -133,7 +124,6 @@ export function CourseDetailView({ courseId }: CourseDetailViewProps) {
             />
             <GradeSubmissionModal
                 modalId="grade-submission"
-                onSuccess={handleGradingSuccess}
             />
         </div>
     );
