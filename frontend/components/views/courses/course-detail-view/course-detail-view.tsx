@@ -47,8 +47,8 @@ export function CourseDetailView({ courseId }: CourseDetailViewProps) {
     }, [open]);
 
     const handleViewSubmissions = useCallback(() => {
-        open("submission", "all", submissions);
-    }, [submissions, open]);
+        open("submission", "all", { submissions, isInstructor: isOwner, course });
+    }, [open, submissions, isOwner, course]);
 
 
     // Handle loading and error states using courseStatus
@@ -116,7 +116,6 @@ export function CourseDetailView({ courseId }: CourseDetailViewProps) {
 
             <ViewAllSubmissionsModal
                 modalId="view-all-submissions"
-                submissions={submissions || []}
             />
             <ViewSubmissionModal
                 modalId="view-submission-instructor"

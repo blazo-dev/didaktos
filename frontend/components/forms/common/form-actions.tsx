@@ -25,7 +25,7 @@ export function FormActions({
             <Button
                 type="button"
                 className='h-full'
-                variant="outline"
+                variant="destructive"
                 onClick={onCancel}
                 disabled={isPending}
             >

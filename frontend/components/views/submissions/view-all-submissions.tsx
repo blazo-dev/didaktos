@@ -1,24 +1,19 @@
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 // Removed: import { useAppStore } from "@/stores/app-store"
-import { useAuthStore } from "@/stores/auth-store"
 import { useModalStore } from "@/stores/ui-store"
 import { Course, Submission } from "@/types/course"
 import { Award, Calendar, Edit, Eye, FileText, User } from "lucide-react"
 
 interface ViewAllSubmissionsProps {
     submissions: Submission[];
+    isInstructor: boolean;
     course?: Course;
     onSubmissionSelect?: (submission: Submission) => void;
 }
 
-function ViewAllSubmissions({ submissions, course, onSubmissionSelect }: ViewAllSubmissionsProps) {
-    // Removed: const { currentCourse, setCurrentSubmission } = useAppStore()
+function ViewAllSubmissions({ submissions, isInstructor, course, onSubmissionSelect }: ViewAllSubmissionsProps) {
     const { openModal } = useModalStore()
-    const { user } = useAuthStore()
-
-    // Check if user is the instructor
-    const isInstructor = course?.instructor?.id === user?.id
 
     // If not instructor, show access denied
     if (!isInstructor) {
