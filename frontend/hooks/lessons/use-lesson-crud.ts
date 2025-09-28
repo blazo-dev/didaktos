@@ -2,7 +2,6 @@ import { lessonsApi } from "@/lib/api/lesson";
 import { createNestedCrudHooks } from "@/lib/hooks/use-crud-hooks";
 import { Lesson } from "@/types/course";
 
-// Create standardized CRUD hooks for lessons
 const lessonCrudHooks = createNestedCrudHooks<
     Lesson,
     Omit<Lesson, "id" | "moduleId">,
@@ -20,7 +19,6 @@ const lessonCrudHooks = createNestedCrudHooks<
     },
 });
 
-// Export individual hooks for backward compatibility
 export const useCreateLesson = lessonCrudHooks.useCreate!;
 export const useUpdateLesson = lessonCrudHooks.useUpdate!;
 export const useDeleteLesson = lessonCrudHooks.useDelete!;

@@ -2,7 +2,6 @@ import { coursesApi } from "@/lib/api/course";
 import { createCrudHooks } from "@/lib/hooks/use-crud-hooks";
 import { Course } from "@/types/course";
 
-// Create standardized CRUD hooks for courses
 const courseCrudHooks = createCrudHooks<Course>({
     entityName: "Course",
     invalidateKeys: ["courses"],
@@ -14,7 +13,6 @@ const courseCrudHooks = createCrudHooks<Course>({
     },
 });
 
-// Export individual hooks for backward compatibility
 export const useCreateCourse = courseCrudHooks.useCreate!;
 export const useUpdateCourse = courseCrudHooks.useUpdate!;
 export const useDeleteCourse = courseCrudHooks.useDelete!;
