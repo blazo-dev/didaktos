@@ -1,7 +1,7 @@
 "use client"
 
 import { useSidebar } from "@/hooks/common/use-sidebar"
-import { useIsMobile } from "@/hooks/use-mobile"
+import { useIsMobile } from "@/hooks/common/use-mobile"
 import { cn } from "@/lib/utils"
 import { useEffect, type ReactNode } from "react"
 import { ModalRegistry } from "../ui/modal-registry"

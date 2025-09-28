@@ -4,9 +4,26 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 
 /**
- * Simplified assignment actions hook for cache management
- * Provides methods for invalidating queries after assignment operations
- * Note: Replaced global state management with URL-based entity resolution
+ * Assignment-related actions and query cache management hook
+ *
+ * @description Provides utility functions for managing assignment-related queries and
+ * performing common assignment operations like grading submissions and cache invalidation.
+ * Replaced global state management with URL-based entity resolution pattern.
+ *
+ * @returns {Object} Object containing:
+ *   - invalidateAssignmentQueries: Function to invalidate all assignment-related queries
+ *   - updateSubmissionWithGrade: Function to update submission with grade and return updated object
+ *   - handleAssignmentDeletion: Function to clean up after assignment deletion
+ *
+ * @example
+ * ```tsx
+ * const { invalidateAssignmentQueries, updateSubmissionWithGrade } = useAssignmentActions();
+ *
+ * const handleGradeSubmission = (submission: Submission, grade: number) => {
+ *   const updated = updateSubmissionWithGrade(submission, grade, "Good work!");
+ *   // Components will re-fetch via URL-based hooks
+ * };
+ * ```
  */
 export function useAssignmentActions() {
     const queryClient = useQueryClient();

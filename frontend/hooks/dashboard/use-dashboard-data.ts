@@ -30,6 +30,36 @@ export interface DashboardData {
     }[];
 }
 
+/**
+ * Comprehensive dashboard data aggregation hook
+ *
+ * @description Processes course data to generate dashboard statistics, recent activity,
+ * upcoming deadlines, and course progress. Fetches submission data for each course
+ * in parallel using useQueries for optimal performance. Memoizes computations to
+ * prevent unnecessary recalculations.
+ *
+ * @param {Course[]} courses - Array of courses to analyze for dashboard data
+ *
+ * @returns {DashboardData} Object containing:
+ *   - stats: Dashboard statistics (active courses, due assignments, avg grade, etc.)
+ *   - currentCourses: Array of courses user is currently enrolled in
+ *   - upcomingAssignments: Array of upcoming assignment deadlines
+ *   - recentGrades: Array of recently graded submissions
+ *
+ * @example
+ * ```tsx
+ * const { data: courses = [] } = useCourses();
+ * const { stats, recentGrades, upcomingAssignments } = useDashboardData(courses);
+ *
+ * return (
+ *   <Dashboard>
+ *     <StatsCards stats={stats} />
+ *     <GradesFeed grades={recentGrades} />
+ *     <AssignmentsList assignments={upcomingAssignments} />
+ *   </Dashboard>
+ * );
+ * ```
+ */
 export function useDashboardData(courses: Course[]): DashboardData {
     const user = useAuthStore((state) => state.user);
     const userId = user?.id;
@@ -126,19 +156,31 @@ export function useDashboardData(courses: Course[]): DashboardData {
                 .map((submission) => submission.assignmentId)
         );
 
-        return enrolledCourses.flatMap((course) =>
-            course.modules?.flatMap((m) =>
-                m.assignments
-                    // Filter out assignments that already have grades
-                    .filter((a) => !gradedAssignmentIds.has(a.id))
-                    .map((a) => ({
-                        id: a.id,
-                        title: a.title,
-                        courseTitle: course.title,
-                        dueDate: a.dueDate,
-                    }))
-            ) || []
-        ).filter((a): a is { id: string; title: string; courseTitle: string; dueDate: string } => !!a);
+        return enrolledCourses
+            .flatMap(
+                (course) =>
+                    course.modules?.flatMap((m) =>
+                        m.assignments
+                            // Filter out assignments that already have grades
+                            .filter((a) => !gradedAssignmentIds.has(a.id))
+                            .map((a) => ({
+                                id: a.id,
+                                title: a.title,
+                                courseTitle: course.title,
+                                dueDate: a.dueDate,
+                            }))
+                    ) || []
+            )
+            .filter(
+                (
+                    a
+                ): a is {
+                    id: string;
+                    title: string;
+                    courseTitle: string;
+                    dueDate: string;
+                } => !!a
+            );
     }, [enrolledCourses, allSubmissions, userId]);
 
     // Get recent grades from submissions data

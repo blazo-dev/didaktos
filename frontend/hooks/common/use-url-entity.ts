@@ -4,8 +4,33 @@ import { useParams } from "next/navigation";
 import { useMemo } from "react";
 
 /**
- * Hook to extract entity data from URL parameters instead of global state
- * Replaces the need for currentCourse, currentModule, currentLesson, etc.
+ * Base hook to extract and resolve nested entity data from URL parameters
+ *
+ * @description Replaces global state-based entity management with URL-based entity resolution.
+ * Automatically extracts course, module, lesson, and assignment IDs from URL parameters and
+ * resolves the corresponding entity objects from the course data hierarchy.
+ *
+ * @returns {Object} Object containing:
+ *   - courseId, moduleId, lessonId, assignmentId: URL parameter strings
+ *   - course: Resolved Course object or null
+ *   - currentModule, currentLesson, currentAssignment: Resolved nested entities or null
+ *   - isLoading: Boolean indicating if course data is loading
+ *   - isValid: Boolean indicating if all required entities are found
+ *
+ * @example
+ * ```tsx
+ * const {
+ *   course,
+ *   currentModule,
+ *   currentLesson,
+ *   isLoading,
+ *   isValid
+ * } = useUrlEntities();
+ *
+ * if (isLoading) return <Loading />;
+ * if (!isValid) return <NotFound />;
+ * return <EntityView course={course} lesson={currentLesson} />;
+ * ```
  */
 export function useUrlEntities() {
     const params = useParams();
@@ -65,7 +90,25 @@ export function useUrlEntities() {
 }
 
 /**
- * Hook for course-level data (when only courseId is in URL)
+ * Hook for course-level data extraction from URL parameters
+ *
+ * @description Specialized hook for pages that only need course-level data.
+ * Extracts courseId from URL parameters and resolves the course object.
+ *
+ * @returns {Object} Object containing:
+ *   - course: Course object or null if not found
+ *   - courseId: Course ID string from URL parameters
+ *   - isLoading: Boolean indicating if course data is loading
+ *   - isValid: Boolean indicating if course was found and loaded
+ *
+ * @example
+ * ```tsx
+ * const { course, isLoading, isValid } = useCourseFromUrl();
+ *
+ * if (isLoading) return <Loading />;
+ * if (!isValid) return <CourseNotFound />;
+ * return <CourseDetailView course={course} />;
+ * ```
  */
 export function useCourseFromUrl(): {
     course: Course | null;
@@ -86,7 +129,26 @@ export function useCourseFromUrl(): {
 }
 
 /**
- * Hook for module-level data
+ * Hook for module-level data extraction from URL parameters
+ *
+ * @description Specialized hook for pages that need course and module context.
+ * Extracts courseId and moduleId from URL parameters and resolves both entities.
+ *
+ * @returns {Object} Object containing:
+ *   - course: Parent Course object or null
+ *   - currentModule: Module object or null if not found
+ *   - courseId, moduleId: ID strings from URL parameters
+ *   - isLoading: Boolean indicating if course data is loading
+ *   - isValid: Boolean indicating if both course and module were found
+ *
+ * @example
+ * ```tsx
+ * const { course, currentModule, isLoading, isValid } = useModuleFromUrl();
+ *
+ * if (isLoading) return <Loading />;
+ * if (!isValid) return <ModuleNotFound />;
+ * return <ModuleView course={course} module={currentModule} />;
+ * ```
  */
 export function useModuleFromUrl(): {
     course: Course | null;
@@ -109,7 +171,33 @@ export function useModuleFromUrl(): {
 }
 
 /**
- * Hook for lesson-level data
+ * Hook for lesson-level data extraction from URL parameters
+ *
+ * @description Specialized hook for pages that need course, module, and lesson context.
+ * Extracts courseId, moduleId, and lessonId from URL parameters and resolves all entities.
+ *
+ * @returns {Object} Object containing:
+ *   - course: Parent Course object or null
+ *   - currentModule: Parent Module object or null
+ *   - currentLesson: Lesson object or null if not found
+ *   - courseId, moduleId, lessonId: ID strings from URL parameters
+ *   - isLoading: Boolean indicating if course data is loading
+ *   - isValid: Boolean indicating if course, module, and lesson were found
+ *
+ * @example
+ * ```tsx
+ * const {
+ *   course,
+ *   currentModule,
+ *   currentLesson,
+ *   isLoading,
+ *   isValid
+ * } = useLessonFromUrl();
+ *
+ * if (isLoading) return <Loading />;
+ * if (!isValid) return <LessonNotFound />;
+ * return <LessonView course={course} module={currentModule} lesson={currentLesson} />;
+ * ```
  */
 export function useLessonFromUrl(): {
     course: Course | null;
@@ -136,7 +224,33 @@ export function useLessonFromUrl(): {
 }
 
 /**
- * Hook for assignment-level data
+ * Hook for assignment-level data extraction from URL parameters
+ *
+ * @description Specialized hook for pages that need course, module, and assignment context.
+ * Extracts courseId, moduleId, and assignmentId from URL parameters and resolves all entities.
+ *
+ * @returns {Object} Object containing:
+ *   - course: Parent Course object or null
+ *   - currentModule: Parent Module object or null
+ *   - currentAssignment: Assignment object or null if not found
+ *   - courseId, moduleId, assignmentId: ID strings from URL parameters
+ *   - isLoading: Boolean indicating if course data is loading
+ *   - isValid: Boolean indicating if course, module, and assignment were found
+ *
+ * @example
+ * ```tsx
+ * const {
+ *   course,
+ *   currentModule,
+ *   currentAssignment,
+ *   isLoading,
+ *   isValid
+ * } = useAssignmentFromUrl();
+ *
+ * if (isLoading) return <Loading />;
+ * if (!isValid) return <AssignmentNotFound />;
+ * return <AssignmentView assignment={currentAssignment} course={course} />;
+ * ```
  */
 export function useAssignmentFromUrl(): {
     course: Course | null;
@@ -163,7 +277,35 @@ export function useAssignmentFromUrl(): {
 }
 
 /**
- * Hook for submission-level data (when submissionId is in URL)
+ * Hook for submission-level data extraction from URL parameters
+ *
+ * @description Specialized hook for pages that need complete entity hierarchy including
+ * submissions. Extracts all relevant IDs from URL parameters and resolves the full
+ * entity chain. Note: Currently requires additional API call for submission data.
+ *
+ * @returns {Object} Object containing:
+ *   - course: Parent Course object or null
+ *   - currentModule: Parent Module object or null
+ *   - currentAssignment: Parent Assignment object or null
+ *   - currentSubmission: Submission object or null (TODO: requires API integration)
+ *   - courseId, moduleId, assignmentId, submissionId: ID strings from URL parameters
+ *   - isLoading: Boolean indicating if course data is loading
+ *   - isValid: Boolean indicating if course, module, and assignment were found
+ *
+ * @example
+ * ```tsx
+ * const {
+ *   course,
+ *   currentAssignment,
+ *   currentSubmission,
+ *   isLoading,
+ *   isValid
+ * } = useSubmissionFromUrl();
+ *
+ * if (isLoading) return <Loading />;
+ * if (!isValid) return <SubmissionNotFound />;
+ * return <SubmissionView submission={currentSubmission} assignment={currentAssignment} />;
+ * ```
  */
 export function useSubmissionFromUrl(): {
     course: Course | null;

@@ -12,7 +12,11 @@ type ModalConfig = {
     data?: any;
 };
 
-// Config de modales (readonly gracias a `as const`)
+/**
+ * Configuration object for predefined entity modals
+ * @description Defines modal configurations for different entity types and actions.
+ * Readonly configuration ensures consistency across the application.
+ */
 const modalConfigs = {
     course: {
         create: { id: "create-course", title: "Create Course", size: "md" },
@@ -67,6 +71,43 @@ type ModalConfigs = typeof modalConfigs;
 type EntityType = keyof ModalConfigs;
 type ActionType<E extends EntityType> = keyof ModalConfigs[E];
 
+/**
+ * Standardized entity modal management hook
+ *
+ * @description Provides type-safe modal management for predefined entity types and actions.
+ * Supports courses, modules, lessons, assignments, and submissions with different action
+ * contexts (create, edit, view, grade, etc.). Replaces global state with direct data passing
+ * to modals for better performance and simpler state management.
+ *
+ * @returns {Object} Object containing:
+ *   - open: Function to open a modal with entity type, action, and optional data
+ *   - close: Function to close a specific modal by entity type and action
+ *
+ * @example
+ * ```tsx
+ * const { open, close } = useEntityModal();
+ *
+ * // Open course creation modal
+ * const handleCreateCourse = () => {
+ *   open('course', 'create');
+ * };
+ *
+ * // Open lesson edit modal with data
+ * const handleEditLesson = (lesson: Lesson) => {
+ *   open('lesson', 'edit', lesson);
+ * };
+ *
+ * // Open submission grading modal
+ * const handleGradeSubmission = (submission: Submission) => {
+ *   open('submission', 'grade', { submission, assignment });
+ * };
+ *
+ * // Close modal
+ * const handleClose = () => {
+ *   close('course', 'create');
+ * };
+ * ```
+ */
 export function useEntityModal() {
     const { openModal, closeModal } = useModalStore();
     // Removed: Global state setters - modals now receive data as props

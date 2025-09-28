@@ -3,8 +3,36 @@
 import { useAssistantStore } from "@/stores/assistant-store";
 
 /**
- * Custom hook for AI assistant management (simplified version)
- * Provides convenient methods for interacting with the assistant
+ * AI assistant interaction hook for educational guidance and support
+ *
+ * @description Provides convenient methods for interacting with the AI assistant system.
+ * Manages conversation state, message history, and assistant responses. Simplified version
+ * that interfaces with the assistant store for state management.
+ *
+ * @returns {Object} Object containing:
+ *   - messages: Array of conversation messages between user and assistant
+ *   - isLoading: Boolean indicating if assistant is processing a request
+ *   - sendMessage: Function to send a message to the assistant
+ *   - clearConversation: Function to reset the conversation history
+ *   - isTyping: Boolean indicating if assistant is currently typing a response
+ *
+ * @example
+ * ```tsx
+ * const { messages, sendMessage, isLoading, clearConversation } = useAssistant();
+ *
+ * const handleSendMessage = (content: string) => {
+ *   sendMessage(content);
+ * };
+ *
+ * return (
+ *   <AssistantChat
+ *     messages={messages}
+ *     onSendMessage={handleSendMessage}
+ *     isLoading={isLoading}
+ *     onClear={clearConversation}
+ *   />
+ * );
+ * ```
  */
 export function useAssistant() {
     const {

@@ -4,8 +4,49 @@ import { useMemo, useState } from "react";
 export type FilterType = "all" | "owned" | "enrolled";
 
 /**
- * Optimized course filtering hook with memoization
- * Manages search, filtering, and course statistics efficiently
+ * Advanced course filtering and search hook with statistics and performance optimization
+ *
+ * @description Provides comprehensive course filtering capabilities including text search,
+ * relationship-based filtering (owned/enrolled), and statistical analysis. Uses memoization
+ * for optimal performance with large course datasets. Includes filter summaries and helper
+ * methods for common filtering operations.
+ *
+ * @param {Course[]} courses - Array of courses to filter and analyze
+ * @param {string} [userId] - Current user's ID for determining course relationships
+ *
+ * @returns {Object} Comprehensive filtering object containing:
+ *   - searchTerm: Current search query string
+ *   - setSearchTerm: Function to update search query
+ *   - filterType: Current filter type ('all' | 'owned' | 'enrolled')
+ *   - setFilterType: Function to update filter type
+ *   - filteredCourses: Array of courses after applying all filters
+ *   - coursesByRelation: Object with categorized courses (owned, enrolled, all)
+ *   - stats: Object with course statistics (counts, totals, averages)
+ *   - filterSummary: Object with human-readable filter descriptions
+ *   - clearSearch/clearFilters/applyQuickFilter: Helper methods
+ *   - Various computed flags (isEmpty, hasFilters, isSearching)
+ *
+ * @example
+ * ```tsx
+ * const {
+ *   filteredCourses,
+ *   searchTerm,
+ *   setSearchTerm,
+ *   filterType,
+ *   setFilterType,
+ *   stats,
+ *   clearFilters
+ * } = useCourseFiltering(courses, user?.id);
+ *
+ * return (
+ *   <div>
+ *     <SearchInput value={searchTerm} onChange={setSearchTerm} />
+ *     <FilterTabs value={filterType} onChange={setFilterType} />
+ *     <CourseStats stats={stats} />
+ *     <CourseGrid courses={filteredCourses} />
+ *   </div>
+ * );
+ * ```
  */
 export function useCourseFiltering(courses: Course[], userId?: string) {
     const [searchTerm, setSearchTerm] = useState("");

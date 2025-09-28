@@ -9,8 +9,24 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 /**
- * Custom hook for managing user authentication state and session validation
- * Handles automatic login/logout based on token validity and user session
+ * Primary authentication hook for managing user session state and validation
+ *
+ * @description Handles user authentication state, automatic login/logout based on token validity,
+ * session validation with the API, and redirects for unauthorized access. Automatically validates
+ * stored tokens against the API and manages the authentication flow.
+ *
+ * @returns {{user: User | null, isLoading: boolean}} Object containing:
+ *   - user: Current authenticated user object or null if not authenticated
+ *   - isLoading: Boolean indicating if authentication check is in progress
+ *
+ * @example
+ * ```tsx
+ * const { user, isLoading } = useAuth();
+ *
+ * if (isLoading) return <Loading />;
+ * if (!user) return <LoginForm />;
+ * return <Dashboard user={user} />;
+ * ```
  */
 export function useAuth() {
     const router = useRouter();

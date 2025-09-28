@@ -2,6 +2,35 @@ import { useCourseById } from "@/hooks/courses/use-course-by-id";
 import { useAuthStore } from "@/stores/auth-store";
 import { useMemo } from "react";
 
+/**
+ * Hook for comprehensive course context including user permissions and access control
+ *
+ * @description Extends useCourseById with additional context like access permissions,
+ * enrollment status, and common course-related computed properties. Useful for
+ * course detail pages that need full context about user relationships.
+ *
+ * @param {string} courseId - The unique identifier of the course
+ *
+ * @returns {Object} Object containing:
+ *   - All properties from useCourseById (course, isOwner, isEnrolled, etc.)
+ *   - hasAccess: Boolean indicating if user can view the course content
+ *   - canManage: Boolean indicating if user can edit/manage the course
+ *   - role: String indicating user's role ('owner', 'student', 'visitor')
+ *
+ * @example
+ * ```tsx
+ * const { course, hasAccess, canManage, role } = useCourseContext(courseId);
+ *
+ * if (!hasAccess) return <AccessDenied />;
+ *
+ * return (
+ *   <CourseLayout>
+ *     {canManage && <AdminPanel />}
+ *     <CourseContent course={course} userRole={role} />
+ *   </CourseLayout>
+ * );
+ * ```
+ */
 export function useCourseContext(courseId: string) {
     const { course, isOwner, isEnrolled, isLoading, isError } =
         useCourseById(courseId);
