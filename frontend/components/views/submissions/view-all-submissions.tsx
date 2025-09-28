@@ -1,24 +1,24 @@
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { useAppStore } from "@/stores/app-store"
+// Removed: import { useAppStore } from "@/stores/app-store"
 import { useAuthStore } from "@/stores/auth-store"
 import { useModalStore } from "@/stores/ui-store"
-import { Submission } from "@/types/course"
+import { Course, Submission } from "@/types/course"
 import { Award, Calendar, Edit, Eye, FileText, User } from "lucide-react"
 
 interface ViewAllSubmissionsProps {
-    // Future props can be added here if needed
     submissions: Submission[];
+    course?: Course;
+    onSubmissionSelect?: (submission: Submission) => void;
 }
 
-function ViewAllSubmissions({ submissions }: ViewAllSubmissionsProps) {
-    // Note: currentSubmissions will be implemented in useCoursesStore
-    const { currentCourse, setCurrentSubmission } = useAppStore()
+function ViewAllSubmissions({ submissions, course, onSubmissionSelect }: ViewAllSubmissionsProps) {
+    // Removed: const { currentCourse, setCurrentSubmission } = useAppStore()
     const { openModal } = useModalStore()
     const { user } = useAuthStore()
 
     // Check if user is the instructor
-    const isInstructor = currentCourse?.instructor?.id === user?.id
+    const isInstructor = course?.instructor?.id === user?.id
 
     // If not instructor, show access denied
     if (!isInstructor) {
@@ -35,8 +35,8 @@ function ViewAllSubmissions({ submissions }: ViewAllSubmissionsProps) {
         )
     }
 
-    // If no assignment selected
-    if (!currentCourse) {
+    // If no course provided
+    if (!course) {
         return (
             <div className="p-8 text-center">
                 <div className="bg-muted rounded-lg p-8">
@@ -79,7 +79,8 @@ function ViewAllSubmissions({ submissions }: ViewAllSubmissionsProps) {
     }
 
     const handleViewSubmission = (submission: Submission) => {
-        setCurrentSubmission(submission)
+        // Call the parent callback if provided
+        onSubmissionSelect?.(submission)
 
         openModal({
             id: "view-submission-instructor",
@@ -91,7 +92,8 @@ function ViewAllSubmissions({ submissions }: ViewAllSubmissionsProps) {
     }
 
     const handleGradeSubmission = (submission: Submission) => {
-        setCurrentSubmission(submission)
+        // Call the parent callback if provided
+        onSubmissionSelect?.(submission)
         // Open grading modal or navigate to grading page
         openModal({
             id: "grade-submission",
@@ -108,15 +110,15 @@ function ViewAllSubmissions({ submissions }: ViewAllSubmissionsProps) {
             <Card className="p-4 gap-2">
                 <h3 className="font-semibold text-foreground">Course Overview</h3>
                 <h4 className="text-lg font-medium text-primary">
-                    Course: {currentCourse.title}
+                    Course: {course.title}
                 </h4>
                 <p className="text-muted-foreground">
-                    Description: {currentCourse.description}
+                    Description: {course.description}
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                     <div>
                         <span className="font-medium">Total Students:</span>
-                        <span className="ml-2 text-muted-foreground">{currentCourse?.enrollments?.length || 0}</span>
+                        <span className="ml-2 text-muted-foreground">{course?.enrollments?.length || 0}</span>
                     </div>
                     <div>
                         <span className="font-medium">Submitted:</span>
@@ -125,7 +127,7 @@ function ViewAllSubmissions({ submissions }: ViewAllSubmissionsProps) {
                     <div>
                         <span className="font-medium">Pending:</span>
                         <span className="ml-2 text-red-500">
-                            {(currentCourse?.enrollments?.length || 0) - (submissions?.length || 0)}
+                            {(course?.enrollments?.length || 0) - (submissions?.length || 0)}
                         </span>
                     </div>
                 </div>

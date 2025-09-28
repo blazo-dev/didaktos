@@ -1,8 +1,9 @@
 'use client';
 
+import { useModuleFromUrl } from '@/hooks/common/use-url-entity';
 import { useCreateLesson, useUpdateLesson } from "@/hooks/lessons/use-lesson-crud";
 import { LessonFormData, lessonSchema } from "@/lib/schemas/lesson";
-import { useAppStore } from "@/stores/app-store";
+// Removed: import { useAppStore } from "@/stores/app-store";
 import { useAuthStore } from "@/stores/auth-store";
 import { useToastStore } from "@/stores/ui-store";
 import { Lesson } from "@/types/course";
@@ -14,6 +15,7 @@ import { BaseForm } from "./common/base-form";
 
 interface LessonFormProps {
     lesson?: Lesson;
+    moduleId?: string; // Optional prop for when URL doesn't contain moduleId
     onSuccess?: (lesson: Lesson) => void;
     onCancel?: () => void;
 }
@@ -49,12 +51,16 @@ function LessonFormFields() {
     );
 }
 
-export function LessonForm({ lesson, onSuccess, onCancel }: LessonFormProps) {
+export function LessonForm({ lesson, moduleId, onSuccess, onCancel }: LessonFormProps) {
     const { user } = useAuthStore();
-    const { currentModule } = useAppStore();
+    // Use URL-based entity resolution or props
+    const { currentModule, moduleId: urlModuleId } = useModuleFromUrl();
     const { addToast } = useToastStore();
     const createLessonMutation = useCreateLesson();
     const updateLessonMutation = useUpdateLesson();
+
+    // Use moduleId from props or URL
+    const effectiveModuleId = moduleId || urlModuleId || currentModule?.id;
 
     // Handle success with useEffect
     useEffect(() => {
@@ -86,7 +92,7 @@ export function LessonForm({ lesson, onSuccess, onCancel }: LessonFormProps) {
             };
 
             await createLessonMutation.mutateAsync({
-                moduleId: currentModule!.id,
+                moduleId: effectiveModuleId!,
                 lessonData: newLesson,
             });
         }

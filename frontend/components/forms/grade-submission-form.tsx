@@ -3,14 +3,17 @@
 import { useGradeSubmission } from "@/hooks/submissions/use-submission-crud";
 import { SubmissionGradeRequestDto } from "@/lib/api/submission";
 import { GradeSubmissionFormData, gradeSubmissionSchema } from "@/lib/schemas/submission";
-import { useAppStore } from "@/stores/app-store";
+// Removed: import { useAppStore } from "@/stores/app-store";
 import { useAuthStore } from "@/stores/auth-store";
 import { useToastStore } from "@/stores/ui-store";
+import { Submission } from "@/types/course";
 import { useFormContext } from "react-hook-form";
 import { Input } from "../ui/input";
 import { BaseForm } from "./common/base-form";
 
 interface SubmissionFormProps {
+    submission?: Submission;
+    courseId?: string;
     onSuccess: (submission: any) => void;
     onCancel?: () => void;
 }
@@ -34,9 +37,9 @@ function GradeSubmissionFormFields() {
     );
 }
 
-export function GradeSubmissionForm({ onSuccess, onCancel }: SubmissionFormProps) {
+export function GradeSubmissionForm({ submission, courseId, onSuccess, onCancel }: SubmissionFormProps) {
     const { user } = useAuthStore();
-    const { currentCourse, currentSubmission } = useAppStore();
+    // Use props instead of global state
     const createGradeSubmissionMutation = useGradeSubmission();
     const { addToast } = useToastStore();
 
@@ -50,9 +53,9 @@ export function GradeSubmissionForm({ onSuccess, onCancel }: SubmissionFormProps
         }
 
         const gradeData: SubmissionGradeRequestDto = {
-            id: currentSubmission?.id || '',
+            id: submission?.id || '',
             grade: Number(data.grade),
-            courseId: currentCourse?.id || '',
+            courseId: courseId || submission?.courseId || '',
         };
 
         try {

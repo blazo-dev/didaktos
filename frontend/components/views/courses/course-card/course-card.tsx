@@ -10,10 +10,9 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { useConfirmationDialog } from '@/hooks/common/use-confirmation-dialog';
+import { useEntityModals } from '@/hooks/common/use-entity-modals';
 import { useDeleteCourse } from '@/hooks/courses/use-course-crud';
-import { useAppStore } from '@/stores/app-store';
 import { useAuthStore } from '@/stores/auth-store';
-import { useModalStore } from '@/stores/ui-store';
 import { Course } from '@/types/course';
 import {
     BookOpen,
@@ -34,10 +33,10 @@ interface CourseCardProps {
 export function CourseCard({ course }: CourseCardProps) {
     const router = useRouter();
     const [showMenu, setShowMenu] = useState(false);
-    const { openModal } = useModalStore();
+    const { open } = useEntityModals()
     const deleteCourse = useDeleteCourse();
     const { confirmDeletion } = useConfirmationDialog();
-    const { setCurrentCourse } = useAppStore();
+    // Removed: const { setCurrentCourse } = useAppStore();
     const { user } = useAuthStore();
 
 
@@ -45,19 +44,13 @@ export function CourseCard({ course }: CourseCardProps) {
     const isEnrolled = course?.enrollments?.includes(user!.id);
 
     const handleViewCourse = () => {
-        setCurrentCourse(course);
+        // No need to set global state - URL will provide the context
         router.push(`/courses/${course.id}`);
     };
 
     const handleEditCourse = () => {
-        setCurrentCourse(course);
-        openModal({
-            id: 'edit-course',
-            title: 'Edit Course',
-            size: 'md',
-            closable: true,
-            backdrop: true,
-        });
+        // Pass course data directly to modal instead of setting global state
+        open("course", "edit", course);
     };
 
     const handleDeleteCourse = async () => {

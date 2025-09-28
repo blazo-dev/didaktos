@@ -1,52 +1,35 @@
-import { useAppStore } from "@/stores/app-store";
-import { Assignment, Submission } from "@/types/course";
+// Removed: import { useAppStore } from "@/stores/app-store";
+import { Submission } from "@/types/course";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 
 /**
- * Centralized assignment state management hook
- * Provides consistent methods for updating assignment-related state
+ * Simplified assignment actions hook for cache management
+ * Provides methods for invalidating queries after assignment operations
+ * Note: Replaced global state management with URL-based entity resolution
  */
 export function useAssignmentActions() {
     const queryClient = useQueryClient();
-    const {
-        setCurrentAssignment,
-        setCurrentSubmission,
-        setCurrentSubmissions,
-        currentAssignment,
-        currentSubmission,
-    } = useAppStore();
 
     /**
-     * Update assignment with new submission and sync all related state
+     * Invalidate all assignment-related queries after mutations
      */
-    const updateAssignmentWithSubmission = useCallback(
-        (assignment: Assignment, newSubmission: Submission) => {
-            // Create updated assignment with new submission
-            const updatedAssignment = {
-                ...assignment,
-                submissions: [newSubmission],
-            };
-
-            // Update global state atomically
-            setCurrentAssignment(updatedAssignment);
-            setCurrentSubmission(newSubmission);
-
-            // Invalidate related queries to keep cache fresh
-            queryClient.invalidateQueries({ queryKey: ["courses"] });
-            queryClient.invalidateQueries({ queryKey: ["assignments"] });
-            queryClient.invalidateQueries({ queryKey: ["submissions"] });
-
-            return updatedAssignment;
-        },
-        [setCurrentAssignment, setCurrentSubmission, queryClient]
-    );
+    const invalidateAssignmentQueries = useCallback(() => {
+        queryClient.invalidateQueries({ queryKey: ["courses"] });
+        queryClient.invalidateQueries({ queryKey: ["assignments"] });
+        queryClient.invalidateQueries({ queryKey: ["submissions"] });
+    }, [queryClient]);
 
     /**
      * Update assignment submission with grading information
+     * Returns the updated submission for local state updates
      */
     const updateSubmissionWithGrade = useCallback(
-        (submission: Submission, grade: number, feedback?: string) => {
+        (
+            submission: Submission,
+            grade: number,
+            feedback?: string
+        ): Submission => {
             const updatedSubmission = {
                 ...submission,
                 grade,
@@ -54,123 +37,31 @@ export function useAssignmentActions() {
                 gradedAt: new Date().toISOString(),
             };
 
-            // Update current submission
-            setCurrentSubmission(updatedSubmission);
-
-            // If this submission belongs to current assignment, update assignment too
-            if (currentAssignment) {
-                const updatedAssignment = {
-                    ...currentAssignment,
-                    submissions: currentAssignment.submissions?.map((sub) =>
-                        sub.id === submission.id ? updatedSubmission : sub
-                    ) || [updatedSubmission],
-                };
-                setCurrentAssignment(updatedAssignment);
-            }
-
-            // Invalidate related queries
-            queryClient.invalidateQueries({ queryKey: ["courses"] });
-            queryClient.invalidateQueries({ queryKey: ["assignments"] });
-            queryClient.invalidateQueries({ queryKey: ["submissions"] });
+            // Invalidate related queries - components will re-fetch via URL-based hooks
+            invalidateAssignmentQueries();
 
             return updatedSubmission;
         },
-        [
-            currentAssignment,
-            setCurrentAssignment,
-            setCurrentSubmission,
-            queryClient,
-        ]
+        [invalidateAssignmentQueries]
     );
 
     /**
-     * Remove assignment and clean up related state
+     * Clean up after assignment deletion
      */
-    const removeAssignment = useCallback(
+    const handleAssignmentDeletion = useCallback(
         (assignmentId: string) => {
-            // Clear current assignment if it matches deleted one
-            if (currentAssignment?.id === assignmentId) {
-                setCurrentAssignment(null);
-                setCurrentSubmission(null);
-            }
-
-            // Clear any submissions for this assignment
-            setCurrentSubmissions(null);
-
-            // Invalidate queries
-            queryClient.invalidateQueries({ queryKey: ["courses"] });
-            queryClient.invalidateQueries({ queryKey: ["assignments"] });
-            queryClient.invalidateQueries({ queryKey: ["submissions"] });
+            // Invalidate queries to refresh components
+            invalidateAssignmentQueries();
         },
-        [
-            currentAssignment,
-            setCurrentAssignment,
-            setCurrentSubmission,
-            setCurrentSubmissions,
-            queryClient,
-        ]
-    );
-
-    /**
-     * Set current assignment and prepare related state
-     */
-    const selectAssignment = useCallback(
-        (assignment: Assignment | null) => {
-            setCurrentAssignment(assignment);
-
-            // Set current submission if assignment has one
-            if (assignment?.submissions?.[0]) {
-                setCurrentSubmission(assignment.submissions[0]);
-            } else {
-                setCurrentSubmission(null);
-            }
-        },
-        [setCurrentAssignment, setCurrentSubmission]
-    );
-
-    /**
-     * Bulk update submissions for current assignment (useful for instructor views)
-     */
-    const updateAssignmentSubmissions = useCallback(
-        (submissions: Submission[]) => {
-            setCurrentSubmissions(submissions);
-
-            // If there's a current assignment, update it with new submissions
-            if (currentAssignment) {
-                const updatedAssignment = {
-                    ...currentAssignment,
-                    submissions,
-                };
-                setCurrentAssignment(updatedAssignment);
-            }
-
-            // Invalidate related queries
-            queryClient.invalidateQueries({ queryKey: ["courses"] });
-            queryClient.invalidateQueries({ queryKey: ["submissions"] });
-        },
-        [
-            currentAssignment,
-            setCurrentAssignment,
-            setCurrentSubmissions,
-            queryClient,
-        ]
+        [invalidateAssignmentQueries]
     );
 
     return {
-        // State update methods
-        updateAssignmentWithSubmission,
+        // Query management
+        invalidateAssignmentQueries,
+
+        // Specific actions
         updateSubmissionWithGrade,
-        updateAssignmentSubmissions,
-        selectAssignment,
-        removeAssignment,
-
-        // Current state for convenience
-        currentAssignment,
-        currentSubmission,
-
-        // Computed flags
-        hasCurrentAssignment: !!currentAssignment,
-        hasCurrentSubmission: !!currentSubmission,
-        isSubmissionGraded: !!(currentSubmission?.grade !== undefined),
+        handleAssignmentDeletion,
     };
 }

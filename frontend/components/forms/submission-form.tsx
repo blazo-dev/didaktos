@@ -1,8 +1,9 @@
 'use client';
 
+import { useAssignmentFromUrl } from '@/hooks/common/use-url-entity';
 import { useCreateSubmission } from "@/hooks/submissions/use-submission-crud";
 import { SubmissionFormData, submissionSchema } from "@/lib/schemas/submission";
-import { useAppStore } from "@/stores/app-store";
+// Removed: import { useAppStore } from "@/stores/app-store";
 import { useAuthStore } from "@/stores/auth-store";
 import { useToastStore } from "@/stores/ui-store";
 import { Assignment, Submission } from "@/types/course";
@@ -39,7 +40,8 @@ function SubmissionFormFields() {
 
 export function SubmissionForm({ assignment, courseId, onSuccess, onCancel }: SubmissionFormProps) {
     const { user } = useAuthStore();
-    const { currentCourse, currentAssignment } = useAppStore();
+    // Use URL-based entities instead of global state
+    const { course, currentAssignment, courseId: urlCourseId, assignmentId } = useAssignmentFromUrl();
     const createSubmissionMutation = useCreateSubmission();
     const { addToast } = useToastStore();
 
@@ -54,9 +56,9 @@ export function SubmissionForm({ assignment, courseId, onSuccess, onCancel }: Su
 
         const submissionData: Submission = {
             content: data.content,
-            assignmentId: assignment?.id || currentAssignment?.id || '',
+            assignmentId: assignment?.id || currentAssignment?.id || assignmentId || '',
             studentId: user.id,
-            courseId: courseId || currentCourse?.id || '',
+            courseId: courseId || course?.id || urlCourseId || '',
         };
 
         try {

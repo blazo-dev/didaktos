@@ -1,13 +1,20 @@
-import { Card } from "@/components/ui/card"
-import { useAppStore } from "@/stores/app-store"
-import { useAuthStore } from "@/stores/auth-store"
-import { Award, FileText } from "lucide-react"
+import { Card } from "@/components/ui/card";
+// Removed: import { useAppStore } from "@/stores/app-store"
+import { useAuthStore } from "@/stores/auth-store";
+import { Assignment, Course, Submission } from "@/types/course";
+import { Award, FileText } from "lucide-react";
 
-function ViewSubmission() {
-    const { currentSubmission, currentAssignment, currentCourse } = useAppStore()
+interface ViewSubmissionProps {
+    submission?: Submission;
+    assignment?: Assignment;
+    course?: Course;
+}
+
+function ViewSubmission({ submission, assignment, course }: ViewSubmissionProps) {
+    // Removed: const { currentSubmission, currentAssignment, currentCourse } = useAppStore()
     const { user } = useAuthStore()
 
-    if (!currentSubmission) {
+    if (!submission) {
         return (
             <div className="p-8 text-center">
                 <div className="bg-muted rounded-lg p-8">
@@ -21,7 +28,7 @@ function ViewSubmission() {
         )
     }
 
-    const isInstructor = currentCourse?.instructor?.id === user?.id;
+    const isInstructor = course?.instructor?.id === user?.id;
 
     const formatDate = (dateString?: string) => {
         if (!dateString) return "Not available"
@@ -64,7 +71,7 @@ function ViewSubmission() {
                         <div>
                             <p className="text-sm font-medium text-foreground">Submission ID</p>
                             <p className="text-xs text-muted-foreground truncate break-all">
-                                {currentSubmission.id || "Not assigned"}
+                                {submission.id || "Not assigned"}
                             </p>
                         </div>
                     </div>
@@ -78,8 +85,8 @@ function ViewSubmission() {
                         </div>
                         <div>
                             <p className="text-sm font-medium text-foreground">Grade</p>
-                            <p className={`text-xs font-semibold ${getGradeColor(currentSubmission.grade)}`}>
-                                {getGradeDisplay(currentSubmission.grade)}
+                            <p className={`text-xs font-semibold ${getGradeColor(submission.grade)}`}>
+                                {getGradeDisplay(submission.grade)}
                             </p>
                         </div>
                     </div>
@@ -87,41 +94,41 @@ function ViewSubmission() {
             </div>
 
             {/* Assignment Context */}
-            {currentAssignment && (
+            {assignment && (
                 <Card className="p-6">
                     <h2 className="text-lg font-semibold text-foreground">Assignment Information</h2>
                     <div className="space-y-3">
                         <div>
                             <p className="text-sm font-medium text-foreground">Assignment Title</p>
-                            <p className="text-muted-foreground">{currentAssignment.title}</p>
+                            <p className="text-muted-foreground">{assignment.title}</p>
                         </div>
                         <div>
                             <p className="text-sm font-medium text-foreground">Due Date</p>
-                            <p className="text-muted-foreground">{formatDate(currentAssignment.dueDate)}</p>
+                            <p className="text-muted-foreground">{formatDate(assignment.dueDate)}</p>
                         </div>
                     </div>
                 </Card>
             )}
 
             {/* Course Context */}
-            {currentCourse && (
+            {course && (
                 <Card className="p-6">
                     <h2 className="text-lg font-semibold text-foreground">Course Information</h2>
                     <div className="space-y-3">
                         <div>
                             <p className="text-sm font-medium text-foreground">Course Title</p>
-                            <p className="text-muted-foreground">{currentCourse.title}</p>
+                            <p className="text-muted-foreground">{course.title}</p>
                         </div>
                         {!isInstructor ? (<div>
                             <p className="text-sm font-medium text-foreground">Instructor</p>
                             <p className="text-muted-foreground">
-                                {currentCourse.instructor?.name} ({currentCourse.instructor?.email})
+                                {course.instructor?.name} ({course.instructor?.email})
                             </p>
                         </div>) : (
                             <div>
                                 <p className="text-sm font-medium text-foreground">Student</p>
                                 <p className="text-muted-foreground">
-                                    {currentSubmission.name}
+                                    {submission.name}
                                 </p>
                             </div>
                         )}
@@ -134,7 +141,7 @@ function ViewSubmission() {
                 <h2 className="text-lg font-semibold text-foreground">Submission Content</h2>
                 <div className="bg-muted rounded-lg p-4">
                     <div className="whitespace-pre-wrap text-foreground leading-relaxed">
-                        {currentSubmission.content || "No content provided"}
+                        {submission.content || "No content provided"}
                     </div>
                 </div>
             </Card>

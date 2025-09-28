@@ -1,8 +1,9 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { useCourseFromUrl } from '@/hooks/common/use-url-entity';
 import { useCreateEnrollment } from '@/hooks/enrollments/use-create-enroll';
-import { useAppStore } from '@/stores/app-store';
+// Removed: import { useAppStore } from '@/stores/app-store';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
@@ -13,7 +14,8 @@ interface CourseNotFoundProps {
 export function CourseNotFound({ type }: CourseNotFoundProps) {
     const router = useRouter();
     const createEnrollment = useCreateEnrollment();
-    const { currentCourse } = useAppStore();
+    // Use URL-based entity resolution for course data
+    const { course, courseId } = useCourseFromUrl();
 
 
     if (type === 'not-found') {
@@ -31,13 +33,13 @@ export function CourseNotFound({ type }: CourseNotFoundProps) {
     }
 
     const handleEnroll = async () => {
-        if (!currentCourse) return;
+        if (!course && !courseId) return;
 
         createEnrollment.mutate(
-            { courseId: currentCourse.id },
+            { courseId: course?.id || courseId },
             {
                 onSuccess: () => {
-                    router.push(`/courses/${currentCourse.id}`);
+                    router.push(`/courses/${course?.id || courseId}`);
                 },
             }
         );
@@ -54,7 +56,7 @@ export function CourseNotFound({ type }: CourseNotFoundProps) {
                 <Button variant="outline" asChild>
                     <Link href="/courses">Back to Courses</Link>
                 </Button>
-                <Button onClick={handleEnroll} disabled={!currentCourse}>
+                <Button onClick={handleEnroll} disabled={!course && !courseId}>
                     Enroll Now
                 </Button>
             </div>

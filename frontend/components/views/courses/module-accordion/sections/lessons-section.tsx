@@ -1,6 +1,6 @@
 'use client';
 
-import { useAppStore } from '@/stores/app-store';
+// Removed: import { useAppStore } from '@/stores/app-store';
 import { useModalStore } from '@/stores/ui-store';
 import { Lesson, Module } from '@/types/course';
 import { BookOpen, ChevronRight, File, Plus } from 'lucide-react';
@@ -15,17 +15,18 @@ interface LessonsSectionProps {
 
 export function LessonsSection({ module, courseId, canEdit }: LessonsSectionProps) {
     const { openModal } = useModalStore();
-    const { setCurrentLesson, setCurrentModule } = useAppStore();
+    // Removed: const { setCurrentLesson, setCurrentModule } = useAppStore();
     const router = useRouter();
 
     const handleOpenLesson = (module: Module, lesson: Lesson) => {
-        setCurrentLesson(lesson);
-        setCurrentModule(module);
+        // Navigation will automatically resolve entities via URL parameters
         router.push(`/courses/${courseId}/modules/${module.id}/lessons/${lesson.id}`);
     };
 
     const handleCreateLesson = (module: Module) => {
-        setCurrentModule(module);
+        // Navigate to module context first, then open modal
+        // The useLessonForm hook will detect moduleId from URL
+        router.push(`/courses/${courseId}/modules/${module.id}?modal=create-lesson`);
         openModal({
             id: 'create-lesson',
             title: 'Create New Lesson',

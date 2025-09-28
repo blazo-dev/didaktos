@@ -10,7 +10,7 @@ import { ViewSubmissionModal } from '@/components/modals/view-submission-modal';
 import { useEntityModals } from '@/hooks/common/use-entity-modals';
 import { useCourseContext } from '@/hooks/courses/use-course-context';
 import { useGetAllSubmissionsByCourse } from '@/hooks/submissions/use-get-all-submission-by-course';
-import { useAppStore } from '@/stores/app-store';
+// Removed: import { useAppStore } from '@/stores/app-store';
 import { useCallback } from 'react';
 import { CourseDetailHeader } from './course-detail-header';
 import { CourseInfoCard } from './course-info-card';
@@ -24,7 +24,7 @@ interface CourseDetailViewProps {
 }
 
 export function CourseDetailView({ courseId }: CourseDetailViewProps) {
-    const { currentModule } = useAppStore();
+    // Removed: const { currentModule } = useAppStore();
     const { data: submissions } = useGetAllSubmissionsByCourse(courseId);
 
     // Use new state management hooks
@@ -112,7 +112,6 @@ export function CourseDetailView({ courseId }: CourseDetailViewProps) {
             <ModuleModal
                 modalId={"edit-module"}
                 courseId={course.id}
-                module={currentModule!}
             />
 
             <ViewAllSubmissionsModal

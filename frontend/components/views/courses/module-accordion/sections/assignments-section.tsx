@@ -1,6 +1,6 @@
 'use client';
 
-import { useAppStore } from '@/stores/app-store';
+// Removed: import { useAppStore } from '@/stores/app-store';
 import { useModalStore } from '@/stores/ui-store';
 import { Assignment, Module } from '@/types/course';
 import { Calendar, ChevronRight, FileText, Plus } from 'lucide-react';
@@ -15,17 +15,18 @@ interface AssignmentsSectionProps {
 
 export function AssignmentsSection({ module, courseId, canEdit }: AssignmentsSectionProps) {
     const { openModal } = useModalStore();
-    const { setCurrentAssignment, setCurrentModule } = useAppStore();
+    // Removed: const { setCurrentAssignment, setCurrentModule } = useAppStore();
     const router = useRouter();
 
     const handleOpenAssignment = (module: Module, assignment: Assignment) => {
-        setCurrentAssignment(assignment);
-        setCurrentModule(module);
+        // Navigation will automatically resolve entities via URL parameters
         router.push(`/courses/${courseId}/modules/${module.id}/assignments/${assignment.id}`);
     };
 
     const handleCreateAssignment = (module: Module) => {
-        setCurrentModule(module);
+        // Navigate to module context first, then open modal
+        // The useAssignmentForm hook will detect moduleId from URL
+        router.push(`/courses/${courseId}/modules/${module.id}?modal=create-assignment`);
         openModal({
             id: 'create-assignment',
             title: 'Create New Assignment',

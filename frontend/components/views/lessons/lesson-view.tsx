@@ -4,8 +4,9 @@ import { LessonModal } from '@/components/modals/lesson-modal';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useConfirmationDialog } from '@/hooks/common/use-confirmation-dialog';
+import { useLessonFromUrl } from '@/hooks/common/use-url-entity';
 import { useDeleteLesson } from '@/hooks/lessons/use-lesson-crud';
-import { useAppStore } from '@/stores/app-store';
+// Removed: import { useAppStore } from '@/stores/app-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { useModalStore } from '@/stores/ui-store';
 import Link from 'next/link';
@@ -19,7 +20,8 @@ interface LessonViewProps {
 
 
 export function LessonView({ courseId }: LessonViewProps) {
-    const { currentCourse, currentLesson } = useAppStore();
+    // Use URL-based entity resolution instead of global state
+    const { course, currentLesson } = useLessonFromUrl();
     const deleteLesson = useDeleteLesson();
     const router = useRouter();
     const { confirmDeletion } = useConfirmationDialog();
@@ -27,7 +29,7 @@ export function LessonView({ courseId }: LessonViewProps) {
     const { openModal } = useModalStore();
     const { user } = useAuthStore();
 
-    if (!currentCourse) {
+    if (!course) {
         return (
             <div className="p-6 text-center">
                 <h2 className="text-2xl font-bold mb-2">Course not found</h2>
@@ -41,7 +43,7 @@ export function LessonView({ courseId }: LessonViewProps) {
         );
     }
 
-    if (!currentCourse.instructor) {
+    if (!course.instructor) {
         return (
             <div className="p-6 text-center">
                 <h2 className="text-2xl font-bold mb-2">Instructor not found</h2>
@@ -56,7 +58,7 @@ export function LessonView({ courseId }: LessonViewProps) {
 
     }
 
-    const isOwner = currentCourse.instructor.id === user?.id;
+    const isOwner = course.instructor.id === user?.id;
 
     if (!currentLesson) {
         return (

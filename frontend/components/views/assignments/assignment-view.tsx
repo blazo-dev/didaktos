@@ -9,6 +9,7 @@ import { useAssignmentActions } from '@/hooks/assignments/use-assignment-actions
 import { useDeleteAssignment } from '@/hooks/assignments/use-assignment-crud';
 import { useConfirmationDialog } from '@/hooks/common/use-confirmation-dialog';
 import { useEntityModals } from '@/hooks/common/use-entity-modals';
+import { useAssignmentFromUrl } from '@/hooks/common/use-url-entity';
 import { useCourseContext } from '@/hooks/courses/use-course-context';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -26,7 +27,9 @@ export function AssignmentView({ courseId }: AssignmentViewProps) {
     const deleteAssignment = useDeleteAssignment();
 
     const { course, isOwner } = useCourseContext(courseId);
-    const { currentAssignment, updateAssignmentWithSubmission } = useAssignmentActions();
+    // Use URL-based entity resolution instead of global state
+    const { currentAssignment } = useAssignmentFromUrl();
+    const { invalidateAssignmentQueries } = useAssignmentActions();
     const { open } = useEntityModals();
 
     const handleAssignmentEdit = useCallback(() => {
@@ -57,10 +60,9 @@ export function AssignmentView({ courseId }: AssignmentViewProps) {
     }, [currentAssignment, open]);
 
     const handleSubmissionSuccess = useCallback((newSubmission: any) => {
-        if (currentAssignment) {
-            updateAssignmentWithSubmission(currentAssignment, newSubmission);
-        }
-    }, [currentAssignment, updateAssignmentWithSubmission]);
+        // Invalidate queries to refresh assignment data instead of updating global state
+        invalidateAssignmentQueries();
+    }, [invalidateAssignmentQueries]);
 
     // Early returns after all hooks
     if (!currentAssignment || !course) {

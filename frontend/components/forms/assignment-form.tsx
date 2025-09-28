@@ -1,8 +1,9 @@
 'use client';
 
 import { useCreateAssignment, useUpdateAssignment } from "@/hooks/assignments/use-assignment-crud";
+import { useModuleFromUrl } from '@/hooks/common/use-url-entity';
 import { AssignmentFormData, assignmentSchema } from "@/lib/schemas/assignment";
-import { useAppStore } from "@/stores/app-store";
+// Removed: import { useAppStore } from "@/stores/app-store";
 import { useAuthStore } from "@/stores/auth-store";
 import { useToastStore } from "@/stores/ui-store";
 import { Assignment } from "@/types/course";
@@ -14,6 +15,7 @@ import { BaseForm } from "./common/base-form";
 
 interface AssignmentFormProps {
     assignment?: Assignment;
+    moduleId?: string; // Optional prop for when URL doesn't contain moduleId
     onSuccess?: (assignment: Assignment) => void;
     onCancel?: () => void;
 }
@@ -60,12 +62,16 @@ function AssignmentFormFields() {
     );
 }
 
-export function AssignmentForm({ assignment, onSuccess, onCancel }: AssignmentFormProps) {
+export function AssignmentForm({ assignment, moduleId, onSuccess, onCancel }: AssignmentFormProps) {
     const { user } = useAuthStore();
-    const { currentModule } = useAppStore();
+    // Use URL-based entity resolution or props
+    const { currentModule, moduleId: urlModuleId } = useModuleFromUrl();
     const { addToast } = useToastStore();
     const createAssignmentMutation = useCreateAssignment();
     const updateAssignmentMutation = useUpdateAssignment();
+
+    // Use moduleId from props or URL
+    const effectiveModuleId = moduleId || urlModuleId || currentModule?.id;
 
     // Handle success with useEffect
     useEffect(() => {
@@ -97,7 +103,7 @@ export function AssignmentForm({ assignment, onSuccess, onCancel }: AssignmentFo
             };
 
             await createAssignmentMutation.mutateAsync({
-                moduleId: currentModule!.id,
+                moduleId: effectiveModuleId!,
                 assignmentData: newAssignment,
             });
         }

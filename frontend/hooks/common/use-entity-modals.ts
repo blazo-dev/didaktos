@@ -1,6 +1,5 @@
-import { useAppStore } from "@/stores/app-store";
+// Removed: import { useAppStore } from "@/stores/app-store";
 import { useModalStore } from "@/stores/ui-store";
-import { Assignment, Lesson, Module, Submission } from "@/types/course";
 
 type ModalSize = "md" | "xl" | "lg" | "sm" | "full";
 
@@ -15,6 +14,10 @@ type ModalConfig = {
 
 // Config de modales (readonly gracias a `as const`)
 const modalConfigs = {
+    course: {
+        create: { id: "create-course", title: "Create Course", size: "md" },
+        edit: { id: "edit-course", title: "Edit Course", size: "md" },
+    },
     module: {
         create: { id: "create-module", title: "Create Module", size: "md" },
         edit: { id: "edit-module", title: "Edit Module", size: "md" },
@@ -66,36 +69,21 @@ type ActionType<E extends EntityType> = keyof ModalConfigs[E];
 
 export function useEntityModals() {
     const { openModal, closeModal } = useModalStore();
-    const {
-        setCurrentModule,
-        setCurrentLesson,
-        setCurrentAssignment,
-        setCurrentSubmission,
-        setCurrentSubmissions,
-    } = useAppStore();
+    // Removed: Global state setters - modals now receive data as props
 
     function open<E extends EntityType>(
         entity: E,
         action: ActionType<E>,
         data?: any
     ) {
-        const config = modalConfigs[entity][action] as ModalConfig; // 👈 aquí el cast
+        const config = modalConfigs[entity][action] as ModalConfig;
 
-        if (entity === "module" && data) setCurrentModule(data as Module);
-        if (entity === "lesson" && data) setCurrentLesson(data as Lesson);
-        if (entity === "assignment" && data)
-            setCurrentAssignment(data as Assignment);
-        if (entity === "submission") {
-            if (Array.isArray(data))
-                setCurrentSubmissions(data as Submission[]);
-            else if (data) setCurrentSubmission(data as Submission);
-        }
-
+        // Instead of setting global state, pass data directly to modal
         const modal: ModalConfig = {
             ...config,
             closable: true,
             backdrop: true,
-            data,
+            data, // Modal will receive entity data via props
         };
 
         openModal(modal);

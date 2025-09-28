@@ -1,6 +1,6 @@
 import { assignmentsApi } from "@/lib/api/assignments";
 import { useApiMutation } from "@/lib/hooks/use-api-mutation";
-import { useAppStore } from "@/stores/app-store";
+// Removed: import { useAppStore } from "@/stores/app-store";
 import { Assignment } from "@/types/course";
 
 // Define the create input type for assignments
@@ -30,7 +30,7 @@ export const useCreateAssignment = () => {
 
 // Update assignment hook
 export const useUpdateAssignment = () => {
-    const { setCurrentAssignment } = useAppStore();
+    // Removed: const { setCurrentAssignment } = useAppStore();
 
     return useApiMutation(
         ({
@@ -44,9 +44,7 @@ export const useUpdateAssignment = () => {
             successMessage: "Assignment updated successfully!",
             errorMessage: "Failed to update assignment. Please try again.",
             invalidateKeys: ["courses"],
-            onSuccess: (updatedAssignment) => {
-                setCurrentAssignment(updatedAssignment);
-            },
+            // Removed: Global state update - components will re-fetch via URL-based hooks
         }
     );
 };

@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button"
 import { InlineLoading } from "@/components/ui/loading-states"
 import { Tooltip } from "@/components/ui/tooltip"
 import { useAssistant } from "@/hooks/common/use-assistant"
-import { useAppStore } from "@/stores/app-store"
+import { useLessonFromUrl } from "@/hooks/common/use-url-entity"
+// Removed: import { useAppStore } from "@/stores/app-store"
 import { MessageSquare, Trash, X } from "lucide-react"
 import { useState } from "react"
 import ReactMarkdown from "react-markdown"
@@ -15,7 +16,8 @@ import remarkGfm from "remark-gfm"
 export function StudyAssistant() {
     const [isOpen, setIsOpen] = useState(false)
     const { askWithChoice, assistantMessages, isLoading, clearMessages } = useAssistant()
-    const { currentLesson } = useAppStore()
+    // Use URL-based entity resolution instead of global state
+    const { currentLesson } = useLessonFromUrl()
 
 
     return (

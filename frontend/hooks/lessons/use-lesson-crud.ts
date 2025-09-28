@@ -1,6 +1,6 @@
 import { lessonsApi } from "@/lib/api/lesson";
 import { useApiMutation } from "@/lib/hooks/use-api-mutation";
-import { useAppStore } from "@/stores/app-store";
+// Removed: import { useAppStore } from "@/stores/app-store";
 import { Lesson } from "@/types/course";
 
 // Create lesson hook
@@ -23,7 +23,7 @@ export const useCreateLesson = () => {
 
 // Update lesson hook
 export const useUpdateLesson = () => {
-    const { setCurrentLesson } = useAppStore();
+    // Removed: const { setCurrentLesson } = useAppStore();
 
     return useApiMutation(
         ({ id, lessonData }: { id: string; lessonData: Partial<Lesson> }) =>
@@ -32,9 +32,7 @@ export const useUpdateLesson = () => {
             successMessage: "Lesson updated successfully!",
             errorMessage: "Failed to update lesson. Please try again.",
             invalidateKeys: ["courses"],
-            onSuccess: (updatedLesson) => {
-                setCurrentLesson(updatedLesson);
-            },
+            // Removed: Global state update - components will re-fetch via URL-based hooks
         }
     );
 };

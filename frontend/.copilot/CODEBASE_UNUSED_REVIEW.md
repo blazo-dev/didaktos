@@ -15,6 +15,8 @@ This report identifies unused code, dead code, redundant implementations, and fi
 
 ### `stores/app-store.ts`
 
+**Status**: 🟡 **SOLUTION IN PROGRESS**
+
 - **Issue**: Global "current entity" pattern that was partially refactored
 - **Unused Properties**:
   - `currentCourse`, `setCurrentCourse` - Still used in ~18 files but may be redundant
@@ -23,7 +25,13 @@ This report identifies unused code, dead code, redundant implementations, and fi
   - `currentAssignment`, `setCurrentAssignment` - Used in assignment workflows
   - `currentSubmission`, `setCurrentSubmission` - Used for grading workflows
   - `currentSubmissions`, `setCurrentSubmissions` - Used for bulk operations
-- **Suggested Action**: **ANALYZE FURTHER** - These are still used but the pattern was identified as problematic during refactoring. Consider whether URL-based state management could replace these entirely.
+- **Solution**: ✅ **IMPLEMENTED** - Created `hooks/common/use-url-entity.ts` with URL-based entity resolution
+- **Migration Status**:
+  - ✅ Created URL-based hook system (`useUrlEntities`, `useCourseFromUrl`, etc.)
+  - ✅ Migrated `course-card.tsx` to remove global state dependency
+  - ✅ Migrated `submission-form.tsx` to use URL-based entities
+  - 🔄 In progress: Modal system updates and remaining components
+- **Next Steps**: See `.copilot/GLOBAL_STATE_MIGRATION_PLAN.md` for complete migration guide
 
 ---
 
