@@ -7,7 +7,7 @@ import { LessonModal } from '@/components/modals/lesson-modal';
 import { ModuleModal } from '@/components/modals/module-modal';
 import { ViewAllSubmissionsModal } from '@/components/modals/view-all-submission-modal';
 import { ViewSubmissionModal } from '@/components/modals/view-submission-modal';
-import { useEntityModals } from '@/hooks/common/use-entity-modals';
+import { useEntityModal } from '@/hooks/common/use-entity-modal';
 import { useCourseContext } from '@/hooks/courses/use-course-context';
 import { useGetAllSubmissionsByCourse } from '@/hooks/submissions/use-get-all-submission-by-course';
 // Removed: import { useAppStore } from '@/stores/app-store';
@@ -39,7 +39,7 @@ export function CourseDetailView({ courseId }: CourseDetailViewProps) {
 
     const {
         open
-    } = useEntityModals();
+    } = useEntityModal();
 
     // Handle modal actions with new hooks
     const handleCreateModule = useCallback(() => {

@@ -8,7 +8,7 @@ import { Card } from '@/components/ui/card';
 import { useAssignmentActions } from '@/hooks/assignments/use-assignment-actions';
 import { useDeleteAssignment } from '@/hooks/assignments/use-assignment-crud';
 import { useConfirmationDialog } from '@/hooks/common/use-confirmation-dialog';
-import { useEntityModals } from '@/hooks/common/use-entity-modals';
+import { useEntityModal } from '@/hooks/common/use-entity-modal';
 import { useAssignmentFromUrl } from '@/hooks/common/use-url-entity';
 import { useCourseContext } from '@/hooks/courses/use-course-context';
 import Link from 'next/link';
@@ -22,19 +22,19 @@ interface AssignmentViewProps {
 
 
 export function AssignmentView({ courseId }: AssignmentViewProps) {
+    const deleteAssignment = useDeleteAssignment();
     const router = useRouter();
     const { confirmDeletion } = useConfirmationDialog();
-    const deleteAssignment = useDeleteAssignment();
-
     const { course, isOwner } = useCourseContext(courseId);
+
     // Use URL-based entity resolution instead of global state
     const { currentAssignment } = useAssignmentFromUrl();
     const { invalidateAssignmentQueries } = useAssignmentActions();
-    const { open } = useEntityModals();
+    const { open } = useEntityModal();
 
     const handleAssignmentEdit = useCallback(() => {
         if (currentAssignment) {
-            open("assignment", "edit", currentAssignment);
+            open("assignment", "edit", { assignment: currentAssignment });
         }
     }, [currentAssignment, open]);
 
@@ -111,7 +111,6 @@ export function AssignmentView({ courseId }: AssignmentViewProps) {
             </Card>
             <AssignmentModal
                 modalId="edit-assignment"
-                assignment={currentAssignment}
             />
             <SubmissionModal
                 modalId="create-submission"

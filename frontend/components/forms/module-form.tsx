@@ -1,18 +1,17 @@
 'use client';
 
 import { Input } from '@/components/ui/input';
+import { useCreateModule, useUpdateModule } from '@/hooks/modules/use-module-crud';
 import { ModuleFormData, moduleSchema } from '@/lib/schemas/module';
 import { Module } from '@/types/course';
-import { useEffect } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { BaseForm } from './common/base-form';
-import { useCreateModule, useUpdateModule } from '@/hooks/modules/use-module-crud';
 
 interface ModuleFormProps {
     courseId: string;
     module?: Module;
-    onSuccess?: (module: Module) => void;
-    onCancel?: () => void;
+    onSuccess: (module: Module) => void;
+    onCancel: () => void;
 }
 
 function ModuleFormFields() {
@@ -38,21 +37,13 @@ export function ModuleForm({ courseId, module, onSuccess, onCancel }: ModuleForm
     const createModuleMutation = useCreateModule(courseId);
     const updateModuleMutation = useUpdateModule(courseId);
 
-    // Handle success with useEffect
-    useEffect(() => {
-        if (createModuleMutation.isSuccess || updateModuleMutation.isSuccess) {
-            const resultModule = createModuleMutation.data || updateModuleMutation.data || module;
-            onSuccess?.(resultModule as Module);
-        }
-    }, [createModuleMutation.isSuccess, updateModuleMutation.isSuccess, createModuleMutation.data, updateModuleMutation.data, module, onSuccess]);
-
     const handleSubmit = async (data: ModuleFormData) => {
         if (module) {
             // Update existing module
             await updateModuleMutation.mutateAsync({
                 moduleId: module.id,
                 data: data,
-            });
+            }, { onSuccess: onSuccess });
         } else {
             // Create new module
             const newModuleData = {
@@ -61,7 +52,7 @@ export function ModuleForm({ courseId, module, onSuccess, onCancel }: ModuleForm
                 assignments: [],
             };
 
-            await createModuleMutation.mutateAsync(newModuleData);
+            await createModuleMutation.mutateAsync(newModuleData, { onSuccess: onSuccess });
         }
     };
 

@@ -4,17 +4,14 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useCreateCourse, useUpdateCourse } from '@/hooks/courses/use-course-crud';
 import { CourseFormData, courseSchema } from '@/lib/schemas/course';
-import { useAuthStore } from '@/stores/auth-store';
-import { useToastStore } from '@/stores/ui-store';
 import { Course } from '@/types/course';
-import { useEffect } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { BaseForm } from './common/base-form';
 
 interface CourseFormProps {
     course?: Course;
-    onSuccess?: (course: Course) => void;
-    onCancel?: () => void;
+    onSuccess: (course: Course) => void;
+    onCancel: () => void;
 }
 
 function CourseFormFields() {
@@ -48,28 +45,10 @@ function CourseFormFields() {
 }
 
 export function CourseForm({ course, onSuccess, onCancel }: CourseFormProps) {
-    const { user } = useAuthStore();
-    const { addToast } = useToastStore();
     const createCourseMutation = useCreateCourse();
     const updateCourseMutation = useUpdateCourse();
 
-    // Handle success with useEffect
-    useEffect(() => {
-        if (createCourseMutation.isSuccess || updateCourseMutation.isSuccess) {
-            const resultCourse = createCourseMutation.data || updateCourseMutation.data || course;
-            onSuccess?.(resultCourse as Course);
-        }
-    }, [createCourseMutation.isSuccess, updateCourseMutation.isSuccess, createCourseMutation.data, updateCourseMutation.data, course, onSuccess]);
-
     const handleSubmit = async (data: CourseFormData) => {
-        if (!user) {
-            addToast({
-                message: 'You must be logged in to create a course',
-                type: 'error',
-            });
-            return;
-        }
-
         if (course) {
             // Update existing course
             await updateCourseMutation.mutateAsync({
@@ -77,6 +56,8 @@ export function CourseForm({ course, onSuccess, onCancel }: CourseFormProps) {
                 input: {
                     ...data
                 }
+            }, {
+                onSuccess: onSuccess
             });
         } else {
             // Create new course
@@ -84,7 +65,7 @@ export function CourseForm({ course, onSuccess, onCancel }: CourseFormProps) {
                 ...data,
             };
 
-            await createCourseMutation.mutateAsync({ ...newCourseData });
+            await createCourseMutation.mutateAsync({ ...newCourseData }, { onSuccess: onSuccess });
         }
     };
 
@@ -96,7 +77,7 @@ export function CourseForm({ course, onSuccess, onCancel }: CourseFormProps) {
             }}
             validationSchema={courseSchema}
             onSubmit={handleSubmit}
-            onCancel={onCancel || (() => { })}
+            onCancel={onCancel}
             isEdit={!!course}
             submitText={{ create: 'Create Course', update: 'Update Course' }}
             loadingText={{ create: 'Creating...', update: 'Updating...' }}

@@ -1,13 +1,10 @@
 'use client';
 
-import { useModuleFromUrl } from '@/hooks/common/use-url-entity';
 import { useCreateLesson, useUpdateLesson } from "@/hooks/lessons/use-lesson-crud";
 import { LessonFormData, lessonSchema } from "@/lib/schemas/lesson";
 // Removed: import { useAppStore } from "@/stores/app-store";
-import { useAuthStore } from "@/stores/auth-store";
-import { useToastStore } from "@/stores/ui-store";
+import { useModuleFromUrl } from "@/hooks/common/use-url-entity";
 import { Lesson } from "@/types/course";
-import { useEffect } from "react";
 import { useFormContext } from "react-hook-form";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
@@ -15,9 +12,9 @@ import { BaseForm } from "./common/base-form";
 
 interface LessonFormProps {
     lesson?: Lesson;
-    moduleId?: string; // Optional prop for when URL doesn't contain moduleId
-    onSuccess?: (lesson: Lesson) => void;
-    onCancel?: () => void;
+    moduleId?: string;
+    onSuccess: (lesson: Lesson) => void;
+    onCancel: () => void;
 }
 
 function LessonFormFields() {
@@ -52,38 +49,22 @@ function LessonFormFields() {
 }
 
 export function LessonForm({ lesson, moduleId, onSuccess, onCancel }: LessonFormProps) {
-    const { user } = useAuthStore();
     // Use URL-based entity resolution or props
     const { currentModule, moduleId: urlModuleId } = useModuleFromUrl();
-    const { addToast } = useToastStore();
     const createLessonMutation = useCreateLesson();
     const updateLessonMutation = useUpdateLesson();
 
     // Use moduleId from props or URL
     const effectiveModuleId = moduleId || urlModuleId || currentModule?.id;
 
-    // Handle success with useEffect
-    useEffect(() => {
-        if (createLessonMutation.isSuccess || updateLessonMutation.isSuccess) {
-            const resultLesson = createLessonMutation.data || updateLessonMutation.data || lesson;
-            onSuccess?.(resultLesson as Lesson);
-        }
-    }, [createLessonMutation.isSuccess, updateLessonMutation.isSuccess, createLessonMutation.data, updateLessonMutation.data, lesson, onSuccess]);
-
     const handleSubmit = async (data: LessonFormData) => {
-        if (!user) {
-            addToast({
-                message: 'You must be logged in to create a lesson',
-                type: 'error',
-            });
-            return;
-        }
-
         if (lesson) {
             // Update existing lesson
             await updateLessonMutation.mutateAsync({
                 id: lesson.id,
                 lessonData: data,
+            }, {
+                onSuccess: onSuccess
             });
         } else {
             // Create new lesson
@@ -94,6 +75,8 @@ export function LessonForm({ lesson, moduleId, onSuccess, onCancel }: LessonForm
             await createLessonMutation.mutateAsync({
                 moduleId: effectiveModuleId!,
                 lessonData: newLesson,
+            }, {
+                onSuccess: onSuccess
             });
         }
     };
@@ -106,7 +89,7 @@ export function LessonForm({ lesson, moduleId, onSuccess, onCancel }: LessonForm
             }}
             validationSchema={lessonSchema}
             onSubmit={handleSubmit}
-            onCancel={onCancel || (() => { })}
+            onCancel={onCancel}
             isEdit={!!lesson}
             submitText={{ create: 'Create Lesson', update: 'Update Lesson' }}
             loadingText={{ create: 'Creating...', update: 'Updating...' }}

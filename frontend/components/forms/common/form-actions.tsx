@@ -21,16 +21,17 @@ export function FormActions({
     cancelText = 'Cancel'
 }: FormActionsProps) {
     return (
-        <div className="flex justify-end space-x-2 pt-4 border-t border-border">
+        <div className="flex justify-end gap-2 pt-4 border-t border-border">
             <Button
                 type="button"
+                className='h-full'
                 variant="outline"
                 onClick={onCancel}
                 disabled={isPending}
             >
                 {cancelText}
             </Button>
-            <Button type="submit" disabled={isPending}>
+            <Button className='h-full' type="submit" disabled={isPending}>
                 {isPending ? (
                     <>
                         <LoadingSpinner size="sm" className="mr-2" />

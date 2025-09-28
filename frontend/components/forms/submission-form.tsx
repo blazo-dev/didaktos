@@ -46,13 +46,10 @@ export function SubmissionForm({ assignment, courseId, onSuccess, onCancel }: Su
     const { addToast } = useToastStore();
 
     const handleSubmit = async (data: SubmissionFormData) => {
-        if (!user) {
-            addToast({
-                message: 'You must be logged in to submit an assignment',
-                type: 'error',
-            });
-            return;
-        }
+        if (!user) return addToast({
+            message: 'You must be logged in to submit an assignment',
+            type: 'error',
+        });
 
         const submissionData: Submission = {
             content: data.content,
@@ -62,9 +59,7 @@ export function SubmissionForm({ assignment, courseId, onSuccess, onCancel }: Su
         };
 
         try {
-            // Here you would call your submission API
-            await createSubmissionMutation.mutateAsync({ submissionData });
-            onSuccess(submissionData);
+            await createSubmissionMutation.mutateAsync({ submissionData }, { onSuccess: onSuccess });
         } catch (error) {
             // Error handling is done in the mutation
         }

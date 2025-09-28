@@ -23,16 +23,16 @@ const modalConfigs = {
         edit: { id: "edit-module", title: "Edit Module", size: "md" },
     },
     lesson: {
-        create: { id: "create-lesson", title: "Create Lesson", size: "md" },
-        edit: { id: "edit-lesson", title: "Edit Lesson", size: "md" },
+        create: { id: "create-lesson", title: "Create Lesson", size: "xl" },
+        edit: { id: "edit-lesson", title: "Edit Lesson", size: "xl" },
     },
     assignment: {
         create: {
             id: "create-assignment",
             title: "Create Assignment",
-            size: "md",
+            size: "xl",
         },
-        edit: { id: "edit-assignment", title: "Edit Assignment", size: "md" },
+        edit: { id: "edit-assignment", title: "Edit Assignment", size: "xl" },
     },
     submission: {
         create: {
@@ -53,7 +53,7 @@ const modalConfigs = {
         grade: {
             id: "grade-submission",
             title: "Grade Submission",
-            size: "lg",
+            size: "md",
         },
         all: {
             id: "view-all-submissions",
@@ -67,7 +67,7 @@ type ModalConfigs = typeof modalConfigs;
 type EntityType = keyof ModalConfigs;
 type ActionType<E extends EntityType> = keyof ModalConfigs[E];
 
-export function useEntityModals() {
+export function useEntityModal() {
     const { openModal, closeModal } = useModalStore();
     // Removed: Global state setters - modals now receive data as props
 

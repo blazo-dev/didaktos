@@ -1,8 +1,8 @@
 'use client';
 
 // Removed: import { useAppStore } from '@/stores/app-store';
-import { useModalStore } from '@/stores/ui-store';
-import { Assignment, Module } from '@/types/course';
+import { useEntityModal } from '@/hooks/common/use-entity-modal';
+import { Module } from '@/types/course';
 import { Calendar, ChevronRight, FileText, Plus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Button } from '../../../../ui/button';
@@ -14,26 +14,15 @@ interface AssignmentsSectionProps {
 }
 
 export function AssignmentsSection({ module, courseId, canEdit }: AssignmentsSectionProps) {
-    const { openModal } = useModalStore();
-    // Removed: const { setCurrentAssignment, setCurrentModule } = useAppStore();
+    const { open } = useEntityModal();
     const router = useRouter();
 
-    const handleOpenAssignment = (module: Module, assignment: Assignment) => {
-        // Navigation will automatically resolve entities via URL parameters
-        router.push(`/courses/${courseId}/modules/${module.id}/assignments/${assignment.id}`);
+    const handleOpenAssignment = (assignmentId: string) => {
+        router.push(`/courses/${courseId}/modules/${module.id}/assignments/${assignmentId}`);
     };
 
-    const handleCreateAssignment = (module: Module) => {
-        // Navigate to module context first, then open modal
-        // The useAssignmentForm hook will detect moduleId from URL
-        router.push(`/courses/${courseId}/modules/${module.id}?modal=create-assignment`);
-        openModal({
-            id: 'create-assignment',
-            title: 'Create New Assignment',
-            size: 'xl',
-            closable: true,
-            backdrop: true,
-        });
+    const handleCreateAssignment = () => {
+        open("assignment", "create", { moduleId: module.id });
     };
 
     return (
@@ -47,7 +36,7 @@ export function AssignmentsSection({ module, courseId, canEdit }: AssignmentsSec
                     <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => handleCreateAssignment(module)}
+                        onClick={handleCreateAssignment}
                     >
                         <Plus className="h-4 w-4 mr-1" />
                         Add Assignment
@@ -61,7 +50,7 @@ export function AssignmentsSection({ module, courseId, canEdit }: AssignmentsSec
                         <div
                             key={assignment.id}
                             className="flex items-center justify-between p-3 bg-surface rounded-lg border border-border cursor-pointer hover:bg-muted/50 transition-colors"
-                            onClick={() => handleOpenAssignment(module, assignment)}
+                            onClick={() => handleOpenAssignment(assignment.id)}
                         >
                             <div className="flex items-center space-x-3">
                                 <FileText className="h-4 w-4 text-accent-secondary" />

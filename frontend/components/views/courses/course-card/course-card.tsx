@@ -10,7 +10,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { useConfirmationDialog } from '@/hooks/common/use-confirmation-dialog';
-import { useEntityModals } from '@/hooks/common/use-entity-modals';
+import { useEntityModal } from '@/hooks/common/use-entity-modal';
 import { useDeleteCourse } from '@/hooks/courses/use-course-crud';
 import { useAuthStore } from '@/stores/auth-store';
 import { Course } from '@/types/course';
@@ -33,7 +33,7 @@ interface CourseCardProps {
 export function CourseCard({ course }: CourseCardProps) {
     const router = useRouter();
     const [showMenu, setShowMenu] = useState(false);
-    const { open } = useEntityModals()
+    const { open } = useEntityModal()
     const deleteCourse = useDeleteCourse();
     const { confirmDeletion } = useConfirmationDialog();
     // Removed: const { setCurrentCourse } = useAppStore();
@@ -50,7 +50,7 @@ export function CourseCard({ course }: CourseCardProps) {
 
     const handleEditCourse = () => {
         // Pass course data directly to modal instead of setting global state
-        open("course", "edit", course);
+        open("course", "edit", { course });
     };
 
     const handleDeleteCourse = async () => {

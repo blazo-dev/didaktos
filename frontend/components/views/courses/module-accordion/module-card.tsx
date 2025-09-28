@@ -4,7 +4,7 @@ import { Card } from '@/components/ui/card';
 import { useConfirmationDialog } from '@/hooks/common/use-confirmation-dialog';
 import { useDeleteModule } from '@/hooks/modules/use-module-crud';
 // Removed: import { useAppStore } from '@/stores/app-store';
-import { useModalStore } from '@/stores/ui-store';
+import { useEntityModal } from '@/hooks/common/use-entity-modal';
 import { Module } from '@/types/course';
 import { ModuleContent } from './module-content';
 import { ModuleHeader } from './module-header';
@@ -18,24 +18,18 @@ interface ModuleCardProps {
 }
 
 export function ModuleCard({ module, courseId, canEdit, isExpanded, onToggle }: ModuleCardProps) {
-    const { openModal } = useModalStore();
-    // Removed: const { setCurrentModule } = useAppStore();
+    const { open } = useEntityModal();
     const deleteModule = useDeleteModule(courseId);
     const { confirmModuleDeletion } = useConfirmationDialog();
 
-    const handleEditModule = (module: Module) => {
-        // Pass module data directly to the modal instead of setting global state
-        openModal({
-            id: 'edit-module',
-            title: "Edit Module",
-            data: { module }, // Pass module as modal data
-        });
+    const handleEditModule = () => {
+        open("module", "edit", { module });
     };
 
-    const handleDeleteModule = async (moduleId: string, moduleName: string) => {
-        const confirmed = await confirmModuleDeletion(moduleName);
+    const handleDeleteModule = async () => {
+        const confirmed = await confirmModuleDeletion(module.title);
         if (confirmed) {
-            await deleteModule.mutateAsync(moduleId);
+            await deleteModule.mutateAsync(module.id);
         }
     };
 
@@ -46,8 +40,8 @@ export function ModuleCard({ module, courseId, canEdit, isExpanded, onToggle }: 
                 canEdit={canEdit}
                 isExpanded={isExpanded}
                 onToggle={onToggle}
-                onEdit={() => handleEditModule(module)}
-                onDelete={() => handleDeleteModule(module.id, module.title)}
+                onEdit={handleEditModule}
+                onDelete={handleDeleteModule}
             />
             {isExpanded && (
                 <ModuleContent

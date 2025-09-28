@@ -1,9 +1,9 @@
 'use client';
 
 import { CourseForm } from '@/components/forms/course-form';
+import { Modal } from '@/components/ui/modal';
 import { useModalStore } from '@/stores/ui-store';
 import { Course } from '@/types/course';
-import { FormModal } from './common/form-modal';
 
 interface CourseModalProps {
     modalId: string;
@@ -11,26 +11,31 @@ interface CourseModalProps {
 }
 
 export function CourseModal({ modalId, onSuccess }: CourseModalProps) {
-    const { getModal } = useModalStore();
+    const { getModal, closeModal } = useModalStore();
     const modal = getModal(modalId);
 
     // Extract the course data from the modal store
-    const courseData = modal?.data as Course | undefined;
+    const courseData = modal?.data?.course as Course | undefined;
 
-    console.log({ modalId, modal, courseData });
+    const handleSuccess = (courseData: Course) => {
+        closeModal(modalId);
+        onSuccess?.(courseData);
+    };
+
+    const handleCancel = () => {
+        closeModal(modalId);
+    };
 
     return (
-        <FormModal modalId={modalId}>
-            {({ handleSuccess, handleCancel }) => (
-                <CourseForm
-                    course={courseData}
-                    onSuccess={(courseData) => {
-                        handleSuccess();
-                        onSuccess?.(courseData);
-                    }}
-                    onCancel={handleCancel}
-                />
-            )}
-        </FormModal>
+        <Modal
+            id={modalId}
+            onClose={handleCancel}
+        >
+            <CourseForm
+                course={courseData}
+                onSuccess={handleSuccess}
+                onCancel={handleCancel}
+            />
+        </Modal>
     );
 }

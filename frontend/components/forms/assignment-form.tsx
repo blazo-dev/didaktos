@@ -4,10 +4,7 @@ import { useCreateAssignment, useUpdateAssignment } from "@/hooks/assignments/us
 import { useModuleFromUrl } from '@/hooks/common/use-url-entity';
 import { AssignmentFormData, assignmentSchema } from "@/lib/schemas/assignment";
 // Removed: import { useAppStore } from "@/stores/app-store";
-import { useAuthStore } from "@/stores/auth-store";
-import { useToastStore } from "@/stores/ui-store";
 import { Assignment } from "@/types/course";
-import { useEffect } from "react";
 import { useFormContext } from "react-hook-form";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
@@ -16,8 +13,8 @@ import { BaseForm } from "./common/base-form";
 interface AssignmentFormProps {
     assignment?: Assignment;
     moduleId?: string; // Optional prop for when URL doesn't contain moduleId
-    onSuccess?: (assignment: Assignment) => void;
-    onCancel?: () => void;
+    onSuccess: (assignment: Assignment) => void;
+    onCancel: () => void;
 }
 
 function AssignmentFormFields() {
@@ -63,38 +60,22 @@ function AssignmentFormFields() {
 }
 
 export function AssignmentForm({ assignment, moduleId, onSuccess, onCancel }: AssignmentFormProps) {
-    const { user } = useAuthStore();
     // Use URL-based entity resolution or props
     const { currentModule, moduleId: urlModuleId } = useModuleFromUrl();
-    const { addToast } = useToastStore();
     const createAssignmentMutation = useCreateAssignment();
     const updateAssignmentMutation = useUpdateAssignment();
 
     // Use moduleId from props or URL
     const effectiveModuleId = moduleId || urlModuleId || currentModule?.id;
 
-    // Handle success with useEffect
-    useEffect(() => {
-        if (createAssignmentMutation.isSuccess || updateAssignmentMutation.isSuccess) {
-            const resultAssignment = createAssignmentMutation.data || updateAssignmentMutation.data || assignment;
-            onSuccess?.(resultAssignment as Assignment);
-        }
-    }, [createAssignmentMutation.isSuccess, updateAssignmentMutation.isSuccess, createAssignmentMutation.data, updateAssignmentMutation.data, assignment, onSuccess]);
-
     const handleSubmit = async (data: AssignmentFormData) => {
-        if (!user) {
-            addToast({
-                message: 'You must be logged in to create an assignment',
-                type: 'error',
-            });
-            return;
-        }
-
         if (assignment) {
             // Update existing assignment
             await updateAssignmentMutation.mutateAsync({
                 assignmentId: assignment.id,
                 assignmentData: data,
+            }, {
+                onSuccess: onSuccess
             });
         } else {
             // Create new assignment
@@ -105,6 +86,8 @@ export function AssignmentForm({ assignment, moduleId, onSuccess, onCancel }: As
             await createAssignmentMutation.mutateAsync({
                 moduleId: effectiveModuleId!,
                 assignmentData: newAssignment,
+            }, {
+                onSuccess: onSuccess
             });
         }
     };
@@ -118,7 +101,7 @@ export function AssignmentForm({ assignment, moduleId, onSuccess, onCancel }: As
             }}
             validationSchema={assignmentSchema}
             onSubmit={handleSubmit}
-            onCancel={onCancel || (() => { })}
+            onCancel={onCancel}
             isEdit={!!assignment}
             submitText={{ create: 'Create Assignment', update: 'Update Assignment' }}
             loadingText={{ create: 'Creating...', update: 'Updating...' }}
