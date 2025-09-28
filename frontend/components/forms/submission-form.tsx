@@ -59,7 +59,7 @@ export function SubmissionForm({ assignment, courseId, onSuccess, onCancel }: Su
         };
 
         try {
-            await createSubmissionMutation.mutateAsync({ submissionData }, { onSuccess: onSuccess });
+            await createSubmissionMutation.mutateAsync(submissionData, { onSuccess: onSuccess });
         } catch (error) {
             // Error handling is done in the mutation
         }

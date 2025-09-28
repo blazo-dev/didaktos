@@ -62,7 +62,7 @@ export function LessonForm({ lesson, moduleId, onSuccess, onCancel }: LessonForm
             // Update existing lesson
             await updateLessonMutation.mutateAsync({
                 id: lesson.id,
-                lessonData: data,
+                input: data,
             }, {
                 onSuccess: onSuccess
             });
@@ -73,8 +73,8 @@ export function LessonForm({ lesson, moduleId, onSuccess, onCancel }: LessonForm
             };
 
             await createLessonMutation.mutateAsync({
-                moduleId: effectiveModuleId!,
-                lessonData: newLesson,
+                parentId: effectiveModuleId!,
+                input: newLesson,
             }, {
                 onSuccess: onSuccess
             });

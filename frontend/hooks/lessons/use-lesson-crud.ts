@@ -1,47 +1,26 @@
 import { lessonsApi } from "@/lib/api/lesson";
-import { useApiMutation } from "@/lib/hooks/use-api-mutation";
-// Removed: import { useAppStore } from "@/stores/app-store";
+import { createNestedCrudHooks } from "@/lib/hooks/use-crud-hooks";
 import { Lesson } from "@/types/course";
 
-// Create lesson hook
-export const useCreateLesson = () => {
-    return useApiMutation(
-        ({
-            moduleId,
-            lessonData,
-        }: {
-            moduleId: string;
-            lessonData: Omit<Lesson, "id" | "moduleId">;
-        }) => lessonsApi.createLesson(moduleId, lessonData),
-        {
-            successMessage: "Lesson created successfully!",
-            errorMessage: "Failed to create lesson. Please try again.",
-            invalidateKeys: ["courses"],
-        }
-    );
-};
+// Create standardized CRUD hooks for lessons
+const lessonCrudHooks = createNestedCrudHooks<
+    Lesson,
+    Omit<Lesson, "id" | "moduleId">,
+    Partial<Lesson>
+>({
+    entityName: "Lesson",
+    invalidateKeys: ["courses"],
+    api: {
+        create: (
+            moduleId: string,
+            lessonData: Omit<Lesson, "id" | "moduleId">
+        ) => lessonsApi.createLesson(moduleId, lessonData),
+        update: lessonsApi.updateLesson,
+        delete: lessonsApi.deleteLesson,
+    },
+});
 
-// Update lesson hook
-export const useUpdateLesson = () => {
-    // Removed: const { setCurrentLesson } = useAppStore();
-
-    return useApiMutation(
-        ({ id, lessonData }: { id: string; lessonData: Partial<Lesson> }) =>
-            lessonsApi.updateLesson(id, lessonData),
-        {
-            successMessage: "Lesson updated successfully!",
-            errorMessage: "Failed to update lesson. Please try again.",
-            invalidateKeys: ["courses"],
-            // Removed: Global state update - components will re-fetch via URL-based hooks
-        }
-    );
-};
-
-// Delete lesson hook
-export const useDeleteLesson = () => {
-    return useApiMutation(lessonsApi.deleteLesson, {
-        successMessage: "Lesson deleted successfully!",
-        errorMessage: "Failed to delete lesson. Please try again.",
-        invalidateKeys: ["courses"],
-    });
-};
+// Export individual hooks for backward compatibility
+export const useCreateLesson = lessonCrudHooks.useCreate!;
+export const useUpdateLesson = lessonCrudHooks.useUpdate!;
+export const useDeleteLesson = lessonCrudHooks.useDelete!;

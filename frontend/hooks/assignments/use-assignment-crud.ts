@@ -1,6 +1,5 @@
 import { assignmentsApi } from "@/lib/api/assignments";
-import { useApiMutation } from "@/lib/hooks/use-api-mutation";
-// Removed: import { useAppStore } from "@/stores/app-store";
+import { createNestedCrudHooks } from "@/lib/hooks/use-crud-hooks";
 import { Assignment } from "@/types/course";
 
 // Define the create input type for assignments
@@ -10,50 +9,22 @@ interface CreateAssignmentData {
     dueDate: string;
 }
 
-// Create assignment hook
-export const useCreateAssignment = () => {
-    return useApiMutation(
-        ({
-            moduleId,
-            assignmentData,
-        }: {
-            moduleId: string;
-            assignmentData: CreateAssignmentData;
-        }) => assignmentsApi.createAssignment(moduleId, assignmentData),
-        {
-            successMessage: "Assignment created successfully!",
-            errorMessage: "Failed to create assignment. Please try again.",
-            invalidateKeys: ["courses"],
-        }
-    );
-};
+// Create standardized CRUD hooks for assignments
+const assignmentCrudHooks = createNestedCrudHooks<
+    Assignment,
+    CreateAssignmentData,
+    Partial<Assignment>
+>({
+    entityName: "Assignment",
+    invalidateKeys: ["courses"],
+    api: {
+        create: assignmentsApi.createAssignment,
+        update: assignmentsApi.updateAssignment,
+        delete: assignmentsApi.deleteAssignment,
+    },
+});
 
-// Update assignment hook
-export const useUpdateAssignment = () => {
-    // Removed: const { setCurrentAssignment } = useAppStore();
-
-    return useApiMutation(
-        ({
-            assignmentId,
-            assignmentData,
-        }: {
-            assignmentId: string;
-            assignmentData: Partial<Assignment>;
-        }) => assignmentsApi.updateAssignment(assignmentId, assignmentData),
-        {
-            successMessage: "Assignment updated successfully!",
-            errorMessage: "Failed to update assignment. Please try again.",
-            invalidateKeys: ["courses"],
-            // Removed: Global state update - components will re-fetch via URL-based hooks
-        }
-    );
-};
-
-// Delete assignment hook
-export const useDeleteAssignment = () => {
-    return useApiMutation(assignmentsApi.deleteAssignment, {
-        successMessage: "Assignment deleted successfully!",
-        errorMessage: "Failed to delete assignment. Please try again.",
-        invalidateKeys: ["courses"],
-    });
-};
+// Export individual hooks for backward compatibility
+export const useCreateAssignment = assignmentCrudHooks.useCreate!;
+export const useUpdateAssignment = assignmentCrudHooks.useUpdate!;
+export const useDeleteAssignment = assignmentCrudHooks.useDelete!;

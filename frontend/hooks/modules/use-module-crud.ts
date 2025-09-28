@@ -2,7 +2,7 @@ import { coursesApi } from "@/lib/api/course";
 import { useApiMutation } from "@/lib/hooks/use-api-mutation";
 import { Module } from "@/types/course";
 
-// Create module hook
+// Create module hook - uses courseId as parentId
 export const useCreateModule = (courseId: string) => {
     return useApiMutation(
         (moduleData: Omit<Module, "id" | "courseId">) =>
@@ -15,7 +15,7 @@ export const useCreateModule = (courseId: string) => {
     );
 };
 
-// Update module hook
+// Update module hook - needs both courseId and moduleId
 export const useUpdateModule = (courseId: string) => {
     return useApiMutation(
         ({ moduleId, data }: { moduleId: string; data: Partial<Module> }) =>
@@ -28,7 +28,7 @@ export const useUpdateModule = (courseId: string) => {
     );
 };
 
-// Delete module hook
+// Delete module hook - only needs moduleId
 export const useDeleteModule = (courseId: string) => {
     return useApiMutation(
         (moduleId: string) => coursesApi.deleteModule(moduleId),

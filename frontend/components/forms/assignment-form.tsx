@@ -72,8 +72,8 @@ export function AssignmentForm({ assignment, moduleId, onSuccess, onCancel }: As
         if (assignment) {
             // Update existing assignment
             await updateAssignmentMutation.mutateAsync({
-                assignmentId: assignment.id,
-                assignmentData: data,
+                id: assignment.id,
+                input: data,
             }, {
                 onSuccess: onSuccess
             });
@@ -84,8 +84,8 @@ export function AssignmentForm({ assignment, moduleId, onSuccess, onCancel }: As
             };
 
             await createAssignmentMutation.mutateAsync({
-                moduleId: effectiveModuleId!,
-                assignmentData: newAssignment,
+                parentId: effectiveModuleId!,
+                input: newAssignment,
             }, {
                 onSuccess: onSuccess
             });

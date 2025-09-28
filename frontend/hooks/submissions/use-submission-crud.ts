@@ -3,20 +3,23 @@ import {
     submissionsApi,
 } from "@/lib/api/submission";
 import { useApiMutation } from "@/lib/hooks/use-api-mutation";
+import { createCrudHooks } from "@/lib/hooks/use-crud-hooks";
 import { Submission } from "@/types/course";
 
-// Create submission hook
-export const useCreateSubmission = () => {
-    return useApiMutation(
-        ({ submissionData }: { submissionData: Omit<Submission, "id"> }) =>
-            submissionsApi.createSubmission(submissionData),
-        {
-            successMessage: "Submission created successfully!",
-            errorMessage: "Failed to create submission. Please try again.",
-            invalidateKeys: ["courses"],
-        }
-    );
-};
+// Create standardized CRUD hooks for submissions
+const submissionCrudHooks = createCrudHooks<Submission, Omit<Submission, "id">>(
+    {
+        entityName: "Submission",
+        invalidateKeys: ["courses"],
+        api: {
+            create: submissionsApi.createSubmission,
+            // Note: submissions typically don't have update operations, only grading
+        },
+    }
+);
+
+// Export the create hook from the factory
+export const useCreateSubmission = submissionCrudHooks.useCreate!;
 
 // Grade submission hook (specialized action for submissions)
 export const useGradeSubmission = () => {

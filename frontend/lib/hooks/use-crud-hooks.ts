@@ -93,21 +93,42 @@ export function createCrudHooks<
 }
 
 /**
+ * Configuration for creating CRUD hooks for nested entities
+ */
+export interface NestedCrudHookConfig<
+    T,
+    TCreateInput = Omit<T, "id">,
+    TUpdateInput = Partial<T>
+> {
+    /** Entity name for success/error messages */
+    entityName: string;
+    /** Query keys to invalidate after mutations */
+    invalidateKeys: string[];
+    /** API methods for nested CRUD operations */
+    api: {
+        create?: (parentId: string, input: TCreateInput) => Promise<T>;
+        update?: (id: string, input: TUpdateInput) => Promise<T>;
+        delete?: (id: string) => Promise<void>;
+    };
+    /** Custom success messages */
+    messages?: {
+        createSuccess?: string;
+        updateSuccess?: string;
+        deleteSuccess?: string;
+        createError?: string;
+        updateError?: string;
+        deleteError?: string;
+    };
+}
+
+/**
  * Specialized factory for entity CRUD with parent relationships
  */
 export function createNestedCrudHooks<
     T,
     TCreateInput = Omit<T, "id">,
     TUpdateInput = Partial<T>
->(
-    config: CrudHookConfig<T, TCreateInput, TUpdateInput> & {
-        api: {
-            create?: (parentId: string, input: TCreateInput) => Promise<T>;
-            update?: (id: string, input: TUpdateInput) => Promise<T>;
-            delete?: (id: string) => Promise<void>;
-        };
-    }
-) {
+>(config: NestedCrudHookConfig<T, TCreateInput, TUpdateInput>) {
     const { entityName, invalidateKeys, api, messages = {} } = config;
 
     const useCreate = api.create

@@ -10,7 +10,6 @@ import { ViewSubmissionModal } from '@/components/modals/view-submission-modal';
 import { useEntityModal } from '@/hooks/common/use-entity-modal';
 import { useCourseContext } from '@/hooks/courses/use-course-context';
 import { useGetAllSubmissionsByCourse } from '@/hooks/submissions/use-get-all-submission-by-course';
-// Removed: import { useAppStore } from '@/stores/app-store';
 import { useCallback } from 'react';
 import { CourseDetailHeader } from './course-detail-header';
 import { CourseInfoCard } from './course-info-card';
@@ -24,10 +23,8 @@ interface CourseDetailViewProps {
 }
 
 export function CourseDetailView({ courseId }: CourseDetailViewProps) {
-    // Removed: const { currentModule } = useAppStore();
     const { data: submissions } = useGetAllSubmissionsByCourse(courseId);
 
-    // Use new state management hooks
     const {
         course,
         isOwner,
@@ -41,7 +38,6 @@ export function CourseDetailView({ courseId }: CourseDetailViewProps) {
         open
     } = useEntityModal();
 
-    // Handle modal actions with new hooks
     const handleCreateModule = useCallback(() => {
         open("module", "create");
     }, [open]);
@@ -51,7 +47,6 @@ export function CourseDetailView({ courseId }: CourseDetailViewProps) {
     }, [open, submissions, isOwner, course]);
 
 
-    // Handle loading and error states using courseStatus
     if (isLoading || courseStatus.status === 'loading') {
         return <Loader text="Loading course..." />;
     }
@@ -70,7 +65,6 @@ export function CourseDetailView({ courseId }: CourseDetailViewProps) {
 
     return (
         <div className='w-full space-y-4 px-4 sm:px-6 lg:px-8 py-8'>
-            {/* No more prop drilling! Components get data from context */}
             <CourseDetailHeader
                 courseId={courseId}
                 isOwner={isOwner}
@@ -78,7 +72,6 @@ export function CourseDetailView({ courseId }: CourseDetailViewProps) {
                 onViewSubmissions={handleViewSubmissions}
             />
 
-            {/* Use courseStats from context instead of manual calculation */}
             <CourseInfoCard
                 course={course}
                 isOwner={isOwner}
